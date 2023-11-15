@@ -1,0 +1,30 @@
+package com.example.e_commerce.ui.home.categories
+
+import androidx.lifecycle.LiveData
+import com.example.domain.model.Category
+
+class CategoriesContract {
+    interface ViewModel {
+        val states: LiveData<State>
+        val events: LiveData<Event>
+        fun handleAction(action: Action)
+
+
+    }
+
+    sealed class State {
+        class Error(val message: String) : State()
+        class Success(val category: List<Category>) : State()
+        class Loading(val message: String) : State()
+    }
+
+    sealed class Action {
+        object LoadingCategories : Action()
+        class CategoryClicked(val category: Category):Action()
+    }
+
+    sealed class Event {
+        class NavigateToSubCategories(val category: Category) : Event()
+    }
+
+}
