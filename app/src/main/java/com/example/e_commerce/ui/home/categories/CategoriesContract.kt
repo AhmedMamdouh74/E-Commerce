@@ -14,7 +14,7 @@ class CategoriesContract {
 
     sealed class State {
         class Error(val message: String) : State()
-        class Success(val category: List<Category>) : State()
+        class Success(val category: List<Category?>) : State()
         class Loading(val message: String) : State()
     }
 
