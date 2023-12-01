@@ -69,5 +69,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     // fragment extensions
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    // Glide
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 
 }

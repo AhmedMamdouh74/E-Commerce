@@ -75,6 +75,7 @@ class CategoriesAdapter(private var category: List<Category?>?) :
         }
     }
 
+
     var onItemClickListener: OnItemClickListener? = null
 
     fun interface OnItemClickListener {

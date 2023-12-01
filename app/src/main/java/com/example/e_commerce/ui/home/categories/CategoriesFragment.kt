@@ -1,6 +1,7 @@
 package com.example.e_commerce.ui.home.categories
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
+import com.example.e_commerce.ui.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.ViewModelLifecycle
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
@@ -70,6 +71,7 @@ class CategoriesFragment : Fragment() {
         binding.errorText.text=message
         binding.btnTryAgain.setOnClickListener{
             viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
+
         }
     }
 
@@ -86,17 +88,28 @@ class CategoriesFragment : Fragment() {
         binding.successView.isVisible = true
         categoriesAdapter.bindCategories(category)
 
+
     }
 
     private fun handleEvents(event: CategoriesContract.Event) {
         when (event) {
-            is CategoriesContract.Event.NavigateToSubCategories -> navigateToCategory()
+            is CategoriesContract.Event.NavigateToSubCategories -> navigateToSubCategory(event.category)
+
         }
 
     }
 
-    private fun navigateToCategory() {
-        TODO("Not yet implemented")
+    private fun navigateToSubCategory(category: Category) {
+        val subCategoriesFragment=SubCategoriesFragment()
+        val bundle=Bundle()
+        bundle.putParcelable("category",category)
+        subCategoriesFragment.arguments=bundle
+        Log.d("category","$category")
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.subcategories_fragment,subCategoriesFragment)
+            .commit()
+
     }
 
 

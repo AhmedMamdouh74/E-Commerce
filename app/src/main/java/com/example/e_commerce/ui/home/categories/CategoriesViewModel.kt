@@ -1,10 +1,12 @@
 package com.example.e_commerce.ui.home.categories
 
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
+import com.example.domain.model.Category
 import com.example.domain.usecase.GetCategoriesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,10 +29,15 @@ class CategoriesViewModel @Inject constructor(
             }
 
             is CategoriesContract.Action.CategoryClicked -> {
+                showSubCategoryFragment(action.category)
+                Log.d("categoryVm","${action.category}")
 
             }
         }
 
+    }
+    private fun showSubCategoryFragment(category: Category?) {
+        _event.postValue(CategoriesContract.Event.NavigateToSubCategories(category!!))
     }
 
     private fun loadCategories() {

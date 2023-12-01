@@ -44,12 +44,12 @@ data class CategoryDto(
     @field:SerializedName("updatedAt")
     val updatedAt: String? = null
 ) {
-    fun ToCategory(): Category {
-        return Category(
-            image = image,
-            name = name,
-            id = id,
-            slug = slug
-        )
-    }
+//    fun ToCategory(): Category {
+//        return Category(
+//            image = image,
+//            name = name,
+//            _id = id,
+//            slug = slug
+//        )
+//    }
 }

@@ -9,5 +9,4 @@ import com.google.gson.annotations.SerializedName
     val message: String?=null,
     @field:SerializedName("data")
     val data:T?=null
-) {
-}
+)

@@ -4,11 +4,11 @@ import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 
 @Parcelize
-data class Category(
-	val image: String? = null,
+data class SubCategories(
 	val createdAt: String? = null,
 	val name: String? = null,
-	val _id: String? = null,
+	val id: String? = null,
+	val category: String? = null,
 	val slug: String? = null,
 	val updatedAt: String? = null
 ) : Parcelable

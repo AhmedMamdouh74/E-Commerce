@@ -15,25 +15,19 @@
             android:id="@+id/success_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/categories_recycler"
+                android:id="@+id/subcategories_recycler"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:background="@color/primary_30"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent=".33"
-                tools:listitem="@layout/item_category"
-
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_sub_categories"
                 />
 
-            <FrameLayout
-                android:id="@+id/subcategories_fragment"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                app:layout_constraintStart_toEndOf="@id/categories_recycler"
-                app:layout_constraintWidth_percent="0.64" />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -87,7 +81,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                 />
+                />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
