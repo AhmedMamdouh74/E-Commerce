@@ -6,5 +6,7 @@
     <color name="primaryDark">#02284E</color>
     <color name="primary_30">#4A004182</color>
     <color name="transparent">#00000000</color>
+    <color name="primary_50">#80004182</color>
+    <color name="primary_200">#06004F</color>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.subCategories
+package com.example.e_commerce.ui.features.subCategories
 
 
 
@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
+import com.example.domain.model.Category
 import com.example.domain.usecase.GetSubCategoriesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -29,12 +30,17 @@ class SubCategoriesViewModel @Inject constructor(
             }
 
             is SubCategoriesContract.Action.SubCategoriesClicked -> {
+                navigateToSubCategoriesProducts(action.categoryId)
 
             }
 
-            else -> {}
+
         }
 
+    }
+
+    private fun navigateToSubCategoriesProducts(categoryId: String) {
+        _event.postValue(SubCategoriesContract.Event.NavigateToCategoriesProducts(categoryId))
     }
 
     private fun loadSubCategories(categoryId: String) {
@@ -46,7 +52,7 @@ class SubCategoriesViewModel @Inject constructor(
                 is ResultWrapper.Success -> {
                     _states.postValue(
                         SubCategoriesContract.State.Success(
-                            response.data?: listOf()
+                            response.data ?: listOf()
                         )
                     )
                 }

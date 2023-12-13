@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.subCategories
+package com.example.e_commerce.ui.features.subCategories
 
 import android.view.LayoutInflater
 import android.view.View

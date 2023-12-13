@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.subCategories
+package com.example.e_commerce.ui.features.subCategories
 
 import androidx.lifecycle.LiveData
 import com.example.domain.model.Category

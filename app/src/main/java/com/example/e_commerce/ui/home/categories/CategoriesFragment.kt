@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
-import com.example.e_commerce.ui.subCategories.SubCategoriesFragment
+import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,7 +44,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun initViews() {
-        categoriesAdapter.onItemClickListener= CategoriesAdapter.OnItemClickListener{position, item ->
+        categoriesAdapter.onItemClickListener= CategoriesAdapter.OnItemClickListener{ _, item ->
             item?.let {
                 viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
             }
@@ -100,7 +100,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun navigateToSubCategory(category: Category) {
-        val subCategoriesFragment=SubCategoriesFragment()
+        val subCategoriesFragment= SubCategoriesFragment()
         val bundle=Bundle()
         bundle.putParcelable("category",category)
         subCategoriesFragment.arguments=bundle
@@ -120,7 +120,7 @@ class CategoriesFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             CategoriesFragment()
     }
 }

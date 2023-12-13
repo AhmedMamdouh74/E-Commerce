@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.subCategories
+package com.example.e_commerce.ui.features.subCategories
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
+import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
+import com.example.e_commerce.ui.features.products.ProductFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,12 +31,9 @@ class SubCategoriesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[SubCategoriesViewModel::class.java]
+        getCategory()
 
-        val bundle: Bundle? = this.arguments
-        if (bundle != null) {
-            category = bundle.getParcelable("category")!!
-            Log.d("subcategory", "$category" )
-        }
+
     }
 
     private var _viewBinding: FragmentSubCategoriesBinding? = null
@@ -58,7 +57,11 @@ class SubCategoriesFragment : Fragment() {
         initViews()
         viewModel.states.observe(viewLifecycleOwner, ::renderViewState)
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
-        viewModel.handleAction(SubCategoriesContract.Action.LoadingSubCategories(category._id?:""))
+        viewModel.handleAction(
+            SubCategoriesContract.Action.LoadingSubCategories(
+                category._id ?: ""
+            )
+        )
     }
 
     private fun initViews() {
@@ -67,7 +70,7 @@ class SubCategoriesFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         SubCategoriesContract.Action.SubCategoriesClicked(
-                            category._id?:""
+                            category._id?: ""
                         )
                     )
                 }
@@ -82,6 +85,7 @@ class SubCategoriesFragment : Fragment() {
             is SubCategoriesContract.State.Loading -> showLoadind(state.message)
             is SubCategoriesContract.State.Error -> showError(state.message)
 
+            else -> {}
         }
     }
 
@@ -91,7 +95,11 @@ class SubCategoriesFragment : Fragment() {
         binding.successView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            viewModel.handleAction(SubCategoriesContract.Action.LoadingSubCategories(category._id?:""))
+            viewModel.handleAction(
+                SubCategoriesContract.Action.LoadingSubCategories(
+                    category._id ?: ""
+                )
+            )
         }
     }
 
@@ -112,19 +120,43 @@ class SubCategoriesFragment : Fragment() {
 
     private fun handleEvents(event: SubCategoriesContract.Event) {
         when (event) {
-            is SubCategoriesContract.Event.NavigateToCategoriesProducts -> navigateToCategoriesProducts()
+            is SubCategoriesContract.Event.NavigateToCategoriesProducts -> navigateToCategoriesProducts(
+                event.categoryId
+            )
+
+            else -> {}
         }
 
     }
 
-    private fun navigateToCategoriesProducts() {
-        TODO("Not yet implemented")
+    private fun navigateToCategoriesProducts(categoryId: String) {
+//        val productFragment= ProductFragment()
+//        val bundle=Bundle()
+//        bundle.putParcelable("category",category)
+//        productFragment.arguments=bundle
+//        Log.d("category","$category")
+        requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.fragment_container, ProductFragment.getInstance(category))
+            .commit()
+
     }
 
 
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
+    }
+
+    private fun getCategory() {
+        val bundle: Bundle? = this.arguments
+        if (bundle != null) {
+            category = bundle.getParcelable("category")!!
+            Log.d("subcategory", "$category")
+        }
+
     }
 
 

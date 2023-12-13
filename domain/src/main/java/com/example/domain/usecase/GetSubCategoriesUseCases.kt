@@ -7,7 +7,7 @@ import com.example.domain.repositories.SubCategoriesRepository
 import javax.inject.Inject
 
 class GetSubCategoriesUseCases @Inject constructor (val subCategories: SubCategoriesRepository) {
-    suspend fun invoke(categoryId: String):ResultWrapper<List<SubCategories?>?>{
+    suspend operator fun invoke(categoryId: String):ResultWrapper<List<SubCategories?>?>{
         return subCategories.getSubCategories(categoryId)
     }
 }

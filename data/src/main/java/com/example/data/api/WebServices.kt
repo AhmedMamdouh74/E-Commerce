@@ -3,6 +3,7 @@ package com.example.data.api
 import com.example.data.model.BaseResponse
 import com.example.data.model.category.CategoryResponse
 import com.example.domain.model.Category
+import com.example.domain.model.Product
 import com.example.domain.model.SubCategories
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -18,6 +19,18 @@ interface WebServices {
     suspend fun getSubCategories(
         @Path("categoryId") id: String
     ): BaseResponse<List<SubCategories?>?>
+
+    @GET("products")
+    suspend fun getProducts(
+        @Query("category[in]") id: String
+        //  @Query("page") page:Int
+    ): BaseResponse<List<Product?>?>
+
+    @GET("products/productsId")
+    suspend fun getSpecificProducts(
+        @Path("productsId") productId: String
+    ): BaseResponse<Product?>
+
 
 
 }
