@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductDetailsBinding
+import com.example.e_commerce.ui.features.products.ProductFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +25,7 @@ class ProductDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[ProductDetailsViewModel::class.java]
-        getProduct()
+       // getProduct()
 
 
     }
@@ -43,11 +44,22 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+      //  initViews()
         viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
     }
+
+//    private fun initViews() {
+//        binding.icBack.setOnClickListener{
+//            requireActivity()
+//                .supportFragmentManager
+//                .beginTransaction()
+//                .addToBackStack(null)
+//                .replace(R.id.fragment_container,ProductFragment())
+//                .commit()
+//        }
+//    }
 
     private fun handleEvents(event: ProductsDetailsContract.Event?) {
         when (event) {
@@ -111,12 +123,12 @@ class ProductDetailsFragment : Fragment() {
         super.onDestroyView()
         viewBinding = null
     }
-    private fun getProduct() {
-        val bundle: Bundle? = this.arguments
-        if (bundle != null) {
-            product = bundle.getParcelable("category")!!
-            Log.d("productDetails", "$product")
-        }
-
-    }
+//    private fun getProduct() {
+//        val bundle: Bundle? = this.arguments
+//        if (bundle != null) {
+//            product = bundle.getParcelable("category")!!
+//            Log.d("productDetails", "$product")
+//        }
+//
+//    }
 }

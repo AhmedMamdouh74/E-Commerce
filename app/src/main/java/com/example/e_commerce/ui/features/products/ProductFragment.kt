@@ -83,6 +83,7 @@ class ProductFragment : Fragment() {
             .supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container,ProductDetailsFragment.getInstance(product))
+            .addToBackStack(null)
             .commit()
 
     }
@@ -145,7 +146,7 @@ class ProductFragment : Fragment() {
         }
         fun getProduct(product: Product):ProductFragment{
             val productFragmentRef=ProductFragment()
-            productFragmentRef.product=product
+          //  productFragmentRef.product=product
             productFragmentRef.arguments = Bundle().apply {
                 putParcelable("product", product)
             }

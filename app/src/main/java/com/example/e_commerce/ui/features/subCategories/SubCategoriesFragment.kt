@@ -130,11 +130,11 @@ class SubCategoriesFragment : Fragment() {
     }
 
     private fun navigateToCategoriesProducts(categoryId: String) {
-//        val productFragment= ProductFragment()
-//        val bundle=Bundle()
-//        bundle.putParcelable("category",category)
-//        productFragment.arguments=bundle
-//        Log.d("category","$category")
+        val productFragment= ProductFragment()
+        val bundle=Bundle()
+        bundle.putParcelable("category",category)
+        productFragment.arguments=bundle
+        Log.d("category","$category")
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
