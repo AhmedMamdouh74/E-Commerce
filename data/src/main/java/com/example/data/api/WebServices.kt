@@ -26,7 +26,7 @@ interface WebServices {
         //  @Query("page") page:Int
     ): BaseResponse<List<Product?>?>
 
-    @GET("products/productsId")
+    @GET("products/{productsId}")
     suspend fun getSpecificProducts(
         @Path("productsId") productId: String
     ): BaseResponse<Product?>

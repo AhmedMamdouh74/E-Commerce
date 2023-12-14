@@ -75,17 +75,18 @@ class ProductDetailsFragment : Fragment() {
         when (state) {
             is ProductsDetailsContract.State.Error -> showError(state.message)
             is ProductsDetailsContract.State.Loading -> showLoading(state.message)
-            is ProductsDetailsContract.State.Success -> bindProductDetail()
+            is ProductsDetailsContract.State.Success -> bindProductDetail(state.product)
 
             else -> {}
         }
 
     }
 
-    private fun bindProductDetail() {
+    private fun bindProductDetail(product: Product?) {
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
+        binding.product=product
     }
 
     private fun showLoading(message: String) {
