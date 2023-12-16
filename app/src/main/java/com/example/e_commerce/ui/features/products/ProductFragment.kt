@@ -54,7 +54,7 @@ class ProductFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         ProductContract.Action.ProductsClicked(
-                            product
+                            it
                         )
                     )
                 }
@@ -83,7 +83,6 @@ class ProductFragment : Fragment() {
             .supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container,ProductDetailsFragment.getInstance(product))
-            .addToBackStack(null)
             .commit()
 
     }

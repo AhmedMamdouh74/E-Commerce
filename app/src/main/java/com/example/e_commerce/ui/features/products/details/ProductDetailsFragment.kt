@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductDetailsBinding
@@ -50,16 +51,13 @@ class ProductDetailsFragment : Fragment() {
         viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
     }
 
-//    private fun initViews() {
-//        binding.icBack.setOnClickListener{
-//            requireActivity()
-//                .supportFragmentManager
-//                .beginTransaction()
-//                .addToBackStack(null)
-//                .replace(R.id.fragment_container,ProductFragment())
-//                .commit()
-//        }
-//    }
+    private fun initViews() {
+        binding.icBack.setOnClickListener{
+            requireActivity()
+                .onBackPressed()
+
+        }
+    }
 
     private fun handleEvents(event: ProductsDetailsContract.Event?) {
         when (event) {
@@ -87,6 +85,15 @@ class ProductDetailsFragment : Fragment() {
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
         binding.product=product
+        binding.apply {
+            view?.let {
+                Glide
+                    .with(it)
+                    .load(product?.imageCover)
+                    .into(productDetailsImage)
+            }
+
+        }
     }
 
     private fun showLoading(message: String) {
@@ -124,12 +131,12 @@ class ProductDetailsFragment : Fragment() {
         super.onDestroyView()
         viewBinding = null
     }
-//    private fun getProduct() {
-//        val bundle: Bundle? = this.arguments
-//        if (bundle != null) {
-//            product = bundle.getParcelable("category")!!
-//            Log.d("productDetails", "$product")
-//        }
-//
-//    }
+    private fun getProduct() {
+        val bundle: Bundle? = this.arguments
+        if (bundle != null) {
+            product = bundle.getParcelable("category")!!
+            Log.d("productDetails", "$product")
+        }
+
+    }
 }

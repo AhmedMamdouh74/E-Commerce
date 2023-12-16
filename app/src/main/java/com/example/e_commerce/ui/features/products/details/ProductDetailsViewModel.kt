@@ -41,18 +41,18 @@ class ProductDetailsViewModel @Inject constructor(private val getSpecificProduct
         viewModelScope.launch {
             _states.postValue(ProductsDetailsContract.State.Loading("Loading"))
             when (val response = getSpecificProductUseCases.invoke(productId)) {
-                is ResultWrapper.Error -> {
-                    ProductsDetailsContract.State.Error(
-                        response.error.localizedMessage
-                    )
+                is ResultWrapper.Error -> {_states.postValue( ProductsDetailsContract.State.Error(
+                    response.error.localizedMessage
+                ))
+
                 }
 
 
-                is ResultWrapper.ServerError -> ProductsDetailsContract.State.Error(
+                is ResultWrapper.ServerError ->_states.postValue( ProductsDetailsContract.State.Error(
                     response.error.serverMessage
-                )
+                ))
 
-                is ResultWrapper.Success -> response.data
+                is ResultWrapper.Success -> _states.postValue(ProductsDetailsContract.State.Success(response.data))
 
                 is ResultWrapper.Loading -> TODO()
                 else -> {}
