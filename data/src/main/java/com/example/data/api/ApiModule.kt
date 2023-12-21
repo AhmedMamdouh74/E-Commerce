@@ -1,10 +1,17 @@
 package com.example.data.api
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -56,5 +63,34 @@ object ApiModule {
     fun provideWebServices(retrofit: Retrofit): WebServices {
         return retrofit.create(WebServices::class.java)
     }
+    @Singleton
+    @Provides
+    fun provideTokenManager(@ApplicationContext context: Context): TokenManager = TokenManager(context)
+    @Singleton
+    @Provides
+    fun provideAuthenticator(tokenManager: TokenManager): Interceptor {
+        return AuthInterceptor(tokenManager)
+    }
+    @Singleton
+    @Provides
+    fun provideTokenInterceptor(sharedPreferences: SharedPreferences) : Interceptor{
+        return  TokenInterceptor(sharedPreferences)
+    }
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext context: Context) : SharedPreferences{
+        return  context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+    }
+    @Singleton
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    @Singleton
+    @Provides
+    fun provideIoScope(coroutineDispatcher: CoroutineDispatcher): CoroutineScope {
+        return CoroutineScope(coroutineDispatcher)
+    }
+
+
+
 
 }

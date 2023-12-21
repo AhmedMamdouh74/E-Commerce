@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 class ProductFragment : Fragment() {
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
-    lateinit var product: Product
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +58,7 @@ class ProductFragment : Fragment() {
                         )
                     )
                 }
-                Log.d( "initViews: ","$product")
+
             }
 
         binding.productsRecycler.adapter = productsAdapter
@@ -89,7 +89,7 @@ class ProductFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        product = arguments?.getParcelable("product") ?: Product() // Provide default value if necessary
+
 
 
         initViews()
@@ -143,14 +143,7 @@ class ProductFragment : Fragment() {
             productFragmentRef.category = category
             return productFragmentRef
         }
-        fun getProduct(product: Product):ProductFragment{
-            val productFragmentRef=ProductFragment()
-          //  productFragmentRef.product=product
-            productFragmentRef.arguments = Bundle().apply {
-                putParcelable("product", product)
-            }
-            return productFragmentRef
-        }
+
 
 
     }

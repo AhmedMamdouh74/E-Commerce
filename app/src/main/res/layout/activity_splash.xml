@@ -11,5 +11,9 @@
         android:layout_height="match_parent"
         android:src="@drawable/splash_screen"
         android:scaleType="centerCrop"/>
+    <FrameLayout
+        android:id="@+id/register_login_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
