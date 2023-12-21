@@ -1,6 +1,7 @@
 package com.example.e_commerce.ui.features.auth.register
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -46,7 +47,8 @@ class RegisterFragment : Fragment() {
             is RegisterContract.State.Loading -> showLoading(state.message)
             is RegisterContract.State.Success -> register(state.registerResponse)
 
-            null -> TODO()
+
+            else -> {}
         }
 
     }
@@ -55,39 +57,48 @@ class RegisterFragment : Fragment() {
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
-        binding.lifecycleOwner = this
-        binding.vm = viewModel
-        TokenViewModel(TokenManager(this.requireContext())).saveToken(registerResponse.token?:"")
+
+
+//        TokenViewModel(TokenManager(this.requireContext())).saveToken(registerResponse.token?:"")
+//        Log.d( "register: ","${registerResponse.token}")
 
 
     }
 
     private fun showLoading(message: String) {
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = true
         binding.loadingText.text = message
     }
 
     private fun showError(message: String) {
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
         binding.errorView.isVisible = true
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            viewModel.validateAndRegister(viewModel.registerRequest)
+            binding.successView.isVisible=true
+            binding.errorView.isVisible=false
+            viewModel.handleAction(RegisterContract.Action.Register(viewModel.getRegisterRequest()))
+
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.lifecycleOwner = this
+        binding.vm=viewModel
         viewModel.states.observe(viewLifecycleOwner, ::renderStates)
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         binding.btnSignUp.setOnClickListener {
-            viewModel.handleAction(RegisterContract.Action.Register(viewModel.registerRequest))
+            viewModel.handleAction(RegisterContract.Action.Register(viewModel.getRegisterRequest()))
+
+
         }
+
     }
+
 
     private fun handleEvents(event: RegisterContract.Event?) {
         when (event) {

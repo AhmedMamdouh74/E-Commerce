@@ -20,8 +20,8 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         Handler(Looper.getMainLooper()).postDelayed({
-            navigateToHome()
-            // navigateToRegister()
+           navigateToHome()
+             //navigateToRegister()
         }, 2000)
         var tokenManager = TokenViewModel(TokenManager(this))
         val token = tokenManager.token.value

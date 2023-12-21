@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary"
+
         tools:context=".ui.features.auth.register.RegisterFragment">
         <ScrollView
             android:layout_width="match_parent"
@@ -23,6 +23,7 @@
         android:id="@+id/success_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/primary"
         >
 
 
@@ -48,7 +49,7 @@
             app:Error="@{vm.nameError}"
             app:layout_constraintTop_toBottomOf="@id/img_route">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,7 +57,7 @@
                 android:fontFamily="@font/poppins"
                 android:hint="enter your full name"
                 android:inputType="text"
-                android:text="@{vm.name}"
+                android:text="@={vm.name}"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,7 +72,7 @@
             app:Error="@{vm.mobileError}"
             app:layout_constraintTop_toBottomOf="@id/name_container">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/mobile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +80,7 @@
                 android:fontFamily="@font/poppins"
                 android:hint="enter your mobile number"
                 android:inputType="number"
-                android:text="@{vm.mobile}"
+                android:text="@={vm.mobile}"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,7 +95,7 @@
             app:Error="@{vm.emailError}"
             app:layout_constraintTop_toBottomOf="@id/mobile_container">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,7 +103,7 @@
                 android:fontFamily="@font/poppins"
                 android:hint="enter your email"
                 android:inputType="textEmailAddress"
-                android:text="@{vm.email}"
+                android:text="@={vm.email}"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,16 +118,16 @@
             app:Error="@{vm.passwordError}"
             app:layout_constraintTop_toBottomOf="@id/email_container">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/transparent"
-                android:fontFamily="@font/poppins"
-                android:hint="enter your password"
-                android:inputType="textPassword"
-                android:text="@{vm.password}"
-                android:textSize="18sp" />
+           <EditText
+               android:id="@+id/password"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:background="@color/transparent"
+               android:fontFamily="@font/poppins"
+               android:hint="enter your password"
+               android:inputType="textPassword"
+               android:text="@={vm.password}"
+               android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -140,7 +141,7 @@
             app:Error="@{vm.rePasswordError}"
             app:layout_constraintTop_toBottomOf="@id/password_container">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/rePassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -148,7 +149,7 @@
                 android:fontFamily="@font/poppins"
                 android:hint="confirm password"
                 android:inputType="textPassword"
-                android:text="@{vm.rePassword}"
+                android:text="@={vm.rePassword}"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 

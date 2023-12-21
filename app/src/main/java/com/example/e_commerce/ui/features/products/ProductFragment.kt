@@ -133,7 +133,7 @@ class ProductFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            ProductContract.Action.LoadingProducts(category._id ?: "")
+           viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id?:""))
         }
     }
 

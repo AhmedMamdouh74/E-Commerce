@@ -46,6 +46,7 @@ class ProductDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
       //  initViews()
+        binding.lifecycleOwner=this
         viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
@@ -85,6 +86,7 @@ class ProductDetailsFragment : Fragment() {
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
         binding.product=product
+
         binding.apply {
             view?.let {
                 Glide
@@ -110,7 +112,7 @@ class ProductDetailsFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            ProductsDetailsContract.Action.LoadingProduct(product.id ?: "")
+            viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id?:""))
         }
     }
 
