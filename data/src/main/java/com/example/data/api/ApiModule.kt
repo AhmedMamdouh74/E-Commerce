@@ -38,9 +38,10 @@ object ApiModule {
     }
     @Singleton
     @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor,tokenInterceptor: TokenInterceptor): OkHttpClient {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(tokenInterceptor)
             .build()
         return okHttpClient
     }
@@ -50,7 +51,7 @@ object ApiModule {
         val loggingInterceptor = HttpLoggingInterceptor {
             Log.e("api", it)
         }
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         return loggingInterceptor
     }
     @Singleton
@@ -66,14 +67,15 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideTokenManager(@ApplicationContext context: Context): TokenManager = TokenManager(context)
-    @Singleton
-    @Provides
-    fun provideAuthenticator(tokenManager: TokenManager): Interceptor {
-        return AuthInterceptor(tokenManager)
-    }
+//    @Singleton
+//    @Provides
+//    fun provideAuthenticator(tokenManager: TokenManager): Interceptor {
+//        return AuthInterceptor(tokenManager)
+//    }
     @Singleton
     @Provides
     fun provideTokenInterceptor(sharedPreferences: SharedPreferences) : Interceptor{
+    val tokenInterceptor=TokenInterceptor(sharedPreferences)
         return  TokenInterceptor(sharedPreferences)
     }
     @Singleton

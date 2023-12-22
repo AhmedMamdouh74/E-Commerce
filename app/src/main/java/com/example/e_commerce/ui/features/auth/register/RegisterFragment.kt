@@ -42,6 +42,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun renderStates(state: RegisterContract.State?) {
+        Log.d( "renderStates: ","$state")
         when (state) {
             is RegisterContract.State.Error -> showError(state.message)
             is RegisterContract.State.Loading -> showLoading(state.message)
@@ -54,13 +55,14 @@ class RegisterFragment : Fragment() {
     }
 
     private fun register(registerResponse: RegisterResponse) {
+        Log.d( "register33: ","${registerResponse.token}")
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
 
 
-//        TokenViewModel(TokenManager(this.requireContext())).saveToken(registerResponse.token?:"")
-//        Log.d( "register: ","${registerResponse.token}")
+        TokenViewModel(TokenManager(this.requireContext())).saveToken(registerResponse.token?:"")
+        Log.d( "register: ","${registerResponse.token}")
 
 
     }
