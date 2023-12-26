@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.features.auth.register
+package com.example.e_commerce.ui.features.auth
 
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout

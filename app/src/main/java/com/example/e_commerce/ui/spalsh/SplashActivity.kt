@@ -13,19 +13,29 @@ import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
+    @Inject
+    lateinit var tokenManager: TokenManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         Handler(Looper.getMainLooper()).postDelayed({
-            // navigateToHome()
-             navigateToRegister()
+            if (isUserLogged(tokenManager)) {
+                navigateToHome()
+            } else navigateToRegister()
         }, 2000)
-        var tokenManager = TokenViewModel(TokenManager(this))
-        val token = tokenManager.token.value
-        Log.d("onCreateSplash: ", "$token")
+
+
+    }
+
+    fun isUserLogged(tokenManager: TokenManager): Boolean {
+        val userToken = tokenManager.getToken()
+        return !userToken.isNullOrEmpty()
+
 
     }
 

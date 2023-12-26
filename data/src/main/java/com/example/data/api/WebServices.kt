@@ -41,10 +41,10 @@ interface WebServices {
     fun refreshToken(oldToken: String): Response<LoginResponse>
 
     @POST("auth/signup")
-    suspend fun register(@Body registerRequest: RegisterRequest): BaseResponse<RegisterResponse?>
+    suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse?>
 
     @POST("auth/signin")
-    suspend fun login(@Body loginRequest: LoginRequest): BaseResponse<LoginResponse?>
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse?>
 
 
 }

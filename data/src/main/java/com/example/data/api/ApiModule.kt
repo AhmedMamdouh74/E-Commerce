@@ -36,15 +36,20 @@ object ApiModule {
         return retrofit
 
     }
+
     @Singleton
     @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor,tokenInterceptor: TokenInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        tokenInterceptor: TokenInterceptor
+    ): OkHttpClient {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(tokenInterceptor)
             .build()
         return okHttpClient
     }
+
     @Singleton
     @Provides
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
@@ -54,45 +59,47 @@ object ApiModule {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         return loggingInterceptor
     }
+
     @Singleton
     @Provides
-    fun provideGsonConverterFactory():GsonConverterFactory{
+    fun provideGsonConverterFactory(): GsonConverterFactory {
         return GsonConverterFactory.create()
     }
+
     @Singleton
     @Provides
     fun provideWebServices(retrofit: Retrofit): WebServices {
         return retrofit.create(WebServices::class.java)
     }
+
     @Singleton
     @Provides
-    fun provideTokenManager(@ApplicationContext context: Context): TokenManager = TokenManager(context)
-//    @Singleton
-//    @Provides
-//    fun provideAuthenticator(tokenManager: TokenManager): Interceptor {
-//        return AuthInterceptor(tokenManager)
-//    }
+    fun provideTokenManager(@ApplicationContext context: Context,sharedPreferences: SharedPreferences): TokenManager =
+        TokenManager(context,sharedPreferences)
+
+
     @Singleton
     @Provides
-    fun provideTokenInterceptor(sharedPreferences: SharedPreferences) : Interceptor{
-    val tokenInterceptor=TokenInterceptor(sharedPreferences)
-        return  TokenInterceptor(sharedPreferences)
+    fun provideTokenInterceptor(sharedPreferences: SharedPreferences): Interceptor {
+
+        return TokenInterceptor(sharedPreferences)
     }
+
     @Singleton
     @Provides
-    fun provideSharedPreferences(@ApplicationContext context: Context) : SharedPreferences{
-        return  context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
     }
+
     @Singleton
     @Provides
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
     @Singleton
     @Provides
     fun provideIoScope(coroutineDispatcher: CoroutineDispatcher): CoroutineScope {
         return CoroutineScope(coroutineDispatcher)
     }
-
-
 
 
 }

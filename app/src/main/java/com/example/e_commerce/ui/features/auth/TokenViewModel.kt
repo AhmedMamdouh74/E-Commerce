@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
+import com.example.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,25 +15,22 @@ import javax.inject.Inject
 @HiltViewModel
 class TokenViewModel @Inject constructor(
     private val tokenManager: TokenManager,
-): ViewModel() {
+) : ViewModel() {
 
-    private val _token = MutableLiveData<String?>()
-    var token: MutableLiveData<String?> = _token
 
-    init {
+    fun getToken(){
         viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.getToken().collect {
-                withContext(Dispatchers.Main) {
-                    token.value = it
-                }
-            }
+            tokenManager.getToken()
         }
     }
 
-    fun saveToken(token: String) {
+
+    fun saveToken(token: String, user: User) {
         viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.saveToken(token)
+            tokenManager.saveToken(token, user)
         }
+
+
     }
 
     fun deleteToken() {

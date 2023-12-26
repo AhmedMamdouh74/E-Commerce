@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.data.api.TokenManager
@@ -20,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
     private lateinit var viewModel: RegisterViewModel
+    val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun renderStates(state: RegisterContract.State?) {
-        Log.d( "renderStates: ","$state")
+        Log.d("renderStates: ", "$state")
         when (state) {
             is RegisterContract.State.Error -> showError(state.message)
             is RegisterContract.State.Loading -> showLoading(state.message)
@@ -54,21 +56,21 @@ class RegisterFragment : Fragment() {
 
     }
 
-    private fun register(registerResponse: RegisterResponse) {
-        Log.d( "register33: ","${registerResponse.token}")
+    private fun register(registerResponse: RegisterResponse?) {
+        Log.d("register33: ", "${registerResponse?.token}")
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
 
 
-        TokenViewModel(TokenManager(this.requireContext())).saveToken(registerResponse.token?:"")
-        Log.d( "register: ","${registerResponse.token}")
+        registerResponse?.user?.let { tokenViewModel.saveToken(registerResponse?.token ?: "", it) }
+        Log.d("register: ", "${registerResponse?.token}")
 
 
     }
 
     private fun showLoading(message: String) {
-        binding.successView.isVisible = true
+        binding.successView.isVisible = false
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = true
         binding.loadingText.text = message
@@ -80,8 +82,7 @@ class RegisterFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            binding.successView.isVisible=true
-            binding.errorView.isVisible=false
+
             viewModel.handleAction(RegisterContract.Action.Register(viewModel.getRegisterRequest()))
 
         }
@@ -90,7 +91,7 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        binding.vm=viewModel
+        binding.vm = viewModel
         viewModel.states.observe(viewLifecycleOwner, ::renderStates)
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         binding.btnSignUp.setOnClickListener {
