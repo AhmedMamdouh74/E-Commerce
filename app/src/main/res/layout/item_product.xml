@@ -51,7 +51,6 @@
                     android:id="@+id/add_to_favourites"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/add_favourite"
                     app:layout_constraintBottom_toBottomOf="@+id/circle"
                     app:layout_constraintEnd_toEndOf="@+id/circle"
                     app:layout_constraintStart_toStartOf="@+id/circle"

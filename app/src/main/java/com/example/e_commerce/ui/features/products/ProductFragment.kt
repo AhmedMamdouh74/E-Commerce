@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductBinding
+import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.products.details.ProductDetailsFragment
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesAdapter
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesContract
@@ -26,7 +28,7 @@ import kotlinx.coroutines.launch
 class ProductFragment : Fragment() {
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
-
+    private val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,7 @@ class ProductFragment : Fragment() {
         viewBinding = FragmentProductBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     private fun initViews() {
         productsAdapter.onItemClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
@@ -60,6 +63,27 @@ class ProductFragment : Fragment() {
                 }
 
             }
+        productsAdapter.onIconWishlistClickListener =
+            ProductsAdapter.OnItemClickListener { position, item ->
+                item.let {
+                    if (IsAddedToFavourite.isAdded == true) {
+                        viewModel.handleAction(
+                            ProductContract.Action.AddProductToWishlist(
+                                it?.id ?: "",
+                                tokenViewModel.getToken().toString()
+                            )
+                        )
+                    } else {
+                        viewModel.handleAction(
+                            ProductContract.Action.RemoveProductToWishlist(
+                                it?.id ?: "", tokenViewModel.getToken().toString()
+                            )
+                        )
+                    }
+
+                }
+            }
+
 
         binding.productsRecycler.adapter = productsAdapter
     }
@@ -84,7 +108,7 @@ class ProductFragment : Fragment() {
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container,ProductDetailsFragment.getInstance(product))
+            .replace(R.id.fragment_container, ProductDetailsFragment.getInstance(product))
             .commit()
 
     }
@@ -135,7 +159,7 @@ class ProductFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-           viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id?:""))
+            viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
         }
     }
 
@@ -145,7 +169,6 @@ class ProductFragment : Fragment() {
             productFragmentRef.category = category
             return productFragmentRef
         }
-
 
 
     }

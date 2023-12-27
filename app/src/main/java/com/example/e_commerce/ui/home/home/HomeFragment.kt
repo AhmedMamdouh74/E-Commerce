@@ -39,6 +39,11 @@ class HomeFragment : Fragment() {
             tokenViewModel.deleteToken()
            val intent=Intent(requireActivity(),SplashActivity::class.java)
             startActivity(intent)
+//            requireActivity()
+//                .supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.register_login_container,LoginFragment())
+//                .commit()
 
         }
     }

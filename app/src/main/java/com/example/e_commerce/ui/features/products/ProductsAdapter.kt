@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
+import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ItemProductBinding
 
 class ProductsAdapter(private var product: List<Product?>?) :
@@ -13,6 +14,7 @@ class ProductsAdapter(private var product: List<Product?>?) :
         val itemBinding =
             ItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(itemBinding)
+
 
     }
 
@@ -24,6 +26,14 @@ class ProductsAdapter(private var product: List<Product?>?) :
                 onItemClickListener?.onItemClick(position, product!![position])
             }
         }
+
+        onIconWishlistClickListener.let {
+            holder.itemBinding.addToFavourites.setOnClickListener {
+                notifyItemChanged(position)
+                onIconWishlistClickListener?.onItemClick(position, product!![position])
+            }
+        }
+
     }
 
     fun bindProducts(product: List<Product?>) {
@@ -34,13 +44,22 @@ class ProductsAdapter(private var product: List<Product?>?) :
     override fun getItemCount(): Int = product?.size ?: 0
 
     var onItemClickListener: OnItemClickListener? = null
+    var onIconWishlistClickListener: OnItemClickListener? = null
+
     fun interface OnItemClickListener {
         fun onItemClick(position: Int, item: Product?)
     }
 
-    class ViewHolder(private val itemBinding: ItemProductBinding) :
+
+    class ViewHolder(val itemBinding: ItemProductBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(product: Product?) {
+
+            if (IsAddedToFavourite.isAdded==true) {
+                itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
+            } else{
+                itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
+            }
             itemBinding.product = product
             itemBinding.apply {
                 Glide

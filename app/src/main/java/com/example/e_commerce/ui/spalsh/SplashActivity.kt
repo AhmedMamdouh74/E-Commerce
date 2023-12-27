@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.example.data.api.TokenManager
 import com.example.e_commerce.R
 import com.example.e_commerce.ui.features.auth.login.LoginFragment
@@ -36,6 +37,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun isUserLogged(tokenManager: TokenManager): Boolean {
         val userToken = tokenManager.getToken()
+        Log.d("TAG", "isUserLogged: $userToken")
         return !userToken.isNullOrEmpty()
 
 
