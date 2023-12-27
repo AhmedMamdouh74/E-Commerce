@@ -68,6 +68,8 @@ class ProductFragment : Fragment() {
         when (event) {
             is ProductContract.Event.NavigateToProductsDetails -> navigateToProductsDetails(event.product)
 
+            is ProductContract.Event.NavigateToCartScreen -> TODO()
+
             else -> {}
         }
 

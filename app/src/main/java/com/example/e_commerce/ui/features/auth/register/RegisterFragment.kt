@@ -16,6 +16,7 @@ import com.example.domain.model.RegisterResponse
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentRegisterBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.features.auth.login.LoginFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -77,13 +78,14 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showError(message: String) {
-        binding.successView.isVisible = true
+        binding.successView.isVisible = false
         binding.errorView.isVisible = true
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
+            binding.successView.isVisible = true
+            binding.errorView.isVisible = false
 
-            viewModel.handleAction(RegisterContract.Action.Register(viewModel.getRegisterRequest()))
 
         }
     }
@@ -114,7 +116,11 @@ class RegisterFragment : Fragment() {
     }
 
     private fun navigateAuthenticatedRegisterToLogin(registerRequest: RegisterRequest) {
-        TODO("Not yet implemented")
+        requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.register_login_container,LoginFragment())
+            .commit()
     }
 
     override fun onDestroyView() {

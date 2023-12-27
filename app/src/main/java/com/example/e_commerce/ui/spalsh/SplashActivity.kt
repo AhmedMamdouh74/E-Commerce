@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.example.data.api.TokenManager
 import com.example.e_commerce.R
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.features.auth.login.LoginFragment
 import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,13 +24,17 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (isUserLogged(tokenManager)) {
                 navigateToHome()
-            } else navigateToRegister()
+
+            } else
+                navigateToLogin()
+
+
         }, 2000)
 
 
     }
 
-    fun isUserLogged(tokenManager: TokenManager): Boolean {
+    private fun isUserLogged(tokenManager: TokenManager): Boolean {
         val userToken = tokenManager.getToken()
         return !userToken.isNullOrEmpty()
 
@@ -44,10 +46,10 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun navigateToRegister() {
+    private fun navigateToLogin() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.register_login_container, RegisterFragment())
+            .replace(R.id.register_login_container, LoginFragment())
             .commit()
     }
 }

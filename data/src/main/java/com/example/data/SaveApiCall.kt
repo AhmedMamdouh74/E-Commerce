@@ -31,9 +31,11 @@ suspend fun <T> saveApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
 
             is HttpException -> {
                 val body = e.response()?.errorBody()?.string()
-                //val response = Gson().fromJson(body, BaseResponse::class.java)
+                val response = Gson().fromJson(body, BaseResponse::class.java)
                 return ResultWrapper.ServerError(
                     ServerError(
+//                        response.message ?: "",
+//                        response.statusMessage ?: "",
                         body?:"",
                         body?:"",
                         e.code()

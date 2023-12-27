@@ -63,12 +63,6 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
-//    val categoryLiveData = MutableLiveData<List<Category?>?>()
-//    fun getCategories() {
-//        viewModelScope.launch {
-//            val list = getCategoriesUseCases.invoke()
-//            categoryLiveData.postValue(list)
-//        }
-//    }
+
 
 }
