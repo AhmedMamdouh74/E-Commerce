@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.api.TokenManager
 import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.R
@@ -23,12 +24,16 @@ import com.example.e_commerce.ui.features.subCategories.SubCategoriesContract
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
+    @Inject
+    lateinit var tokenManager:TokenManager
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
-    private val tokenViewModel: TokenViewModel by viewModels()
+//    private val tokenViewModel: TokenViewModel by viewModels()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,20 +70,25 @@ class ProductFragment : Fragment() {
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
-                item.let {
+                item?.let {
                     if (IsAddedToFavourite.isAdded == true) {
-                        viewModel.handleAction(
-                            ProductContract.Action.AddProductToWishlist(
-                                it?.id ?: "",
-                                tokenViewModel.getToken().toString()
-                            )
-                        )
-                    } else {
+                        IsAddedToFavourite.isAdded = false
                         viewModel.handleAction(
                             ProductContract.Action.RemoveProductToWishlist(
-                                it?.id ?: "", tokenViewModel.getToken().toString()
+                                it.id ?: "", tokenManager.getToken().toString()
                             )
                         )
+                    }else {
+                        IsAddedToFavourite.isAdded = true
+                        viewModel.handleAction(
+                            ProductContract.Action.AddProductToWishlist(
+                                it.id ?: "",
+                                tokenManager.getToken().toString()
+
+                            )
+                        )
+                        Log.d("TAG", "initViews:${tokenManager.getToken().toString()} ")
+                        Log.d("TAG", "initViews:${it.id} ")
                     }
 
                 }

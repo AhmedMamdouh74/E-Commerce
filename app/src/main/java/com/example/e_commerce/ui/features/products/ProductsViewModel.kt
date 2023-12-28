@@ -51,7 +51,7 @@ class ProductsViewModel @Inject constructor(private val getProductUseCases: GetP
     private fun addProductToWishlist(productId:String,token:String) {
         viewModelScope.launch {
             _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
-            val response=addProductToWishlistUseCase.invoke(productId,token)
+            val response=addProductToWishlistUseCase.invoke(token,productId)
             when(response){
                 is ResultWrapper.Error -> _wishlistState.postValue(ProductContract.WishlistState.Error(response.error.localizedMessage))
                 ResultWrapper.Loading -> {}

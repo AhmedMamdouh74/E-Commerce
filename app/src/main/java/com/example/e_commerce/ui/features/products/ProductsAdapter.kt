@@ -29,8 +29,9 @@ class ProductsAdapter(private var product: List<Product?>?) :
 
         onIconWishlistClickListener.let {
             holder.itemBinding.addToFavourites.setOnClickListener {
-                notifyItemChanged(position)
+
                 onIconWishlistClickListener?.onItemClick(position, product!![position])
+                notifyItemChanged(position)
             }
         }
 
@@ -55,9 +56,9 @@ class ProductsAdapter(private var product: List<Product?>?) :
         RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(product: Product?) {
 
-            if (IsAddedToFavourite.isAdded==true) {
+            if (IsAddedToFavourite.isAdded == true) {
                 itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
-            } else{
+            } else {
                 itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
             }
             itemBinding.product = product

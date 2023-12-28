@@ -17,7 +17,7 @@ class AddProductToWishlistUseCase @Inject constructor(private val wishlistReposi
 
 class RemoveProductFromWishlistUseCase @Inject constructor(private val wishlistRepository: WishlistRepository) {
     suspend operator fun invoke(productId: String, token: String) {
-         wishlistRepository.removeProductToWishlist(productId, token)
+         wishlistRepository.removeProductToWishlist(token, productId)
     }
 }
 
