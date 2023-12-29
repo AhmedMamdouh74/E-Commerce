@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.features.products
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,13 @@ import com.example.e_commerce.databinding.ItemProductBinding
 
 class ProductsAdapter(private var product: List<Product?>?) :
     RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
+    private var wishlist: List<Product?>? = null
+    fun setWishlist(wishlist: List<Product?>?) {
+        this.wishlist = wishlist
+        notifyDataSetChanged()
+
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding =
             ItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -18,22 +26,23 @@ class ProductsAdapter(private var product: List<Product?>?) :
 
     }
 
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(product!![position])
-        onItemClickListener.let {
-            holder.itemView.setOnClickListener {
-                notifyItemChanged(position)
-                onItemClickListener?.onItemClick(position, product!![position])
-            }
+        holder.bind(product!![position], wishlist)
+        //  onItemClickListener.let {
+        holder.itemView.setOnClickListener {
+            notifyItemChanged(position)
+            onItemClickListener?.onItemClick(position, product!![position])
         }
+        // }
 
-        onIconWishlistClickListener.let {
-            holder.itemBinding.addToFavourites.setOnClickListener {
+        // onIconWishlistClickListener.let {
+        holder.itemBinding.addToFavourites.setOnClickListener {
+            onIconWishlistClickListener?.onItemClick(position, product!![position])
+            notifyItemChanged(position)
 
-                onIconWishlistClickListener?.onItemClick(position, product!![position])
-                notifyItemChanged(position)
-            }
         }
+        //   }
 
     }
 
@@ -41,6 +50,7 @@ class ProductsAdapter(private var product: List<Product?>?) :
         this.product = product
         notifyDataSetChanged()
     }
+
 
     override fun getItemCount(): Int = product?.size ?: 0
 
@@ -54,14 +64,20 @@ class ProductsAdapter(private var product: List<Product?>?) :
 
     class ViewHolder(val itemBinding: ItemProductBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(product: Product?) {
-
-            if (IsAddedToFavourite.isAdded == true) {
-                itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
-            } else {
-                itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
-            }
+        fun bind(product: Product?, wishlist: List<Product?>?) {
             itemBinding.product = product
+            itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
+            product?.isAdded=false
+            wishlist?.forEach {
+                if (it?.id == product?.id) {
+                    itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
+                    product?.isAdded = true
+                }
+                //                else {
+
+//                }
+            }
+
             itemBinding.apply {
                 Glide
                     .with(itemView)

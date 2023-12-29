@@ -29,11 +29,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
     @Inject
-    lateinit var tokenManager:TokenManager
+    lateinit var tokenManager: TokenManager
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
 //    private val tokenViewModel: TokenViewModel by viewModels()
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,15 +70,15 @@ class ProductFragment : Fragment() {
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
                 item?.let {
-                    if (IsAddedToFavourite.isAdded == true) {
-                        IsAddedToFavourite.isAdded = false
+                    if (it.isAdded == true) {
+                        //    it.isAdded = false
                         viewModel.handleAction(
                             ProductContract.Action.RemoveProductToWishlist(
                                 it.id ?: "", tokenManager.getToken().toString()
                             )
                         )
-                    }else {
-                        IsAddedToFavourite.isAdded = true
+                    } else {
+                        //  it.isAdded = true
                         viewModel.handleAction(
                             ProductContract.Action.AddProductToWishlist(
                                 it.id ?: "",
@@ -87,9 +86,11 @@ class ProductFragment : Fragment() {
 
                             )
                         )
-                        Log.d("TAG", "initViews:${tokenManager.getToken().toString()} ")
+                        Log.d("TAG", "initViews:${tokenManager.getToken()} ")
                         Log.d("TAG", "initViews:${it.id} ")
                     }
+                    //    viewModel.getLoggedWishlist()
+
 
                 }
             }
@@ -129,9 +130,42 @@ class ProductFragment : Fragment() {
 
 
         initViews()
+        viewModel.wishlistState.observe(viewLifecycleOwner, ::renderWishlistState)
+
+        viewModel.loggedWishlistState.observe(viewLifecycleOwner, ::renderLoggedWishlistState)
         viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
+
+
+    }
+
+    private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
+        when (wishlistState) {
+            is ProductContract.WishlistState.Error -> {}
+            is ProductContract.WishlistState.Loading -> {}
+            is ProductContract.WishlistState.Success -> {
+                viewModel.getLoggedWishlist()
+                Log.d("TAG", "renderWishlistStateAhmed:$ ")
+
+            }
+
+            null -> {}
+        }
+
+
+    }
+
+    private fun renderLoggedWishlistState(loggedWishlistState: ProductContract.LoggedWishlistState?) {
+        when (loggedWishlistState) {
+            is ProductContract.LoggedWishlistState.Error -> {}
+            is ProductContract.LoggedWishlistState.Loading -> {}
+            is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
+                loggedWishlistState.wishlistProduct
+            )
+
+            null -> {}
+        }
 
 
     }

@@ -19,26 +19,24 @@ class TokenManager @Inject constructor(
         private val TOKEN_KEY = stringPreferencesKey("token")
     }
 
-//    private val Context.dataStore by preferencesDataStore(
-//        name = "data_store"
-//    )
-
 
     fun getToken(): String? {
         return sharedPreferences.getString("TOKEN_KEY", "token")
     }
 
-    fun saveToken(token: String,user: User) {
-        val userJson=Gson().toJson(user)
+    fun saveToken(token: String, user: User) {
+        val userJson = Gson().toJson(user)
 
-        sharedPreferences.edit().putString("TOKEN_KEY", token).putString("userJson",userJson).apply()
+        sharedPreferences.edit().putString("TOKEN_KEY", token).putString("userJson", userJson)
+            .apply()
     }
-    fun getUser():User?{
-        val gson=Gson()
-        val user=sharedPreferences.getString("userJson","")
+
+    fun getUser(): User? {
+        val gson = Gson()
+        val user = sharedPreferences.getString("userJson", "")
         return try {
-            gson.fromJson(user,User::class.java )
-        }catch (e:Exception) {
+            gson.fromJson(user, User::class.java)
+        } catch (e: Exception) {
             null
         }
 
