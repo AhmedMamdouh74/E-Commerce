@@ -11,6 +11,7 @@ class WishlistContract {
     }
 
     sealed class State {
+        class Idle(productId: String,token: String) : State()
         class Loading(val message: String) : State()
         class Error(val message: String) : State()
         class Success(val product: List<Product?>) : State()
@@ -23,8 +24,8 @@ class WishlistContract {
     }
 
     sealed class Action {
-        class RemoveProductFromWishlist(val productId: String, token: String) : Action()
-        class AddProductToCart(val productId: String) : Action()
+        object LoadingFavouriteProducts : Action()
+        class RemoveProductFromWishlist(val productId: String, val token: String) : Action()
         object CartClicked : Action()
     }
 }

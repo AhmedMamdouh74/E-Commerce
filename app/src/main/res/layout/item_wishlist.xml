@@ -4,50 +4,98 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="product"
             type="com.example.domain.model.Product" />
 
     </data>
 
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="15dp">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            >
 
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
+                android:backgroundTint="@drawable/wishlist_image_bg"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_launcher_background"
-                android:background="@drawable/wishlist_image_bg"/>
+                tools:src="@tools:sample/avatars" />
+
             <TextView
                 android:id="@+id/wishlist_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/poppins"
+                android:text="@{product.title}"
+                android:textColor="@color/primary"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/image"
                 app:layout_constraintTop_toTopOf="parent"
-                android:fontFamily="@font/poppins"
-                android:textColor="@color/primary"/>
-<!--                android:text="@{product.title}"-->
+                tools:text="Nike" />
 
             <TextView
-                android:id="@+id/wishlist_"
+                android:id="@+id/wishlist_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/image"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="14dp"
                 android:fontFamily="@font/poppins"
-                android:textColor="@color/primary"/>
-<!--                android:text="@{product.title}"-->
+                android:text="@{String.valueOf(product.price.toString()) +`EGP`}"
+                android:textColor="@color/primary"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/image"
+                tools:text="1200" />
 
+            <TextView
+                android:id="@+id/wishlist_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="14dp"
+                android:fontFamily="@font/poppins"
+                android:text="@{String.valueOf(product.priceAfterDiscount.toString())+`EGP`}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/wishlist_price"
+                app:layout_constraintTop_toTopOf="@id/wishlist_price"
+                tools:text="1200" />
 
+            <ImageView
+                android:id="@+id/wishlist_favourite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/circle_white"
+                android:src="@drawable/active_heart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="14dp"
+                android:layout_marginBottom="14dp"
+                android:fontFamily="@font/poppins"
+                android:text="Add to Cart"
+                android:textSize="14sp"
+                app:cornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

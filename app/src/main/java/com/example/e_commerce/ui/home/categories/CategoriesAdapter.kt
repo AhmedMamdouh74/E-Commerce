@@ -21,9 +21,6 @@ class CategoriesAdapter(private var category: List<Category?>?) :
 
     private var selectedItemPosition = 0
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-
-
         holder.bind(
             category!![position], selectedItemPosition == position
 

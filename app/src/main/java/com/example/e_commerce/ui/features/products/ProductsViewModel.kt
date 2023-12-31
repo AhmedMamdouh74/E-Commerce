@@ -67,7 +67,7 @@ class ProductsViewModel @Inject constructor(
 
         viewModelScope.launch {
             _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
-            val response = removeProductFromWishlistUseCase.invoke(productId, token)
+             removeProductFromWishlistUseCase.invoke(productId, token)
             _wishlistState.postValue(ProductContract.WishlistState.Success(productId, token))
 
         }

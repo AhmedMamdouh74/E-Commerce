@@ -163,8 +163,7 @@ class ProductFragment : Fragment() {
             is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
                 loggedWishlistState.wishlistProduct
             )
-
-            null -> {}
+            else -> {}
         }
 
 

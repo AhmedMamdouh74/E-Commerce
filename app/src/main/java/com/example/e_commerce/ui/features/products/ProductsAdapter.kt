@@ -73,9 +73,7 @@ class ProductsAdapter(private var product: List<Product?>?) :
                     itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
                     product?.isAdded = true
                 }
-                //                else {
 
-//                }
             }
 
             itemBinding.apply {
