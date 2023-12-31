@@ -25,6 +25,7 @@ class WishlistViewModel @Inject constructor(
     private val _state = MutableLiveData<WishlistContract.State>()
     override val state: LiveData<WishlistContract.State>
         get() = _state
+
     private val _event = MutableLiveData<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
         get() = _event
@@ -47,7 +48,8 @@ class WishlistViewModel @Inject constructor(
         _state.postValue(WishlistContract.State.Loading("loading"))
         viewModelScope.launch {
             removeProductFromWishlistUseCase.invoke(productId, token)
-            _state.postValue(WishlistContract.State.Idle(productId, token))
+            _state.postValue(WishlistContract.State.Idle)
+
         }
     }
 
@@ -55,6 +57,7 @@ class WishlistViewModel @Inject constructor(
         _state.postValue(WishlistContract.State.Loading("loading"))
         viewModelScope.launch {
             val response = getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
+            Log.d("TAG", "loadingFavouriteProductsInvoke:$response ")
             when (response) {
                 is ResultWrapper.Error -> _state.postValue(WishlistContract.State.Error(response.error.localizedMessage))
                 is ResultWrapper.Loading -> {}
@@ -74,6 +77,7 @@ class WishlistViewModel @Inject constructor(
                 else -> {}
             }
             Log.d("TAG", "loadingFavouriteProducts:$response ")
+
         }
 
 

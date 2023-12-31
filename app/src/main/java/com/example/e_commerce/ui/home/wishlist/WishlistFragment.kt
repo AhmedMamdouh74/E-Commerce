@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewbinding.ViewBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.api.TokenManager
 import com.example.domain.model.Product
 import com.example.e_commerce.R
@@ -54,11 +54,11 @@ class WishlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+
         viewModel.state.observe(viewLifecycleOwner, ::renderStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
     }
-
 
     private fun renderStates(state: WishlistContract.State) {
         when (state) {
@@ -74,10 +74,17 @@ class WishlistFragment : Fragment() {
                 bindProducts(state.product)
             }
 
+            is WishlistContract.State.Idle -> showIdle()
             else -> {}
         }
         Log.d("TAG", "renderStatesWishlistFragment:$state ")
 
+    }
+
+    private fun showIdle() {
+        binding.loadingView.isVisible = false
+        binding.errorView.isVisible = false
+        binding.successView.isVisible = true
     }
 
     private fun bindProducts(product: List<Product?>) {
@@ -86,6 +93,12 @@ class WishlistFragment : Fragment() {
         binding.successView.isVisible = true
         wishlistAdapter.bindProducts(product)
         Log.d("TAG", "bindProducts:$product ")
+//        binding.wishlistRecycler.apply {
+//            layoutManager =
+//                LinearLayoutManager(requireContext()) // Use an appropriate layout manager
+//            adapter = wishlistAdapter
+//            visibility = View.VISIBLE // Ensure the RecyclerView is visible
+//        }
 
     }
 
@@ -118,7 +131,7 @@ class WishlistFragment : Fragment() {
                             it.id ?: "", tokenManager.getToken().toString()
                         )
                     )
-                    //  wishlistAdapter.favouriteProductDeleted(it)
+                    wishlistAdapter.favouriteProductDeleted(it)
                 }
             }
 

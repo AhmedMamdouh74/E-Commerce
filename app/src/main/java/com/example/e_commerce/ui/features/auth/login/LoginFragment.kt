@@ -88,7 +88,7 @@ class LoginFragment : Fragment() {
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
             binding.errorView.isVisible = false
-            binding.loadingView.isVisible=false
+            binding.loadingView.isVisible = false
             binding.successView.isVisible = true
         }
 
@@ -102,14 +102,16 @@ class LoginFragment : Fragment() {
     }
 
     private fun login(loginResponse: LoginResponse?) {
-        binding.successView.isVisible=false
-        binding.errorView.isVisible=false
-        binding.loadingView.isVisible=false
+        binding.successView.isVisible = false
+        binding.errorView.isVisible = false
+        binding.loadingView.isVisible = true
+
         loginResponse?.user?.let {
             tokenViewModel.saveToken(
                 loginResponse?.token ?: "", it
             )
         }
+
 
     }
 
