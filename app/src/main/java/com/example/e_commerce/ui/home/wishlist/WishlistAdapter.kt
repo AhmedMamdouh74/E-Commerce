@@ -60,12 +60,14 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
         fun onItemClick(position: Int, item: Product?)
     }
 
-        fun favouriteProductDeleted(product: Product?){
+    fun favouriteProductDeleted(product: Product?) {
         products?.remove(product)
         notifyDataSetChanged()
     }
-    fun bindProducts(product: List<Product?>?) {
-        this.products = product?.toMutableList()
+
+    fun bindProducts(product: MutableList<Product?>?) {
+        this.products = product
+        notifyDataSetChanged()
         Log.d("TAG", "bindProductsAdapter:$product ")
     }
 

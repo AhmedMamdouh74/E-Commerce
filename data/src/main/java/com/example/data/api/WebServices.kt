@@ -9,6 +9,7 @@ import com.example.domain.model.RegisterRequest
 import com.example.domain.model.RegisterResponse
 import com.example.domain.model.SubCategories
 import com.example.domain.model.WishlistResponse
+import com.example.domain.model.CartResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -66,6 +67,24 @@ interface WebServices {
 
     @GET("wishlist")
     suspend fun getLoggedUserWishlist(@Header("token") token: String): BaseResponse<List<Product?>?>
+
+    @POST("cart")
+    @FormUrlEncoded
+    suspend fun addProductToCart(
+        @Header("token") token: String,
+        @Field("productId") productId: String
+    ): BaseResponse<CartResponse?>
+
+    @POST("cart/{productId}")
+    suspend fun removeProductFromCart(
+        @Header("token") token: String,
+        @Path("productId") productId: String
+    ): BaseResponse<Any>
+
+    @GET("cart")
+    suspend fun getLoggedUserCart(
+        @Header("token") token: String
+    ): BaseResponse<List<CartResponse?>?>
 
 
 }

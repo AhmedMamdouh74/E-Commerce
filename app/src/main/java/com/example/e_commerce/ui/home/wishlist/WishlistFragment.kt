@@ -91,14 +91,9 @@ class WishlistFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorView.isVisible = false
         binding.successView.isVisible = true
-        wishlistAdapter.bindProducts(product)
+        wishlistAdapter.bindProducts(product.toMutableList())
         Log.d("TAG", "bindProducts:$product ")
-//        binding.wishlistRecycler.apply {
-//            layoutManager =
-//                LinearLayoutManager(requireContext()) // Use an appropriate layout manager
-//            adapter = wishlistAdapter
-//            visibility = View.VISIBLE // Ensure the RecyclerView is visible
-//        }
+
 
     }
 
