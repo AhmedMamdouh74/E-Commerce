@@ -2,7 +2,9 @@ package com.example.data.repository.cart
 
 import com.example.data.dataSource.cart.CartDataSourceContactImpl
 import com.example.domain.common.ResultWrapper
-import com.example.domain.model.CartResponse
+import com.example.domain.model.cart.Cart
+import com.example.domain.model.cart.CartResponse
+import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.repositories.CartRepository
 import javax.inject.Inject
 
@@ -19,7 +21,7 @@ class CartRepositoryImpl @Inject constructor(private val cartDataSourceContactIm
         return cartDataSourceContactImpl.removeProductFromCart(token, productId)
     }
 
-    override suspend fun getLoggedUserCart(token: String): ResultWrapper<List<CartResponse?>?> {
+    override suspend fun getLoggedUserCart(token: String): ResultWrapper<List<CartQuantity?>?> {
         return cartDataSourceContactImpl.getLoggedUserCart(token)
     }
 }

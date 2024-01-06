@@ -21,8 +21,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/image"
@@ -34,71 +33,46 @@
                 tools:src="@tools:sample/avatars" />
 
             <TextView
-                android:id="@+id/wishlist_title"
+                android:id="@+id/cart_title"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins"
+                android:maxLines="1"
                 android:minLines="1"
                 android:text="@{product.title}"
-                android:maxLines="1"
                 android:textColor="@color/primary"
                 android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/image"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Nike" />
 
-            <TextView
-                android:id="@+id/wishlist_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-
-                android:fontFamily="@font/poppins"
-                android:text="@{String.valueOf(product.priceAfterDiscount.toString()) +`EGP`}"
-                android:textColor="@color/primary"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/image"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="1200" />
 
             <TextView
-                android:id="@+id/wishlist_discount"
+                android:id="@+id/cart_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginBottom="14dp"
                 android:fontFamily="@font/poppins"
                 android:text="@{String.valueOf(product.price.toString())+`EGP`}"
+                android:textColor="@color/primary"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/image"
                 tools:text="1200" />
 
             <ImageView
-                android:id="@+id/wishlist_favourite"
+                android:id="@+id/cart_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="14dp"
-                android:background="@drawable/circle_white"
-                android:src="@drawable/active_heart"
+                android:src="@drawable/delete_icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_addToCart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="14dp"
-                android:layout_marginBottom="14dp"
-                android:fontFamily="@font/poppins"
-                android:text="Add to Cart"
-                android:textSize="14sp"
-                app:cornerRadius="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

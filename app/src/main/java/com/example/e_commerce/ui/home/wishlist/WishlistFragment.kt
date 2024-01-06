@@ -6,20 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.api.TokenManager
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentWishlistBinding
+import com.example.e_commerce.ui.features.auth.TokenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class WishlistFragment : Fragment() {
-    @Inject
-    lateinit var tokenManager: TokenManager
+    val tokenViewModel: TokenViewModel by viewModels()
     private lateinit var viewModel: WishlistViewModel
 
 
@@ -54,10 +56,36 @@ class WishlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-
+        viewModel.cartState.observe(viewLifecycleOwner, ::renderCartState)
+        viewModel.loggedUserCartState.observe(viewLifecycleOwner, ::renderLoggedUserCartState)
         viewModel.state.observe(viewLifecycleOwner, ::renderStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
+    }
+
+    private fun renderCartState(cartState: WishlistContract.CartState?) {
+
+        when (cartState) {
+            is WishlistContract.CartState.Error -> {}
+            is WishlistContract.CartState.Loading -> {}
+            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(tokenViewModel.getToken())
+            null -> {}
+        }
+    }
+
+    private fun renderLoggedUserCartState(loggedUserCartState: WishlistContract.LoggedUserCartState?) {
+        when (loggedUserCartState) {
+            is WishlistContract.LoggedUserCartState.Error -> {}
+            is WishlistContract.LoggedUserCartState.Loading -> {}
+            is WishlistContract.LoggedUserCartState.Success -> wishlistAdapter.setCart(
+                listOf(loggedUserCartState.cart[id]?.products?.get(id)?.product)
+            )
+
+
+            null -> {}
+        }
+
+
     }
 
     private fun renderStates(state: WishlistContract.State) {
@@ -123,10 +151,32 @@ class WishlistFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         WishlistContract.Action.RemoveProductFromWishlist(
-                            it.id ?: "", tokenManager.getToken().toString()
+                            it.id ?: "", tokenViewModel.getToken()
                         )
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
+                    Log.d("TAG", "initViewsWishlist:$it ")
+                }
+            }
+
+        wishlistAdapter.onItemAddedListener =
+            WishlistAdapter.OnItemClickListener { position, item ->
+                item?.let {
+
+                    if (it.addedToCart == true) {
+                        Toast.makeText(context, "Added To Cart Already", Toast.LENGTH_LONG).show()
+                    } else {
+                        viewModel.handleAction(
+                            WishlistContract.Action.AddProductToCart(
+                                tokenViewModel.getToken(),
+                                it.id ?: ""
+                            )
+                        )
+
+
+                    }
+                    Log.d("TAG", "initViews:$it ")
+
                 }
             }
 

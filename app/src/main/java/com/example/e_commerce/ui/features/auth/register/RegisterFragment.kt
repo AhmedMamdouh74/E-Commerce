@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
     private lateinit var viewModel: RegisterViewModel
-    val tokenViewModel: TokenViewModel by viewModels()
+    private val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

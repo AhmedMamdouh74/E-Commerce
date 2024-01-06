@@ -1,7 +1,8 @@
-package com.example.domain.model
+package com.example.domain.model.cart
 
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
+import com.example.domain.model.Product
 
 @Parcelize
 data class CartResponse(
@@ -18,16 +19,10 @@ data class Cart(
 	val totalCartPrice: Int? = null,
 	val __v: Int? = null,
 	val _id: String? = null,
-	val products: List<ProductsItem?>? = null,
+	val products: List<Product?>? = null,
 	val updatedAt: String? = null
 ) : Parcelable
 
 
 
-@Parcelize
-data class ProductsItem(
-	val product: Product? = null,
-	val price: Int? = null,
-	val count: Int? = null,
-	val _id: String? = null
-) : Parcelable
+

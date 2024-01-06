@@ -118,9 +118,4 @@ class CategoriesFragment : Fragment() {
         _viewBinding = null
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            CategoriesFragment()
-    }
 }

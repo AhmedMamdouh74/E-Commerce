@@ -23,7 +23,7 @@ class ProductContract {
     sealed class WishlistState {
         class Error(val message: String) : WishlistState()
         class Loading(val message: String) : WishlistState()
-        class Success(val productId: String, val token: String) : WishlistState()
+        object Success : WishlistState()
     }
 
     sealed class LoggedWishlistState {

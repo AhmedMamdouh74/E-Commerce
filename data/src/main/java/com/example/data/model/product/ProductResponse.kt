@@ -1,6 +1,8 @@
 package com.example.data.model.product
 
 import com.example.data.model.BaseResponse
+import com.example.data.model.category.CategoryDto
+import com.example.data.model.subCategories.SubCategoriesDto
 import com.google.gson.annotations.SerializedName
 
 data class ProductResponse(
@@ -10,21 +12,6 @@ data class ProductResponse(
 	@field:SerializedName("results")
 	val results: Int? = null
 ):BaseResponse<List<ProductDto?>?>()
-
-data class SubcategoryItem(
-
-	@field:SerializedName("name")
-	val name: String? = null,
-
-	@field:SerializedName("_id")
-	val id: String? = null,
-
-	@field:SerializedName("category")
-	val category: String? = null,
-
-	@field:SerializedName("slug")
-	val slug: String? = null
-)
 
 data class ProductDto(
 
@@ -65,10 +52,10 @@ data class ProductDto(
 	val id: String? = null,
 
 	@field:SerializedName("subcategory")
-	val subcategory: List<SubcategoryItem?>? = null,
+	val subcategory: List<SubCategoriesDto?>? = null,
 
 	@field:SerializedName("category")
-	val category: Category? = null,
+	val category: CategoryDto? = null,
 
 	@field:SerializedName("brand")
 	val brand: Any? = null,
@@ -98,17 +85,4 @@ data class Metadata(
 	val currentPage: Int? = null
 )
 
-data class Category(
 
-	@field:SerializedName("image")
-	val image: String? = null,
-
-	@field:SerializedName("name")
-	val name: String? = null,
-
-	@field:SerializedName("_id")
-	val id: String? = null,
-
-	@field:SerializedName("slug")
-	val slug: String? = null
-)

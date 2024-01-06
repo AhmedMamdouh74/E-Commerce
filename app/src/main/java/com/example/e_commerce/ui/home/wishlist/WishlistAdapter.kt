@@ -25,7 +25,7 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.d("TAG", "onBindViewHolder:$products ")
-        holder.bind(products?.get(position))
+        holder.bind(products?.get(position),cart)
 
         // onItemClickListener?.let {clickListener->
         holder.itemBinding.wishlistFavourite.setOnClickListener {
@@ -34,13 +34,33 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
 
         }
         // }
+        holder.itemBinding.btnAddToCart.setOnClickListener{
+            notifyItemChanged(position)
+            onItemAddedListener?.onItemClick(position,products!![position])
+        }
+
+
+    }
+    private var cart: List<Product?>? = null
+    fun setCart(cart: List<Product?>?) {
+        this.cart = cart
+        notifyDataSetChanged()
 
     }
 
     class ViewHolder(var itemBinding: ItemWishlistBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(product: Product?) {
+        fun bind(product: Product?,cart: List<Product?>?) {
             Log.d("TAG", "bind:$product ")
+            itemBinding.btnAddToCart.text="Add To Cart"
+            product?.addedToCart=false
+            cart?.forEach{
+                if (it?.id==product?.id){
+                    itemBinding.btnAddToCart.text="Added To Cart"
+                    product?.addedToCart=true
+                }
+            }
+
             itemBinding.product = product
             itemBinding.apply {
                 Glide
@@ -53,6 +73,7 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
 
 
     }
+    var onItemAddedListener:OnItemClickListener?=null
 
     var onItemClickListener: OnItemClickListener? = null
 

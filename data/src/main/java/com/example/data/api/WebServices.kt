@@ -1,6 +1,7 @@
 package com.example.data.api
 
 import com.example.data.model.BaseResponse
+import com.example.domain.model.cart.Cart
 import com.example.domain.model.Category
 import com.example.domain.model.LoginRequest
 import com.example.domain.model.LoginResponse
@@ -9,7 +10,8 @@ import com.example.domain.model.RegisterRequest
 import com.example.domain.model.RegisterResponse
 import com.example.domain.model.SubCategories
 import com.example.domain.model.WishlistResponse
-import com.example.domain.model.CartResponse
+import com.example.domain.model.cart.CartResponse
+import com.example.domain.model.cart.loggedCart.CartQuantity
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -73,7 +75,7 @@ interface WebServices {
     suspend fun addProductToCart(
         @Header("token") token: String,
         @Field("productId") productId: String
-    ): BaseResponse<CartResponse?>
+    ): Response<CartResponse?>
 
     @POST("cart/{productId}")
     suspend fun removeProductFromCart(
@@ -84,7 +86,7 @@ interface WebServices {
     @GET("cart")
     suspend fun getLoggedUserCart(
         @Header("token") token: String
-    ): BaseResponse<List<CartResponse?>?>
+    ): BaseResponse<List<CartQuantity?>?>
 
 
 }

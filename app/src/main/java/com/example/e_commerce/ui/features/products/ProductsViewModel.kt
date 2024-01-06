@@ -67,8 +67,8 @@ class ProductsViewModel @Inject constructor(
 
         viewModelScope.launch {
             _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
-             removeProductFromWishlistUseCase.invoke(productId, token)
-            _wishlistState.postValue(ProductContract.WishlistState.Success(productId, token))
+            removeProductFromWishlistUseCase.invoke(productId, token)
+            _wishlistState.postValue(ProductContract.WishlistState.Success)
 
         }
     }
@@ -76,12 +76,9 @@ class ProductsViewModel @Inject constructor(
     private fun addProductToWishlist(productId: String, token: String) {
         viewModelScope.launch {
             _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
-            val response = addProductToWishlistUseCase.invoke(token, productId)
+            addProductToWishlistUseCase.invoke(token, productId)
             _wishlistState.postValue(
-                ProductContract.WishlistState.Success(
-                    productId,
-                    token
-                )
+                ProductContract.WishlistState.Success
             )
 //            when (response) {
 //                is ResultWrapper.Error -> _wishlistState.postValue(

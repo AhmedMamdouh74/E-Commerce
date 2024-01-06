@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
 import com.example.domain.common.ResultWrapper
+import com.example.domain.model.Product
+import com.example.domain.usecase.AddProductToCartUseCase
+import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
-
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,12 +21,19 @@ import javax.inject.Inject
 class WishlistViewModel @Inject constructor(
     private val removeProductFromWishlistUseCase: RemoveProductFromWishlistUseCase,
     private val getLoggedUserWishlistUseCase: GetLoggedUserWishlistUseCase,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val addProductToCartUseCase: AddProductToCartUseCase,
+    private val getLoggedUserCartUseCases: GetLoggedUserCartUseCases,
+
 ) :
     ViewModel(), WishlistContract.ViewModel {
     private val _state = MutableLiveData<WishlistContract.State>()
     override val state: LiveData<WishlistContract.State>
         get() = _state
+    private val _cartState = MutableLiveData<WishlistContract.CartState>()
+    override val cartState = _cartState
+    private val _loggedUserCartState = MutableLiveData<WishlistContract.LoggedUserCartState>()
+    override val loggedUserCartState = _loggedUserCartState
 
     private val _event = MutableLiveData<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
@@ -39,6 +48,46 @@ class WishlistViewModel @Inject constructor(
 
             is WishlistContract.Action.LoadingFavouriteProducts -> {
                 loadingFavouriteProducts()
+                getLoggedUserCart(tokenManager.getToken().toString())
+            }
+
+            is WishlistContract.Action.AddProductToCart -> {
+                addProductToCart(action.token, action.productId)
+            }
+
+            else -> {}
+        }
+    }
+
+    fun getLoggedUserCart(token: String) {
+        viewModelScope.launch {
+            _loggedUserCartState.postValue(WishlistContract.LoggedUserCartState.Loading("loading"))
+            val response = getLoggedUserCartUseCases.invoke(token)
+            when (response) {
+                is ResultWrapper.Error -> {}
+                ResultWrapper.Loading -> {}
+                is ResultWrapper.ServerError -> {}
+                is ResultWrapper.Success -> _loggedUserCartState.postValue(
+                    WishlistContract.LoggedUserCartState.Success(
+                        response.data ?: listOf()
+                    )
+                )
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun addProductToCart(token: String, productId: String) {
+
+        viewModelScope.launch {
+            _cartState.postValue(WishlistContract.CartState.Loading("Loading"))
+            val response = addProductToCartUseCase.invoke(token, productId)
+            when (response) {
+                is ResultWrapper.Error -> {}
+                ResultWrapper.Loading -> {}
+                is ResultWrapper.ServerError -> {}
+                is ResultWrapper.Success -> _cartState.postValue(WishlistContract.CartState.Success)
             }
         }
     }

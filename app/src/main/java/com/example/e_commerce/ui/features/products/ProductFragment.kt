@@ -1,45 +1,33 @@
 package com.example.e_commerce.ui.features.products
 
 import android.os.Bundle
-import android.os.Message
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import com.example.data.api.TokenManager
 import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.products.details.ProductDetailsFragment
-import com.example.e_commerce.ui.features.subCategories.SubCategoriesAdapter
-import com.example.e_commerce.ui.features.subCategories.SubCategoriesContract
-import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
-    @Inject
-    lateinit var tokenManager: TokenManager
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
-//    private val tokenViewModel: TokenViewModel by viewModels()
+    private val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
-        //getProduct(product)
-
     }
 
     private var viewBinding: FragmentProductBinding? = null
@@ -65,32 +53,33 @@ class ProductFragment : Fragment() {
                         )
                     )
                 }
-
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
                 item?.let {
                     if (it.isAdded == true) {
-                        //    it.isAdded = false
                         viewModel.handleAction(
                             ProductContract.Action.RemoveProductToWishlist(
-                                it.id ?: "", tokenManager.getToken().toString()
+                                it.id ?: "", tokenViewModel.getToken()
                             )
                         )
+                        Toast.makeText(requireContext(),"Item removed",Toast.LENGTH_LONG).show()
+
+
                     } else {
-                        //  it.isAdded = true
+
                         viewModel.handleAction(
                             ProductContract.Action.AddProductToWishlist(
                                 it.id ?: "",
-                                tokenManager.getToken().toString()
+                                tokenViewModel.getToken()
+
 
                             )
                         )
-                        Log.d("TAG", "initViews:${tokenManager.getToken()} ")
+                        Log.d("TAG", "initViews:${tokenViewModel.getToken()} ")
                         Log.d("TAG", "initViews:${it.id} ")
-                    }
-                    //    viewModel.getLoggedWishlist()
 
+                    }
 
                 }
             }
@@ -103,41 +92,28 @@ class ProductFragment : Fragment() {
         when (event) {
             is ProductContract.Event.NavigateToProductsDetails -> navigateToProductsDetails(event.product)
 
-            is ProductContract.Event.NavigateToCartScreen -> TODO()
+            is ProductContract.Event.NavigateToCartScreen -> {}
 
             else -> {}
         }
-
     }
 
     private fun navigateToProductsDetails(product: Product) {
-//       val productDetailsFragment= ProductDetailsFragment()
-//      val bundle=Bundle()
-//   bundle.putParcelable("category",product)
-//       productDetailsFragment.arguments=bundle
-//        Log.d("productFragment","$product")
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, ProductDetailsFragment.getInstance(product))
             .commit()
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
         initViews()
         viewModel.wishlistState.observe(viewLifecycleOwner, ::renderWishlistState)
-
         viewModel.loggedWishlistState.observe(viewLifecycleOwner, ::renderLoggedWishlistState)
         viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
-
-
     }
 
     private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
@@ -147,13 +123,11 @@ class ProductFragment : Fragment() {
             is ProductContract.WishlistState.Success -> {
                 viewModel.getLoggedWishlist()
                 Log.d("TAG", "renderWishlistStateAhmed:$ ")
-
             }
 
-            null -> {}
+
+            else -> {}
         }
-
-
     }
 
     private fun renderLoggedWishlistState(loggedWishlistState: ProductContract.LoggedWishlistState?) {
@@ -163,10 +137,9 @@ class ProductFragment : Fragment() {
             is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
                 loggedWishlistState.wishlistProduct
             )
+
             else -> {}
         }
-
-
     }
 
     private fun renderViewStates(state: ProductContract.State?) {
@@ -178,8 +151,6 @@ class ProductFragment : Fragment() {
 
             else -> {}
         }
-
-
     }
 
     private fun bindsProducts(product: List<Product?>) {
@@ -212,8 +183,6 @@ class ProductFragment : Fragment() {
             productFragmentRef.category = category
             return productFragmentRef
         }
-
-
     }
 
     override fun onDestroyView() {
