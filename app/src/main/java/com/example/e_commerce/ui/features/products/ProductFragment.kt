@@ -63,7 +63,6 @@ class ProductFragment : Fragment() {
                                 it.id ?: "", tokenViewModel.getToken()
                             )
                         )
-                        Toast.makeText(requireContext(),"Item removed",Toast.LENGTH_LONG).show()
 
 
                     } else {

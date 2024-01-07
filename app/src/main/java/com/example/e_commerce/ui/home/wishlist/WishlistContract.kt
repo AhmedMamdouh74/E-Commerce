@@ -32,7 +32,7 @@ class WishlistContract {
     sealed class LoggedUserCartState {
         class Loading(val message: String) : LoggedUserCartState()
         class Error(val message: String) : LoggedUserCartState()
-        class Success(val cart: List<CartQuantity?>) : LoggedUserCartState()
+        class Success(val cart: CartQuantity?) : LoggedUserCartState()
     }
 
 

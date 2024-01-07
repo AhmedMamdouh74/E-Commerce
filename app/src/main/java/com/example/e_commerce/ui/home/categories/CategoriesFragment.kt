@@ -61,6 +61,7 @@ class CategoriesFragment : Fragment() {
             is CategoriesContract.State.Loading -> showLoadind(state.message)
             is CategoriesContract.State.Error -> showError(state.message)
 
+            else -> {}
         }
     }
 
@@ -95,6 +96,7 @@ class CategoriesFragment : Fragment() {
         when (event) {
             is CategoriesContract.Event.NavigateToSubCategories -> navigateToSubCategory(event.category)
 
+            else -> {}
         }
 
     }

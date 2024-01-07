@@ -74,8 +74,8 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideTokenManager(@ApplicationContext context: Context,sharedPreferences: SharedPreferences): TokenManager =
-        TokenManager(context,sharedPreferences)
+    fun provideTokenManager(sharedPreferences: SharedPreferences): TokenManager =
+        TokenManager(sharedPreferences)
 
 
     @Singleton

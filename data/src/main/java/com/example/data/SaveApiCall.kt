@@ -17,8 +17,10 @@ suspend fun <T> saveApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
     try {
         val result = apiCall.invoke()
         println("ahmed${result}")
+
         return ResultWrapper.Success(result)
     } catch (e: Exception) {
+        println("ahmedError${e}")
 
         when (e) {
             is TimeoutException -> {
@@ -35,10 +37,10 @@ suspend fun <T> saveApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
                 val response = Gson().fromJson(body, BaseResponse::class.java)
                 return ResultWrapper.ServerError(
                     ServerError(
-                        //      response.message ?: "",
-                        //        response.statusMessage ?: "",
-                        body ?: "",
-                        body ?: "",
+                             response.message ?: "",
+                                response.statusMessage ?: "",
+                       // body ?: "",
+                       // body ?: "",
                         e.code()
                     )
                 )

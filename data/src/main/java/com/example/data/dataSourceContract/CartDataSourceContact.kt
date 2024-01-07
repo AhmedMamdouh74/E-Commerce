@@ -9,6 +9,6 @@ interface CartDataSourceContact {
 
     suspend fun addProductToCart(token: String, productId: String): ResultWrapper<CartResponse?>
     suspend fun removeProductFromCart(token: String, productId: String): Any
-    suspend fun getLoggedUserCart(token: String): ResultWrapper<List<CartQuantity?>?>
+    suspend fun getLoggedUserCart(token: String): ResultWrapper<CartQuantity?>
 
 }

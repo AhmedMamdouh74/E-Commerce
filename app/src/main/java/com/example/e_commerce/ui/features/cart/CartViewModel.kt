@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    val tokenManager: TokenManager,
+    tokenManager: TokenManager,
     private val removeProductFromCartUseCase: RemoveProductFromCartUseCase,
     private val getLoggedUserCartUseCases: GetLoggedUserCartUseCases,
 ) : ViewModel(), CartContract.ViewModel {
@@ -23,7 +23,6 @@ class CartViewModel @Inject constructor(
     override val state = _state
 
 
-
     override fun handleAction(action: CartContract.Action) {
         when (action) {
             CartContract.Action.LoadingLoggedUserCarts -> loadingLoggedUserCarts()
@@ -31,8 +30,9 @@ class CartViewModel @Inject constructor(
                 action.token,
                 action.productId
             )
-        }
 
+            else -> {}
+        }
 
 
     }
@@ -40,10 +40,11 @@ class CartViewModel @Inject constructor(
     private fun removeProductFromCart(token: String, productId: String) {
         viewModelScope.launch {
             removeProductFromCartUseCase.invoke(token, productId)
-            _state.postValue(CartContract.State.Success)
+            _state.postValue(CartContract.State.Idle)
         }
     }
-    private val token=tokenManager.getToken().toString()
+
+    private val token = tokenManager.getToken().toString()
 
     private fun loadingLoggedUserCarts() {
         viewModelScope.launch {
@@ -53,7 +54,9 @@ class CartViewModel @Inject constructor(
                 is ResultWrapper.Error -> _state.postValue(CartContract.State.Error(response.error.localizedMessage))
                 ResultWrapper.Loading -> {}
                 is ResultWrapper.ServerError -> _state.postValue(CartContract.State.Error(response.error.serverMessage))
-                is ResultWrapper.Success -> _state.postValue(CartContract.State.Success)
+                is ResultWrapper.Success -> _state.postValue(CartContract.State.Success(response.data))
+
+                else -> {}
             }
         }
 

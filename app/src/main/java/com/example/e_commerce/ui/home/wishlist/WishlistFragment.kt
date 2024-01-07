@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WishlistFragment : Fragment() {
-    val tokenViewModel: TokenViewModel by viewModels()
+    private val tokenViewModel: TokenViewModel by viewModels()
     private lateinit var viewModel: WishlistViewModel
 
 
@@ -77,12 +77,16 @@ class WishlistFragment : Fragment() {
         when (loggedUserCartState) {
             is WishlistContract.LoggedUserCartState.Error -> {}
             is WishlistContract.LoggedUserCartState.Loading -> {}
-            is WishlistContract.LoggedUserCartState.Success -> wishlistAdapter.setCart(
-                listOf(loggedUserCartState.cart[id]?.products?.get(id)?.product)
-            )
+            is WishlistContract.LoggedUserCartState.Success ->
+                wishlistAdapter.setCart(loggedUserCartState.cart?.products?.toMutableList()
+
+           )
+
+          //  wishlistAdapter.setCart(loggedUserCartState.cart?.mapNotNull { it?.products?.get(0)?.product })
 
 
             null -> {}
+            else -> {}
         }
 
 
@@ -155,6 +159,8 @@ class WishlistFragment : Fragment() {
                         )
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
+
+                    Toast.makeText(requireContext(), "Item removed from Wishlist", Toast.LENGTH_LONG).show()
                     Log.d("TAG", "initViewsWishlist:$it ")
                 }
             }

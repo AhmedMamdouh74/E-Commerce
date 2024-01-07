@@ -25,7 +25,7 @@ class WishlistViewModel @Inject constructor(
     private val addProductToCartUseCase: AddProductToCartUseCase,
     private val getLoggedUserCartUseCases: GetLoggedUserCartUseCases,
 
-) :
+    ) :
     ViewModel(), WishlistContract.ViewModel {
     private val _state = MutableLiveData<WishlistContract.State>()
     override val state: LiveData<WishlistContract.State>
@@ -67,11 +67,15 @@ class WishlistViewModel @Inject constructor(
                 is ResultWrapper.Error -> {}
                 ResultWrapper.Loading -> {}
                 is ResultWrapper.ServerError -> {}
-                is ResultWrapper.Success -> _loggedUserCartState.postValue(
-                    WishlistContract.LoggedUserCartState.Success(
-                        response.data ?: listOf()
+                is ResultWrapper.Success -> {
+                    _loggedUserCartState.postValue(
+                        WishlistContract.LoggedUserCartState.Success(
+                            response.data
+                        )
                     )
-                )
+                    Log.d("TAG", "getLoggedUserCartViewModel:${response.data} ")
+
+                }
 
                 else -> {}
             }
@@ -87,7 +91,14 @@ class WishlistViewModel @Inject constructor(
                 is ResultWrapper.Error -> {}
                 ResultWrapper.Loading -> {}
                 is ResultWrapper.ServerError -> {}
-                is ResultWrapper.Success -> _cartState.postValue(WishlistContract.CartState.Success)
+                is ResultWrapper.Success -> {
+                    _cartState.postValue(WishlistContract.CartState.Success)
+                    Log.d("TAG", "addProductToCartViewModel:${response} ")
+
+
+                }
+
+                else -> {}
             }
         }
     }

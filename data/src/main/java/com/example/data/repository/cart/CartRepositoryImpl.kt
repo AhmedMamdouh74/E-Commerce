@@ -21,7 +21,7 @@ class CartRepositoryImpl @Inject constructor(private val cartDataSourceContactIm
         return cartDataSourceContactImpl.removeProductFromCart(token, productId)
     }
 
-    override suspend fun getLoggedUserCart(token: String): ResultWrapper<List<CartQuantity?>?> {
+    override suspend fun getLoggedUserCart(token: String): ResultWrapper<CartQuantity?> {
         return cartDataSourceContactImpl.getLoggedUserCart(token)
     }
 }

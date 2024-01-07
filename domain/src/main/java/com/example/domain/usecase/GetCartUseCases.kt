@@ -10,7 +10,7 @@ import javax.inject.Inject
 class GetLoggedUserCartUseCases @Inject constructor(private val cartRepository: CartRepository) {
     suspend operator fun invoke(
         token: String
-    ): ResultWrapper<List<CartQuantity?>?> {
+    ): ResultWrapper<CartQuantity?> {
         return cartRepository.getLoggedUserCart(token)
     }
 }

@@ -86,7 +86,7 @@ interface WebServices {
     @GET("cart")
     suspend fun getLoggedUserCart(
         @Header("token") token: String
-    ): BaseResponse<List<CartQuantity?>?>
+    ): BaseResponse<CartQuantity?>
 
 
 }

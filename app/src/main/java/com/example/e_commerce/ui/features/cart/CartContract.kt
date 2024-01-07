@@ -1,6 +1,7 @@
 package com.example.e_commerce.ui.features.cart
 
 import androidx.lifecycle.LiveData
+import com.example.domain.model.cart.loggedCart.CartQuantity
 
 class CartContract {
     interface ViewModel {
@@ -10,9 +11,10 @@ class CartContract {
     }
 
     sealed class State {
+        object Idle:State()
         class Loading(val message: String) : State()
         class Error(val message: String) : State()
-        object Success : State()
+        class Success(val cart: CartQuantity?) : State()
     }
 
 

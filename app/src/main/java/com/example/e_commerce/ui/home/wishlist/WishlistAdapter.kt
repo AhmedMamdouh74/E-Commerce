@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
+import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.databinding.ItemWishlistBinding
 
 class WishlistAdapter(private var products: MutableList<Product?>?) :
@@ -41,8 +42,8 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
 
 
     }
-    private var cart: List<Product?>? = null
-    fun setCart(cart: List<Product?>?) {
+    private var cart: MutableList<ProductsItem?>? = null
+    fun setCart(cart: MutableList<ProductsItem?>?) {
         this.cart = cart
         notifyDataSetChanged()
 
@@ -50,14 +51,15 @@ class WishlistAdapter(private var products: MutableList<Product?>?) :
 
     class ViewHolder(var itemBinding: ItemWishlistBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(product: Product?,cart: List<Product?>?) {
+        fun bind(product: Product?,cart: List<ProductsItem?>?) {
             Log.d("TAG", "bind:$product ")
             itemBinding.btnAddToCart.text="Add To Cart"
             product?.addedToCart=false
             cart?.forEach{
-                if (it?.id==product?.id){
+                if (it?.product?.id==product?.id){
                     itemBinding.btnAddToCart.text="Added To Cart"
                     product?.addedToCart=true
+
                 }
             }
 
