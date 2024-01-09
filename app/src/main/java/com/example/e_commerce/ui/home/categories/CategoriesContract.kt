@@ -20,11 +20,13 @@ class CategoriesContract {
 
     sealed class Action {
         object LoadingCategories : Action()
-        class CategoryClicked(val category: Category):Action()
+        class CategoryClicked(val category: Category) : Action()
+        object CartClicked : Action()
     }
 
     sealed class Event {
         class NavigateToSubCategories(val category: Category) : Event()
+        object NavigateToCart : Event()
     }
 
 }

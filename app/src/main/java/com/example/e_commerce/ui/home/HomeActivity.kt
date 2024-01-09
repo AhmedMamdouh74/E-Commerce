@@ -30,6 +30,7 @@ class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
         when (item.itemId) {
             R.id.navigation_home -> {
                 pushFragment(HomeFragment())
+
             }
 
             R.id.navigation_category -> {

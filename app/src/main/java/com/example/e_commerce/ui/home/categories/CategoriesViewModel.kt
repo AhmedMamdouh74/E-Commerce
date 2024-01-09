@@ -33,9 +33,16 @@ class CategoriesViewModel @Inject constructor(
                 Log.d("categoryVm","${action.category}")
 
             }
+
+            CategoriesContract.Action.CartClicked -> showCartFragment()
         }
 
     }
+
+    private fun showCartFragment() {
+        _event.postValue(CategoriesContract.Event.NavigateToCart)
+    }
+
     private fun showSubCategoryFragment(category: Category?) {
         _event.postValue(CategoriesContract.Event.NavigateToSubCategories(category!!))
     }

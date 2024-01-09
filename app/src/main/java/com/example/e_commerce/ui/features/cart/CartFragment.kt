@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CartFragment : Fragment() {
     private lateinit var viewModel: CartViewModel
-    private val tokenViewModel:TokenViewModel by viewModels()
+    private val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +52,18 @@ class CartFragment : Fragment() {
     }
 
     private fun initViews() {
+        cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { position, item ->
+            item.let {
+                viewModel.handleAction(
+                    CartContract.Action.RemoveProductFromCart(
+                        tokenViewModel.getToken(),
+                        it?.product?.id ?: ""
+                    )
+                )
+                cartAdapter.cartProductDeleted(it)
+                Toast.makeText(requireContext(),"Item Cart Deleted",Toast.LENGTH_LONG).show()
+            }
+        }
         binding.cartRecycler.adapter = cartAdapter
 
     }
@@ -100,7 +113,7 @@ class CartFragment : Fragment() {
         }
     }
 
-    private fun bindsCarts(product:MutableList<ProductsItem?>?) {
+    private fun bindsCarts(product: MutableList<ProductsItem?>?) {
         binding.loadingView.isVisible = false
         binding.errorView.isVisible = false
         binding.successView.isVisible = true

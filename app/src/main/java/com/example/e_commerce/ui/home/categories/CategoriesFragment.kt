@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
+import com.example.e_commerce.ui.features.cart.CartFragment
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,8 +53,10 @@ class CategoriesFragment : Fragment() {
 
 
         }
-
         binding.categoriesRecycler.adapter = categoriesAdapter
+        binding.icCart.setOnClickListener {
+            viewModel.handleAction(CategoriesContract.Action.CartClicked)
+        }
     }
 
     private fun renderViewState(state: CategoriesContract.State) {
@@ -96,9 +100,20 @@ class CategoriesFragment : Fragment() {
         when (event) {
             is CategoriesContract.Event.NavigateToSubCategories -> navigateToSubCategory(event.category)
 
+            CategoriesContract.Event.NavigateToCart -> navigateToCart()
             else -> {}
         }
 
+    }
+
+    private fun navigateToCart() {
+        requireActivity()
+            .supportFragmentManager
+
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.cart_container,CartFragment())
+            .commit()
     }
 
     private fun navigateToSubCategory(category: Category) {

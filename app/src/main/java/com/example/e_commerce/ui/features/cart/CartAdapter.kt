@@ -4,15 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.domain.model.Product
 import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.databinding.ItemCartBinding
 
-class CartAdapter(private var product: MutableList<ProductsItem?>?) :
+class CartAdapter(private var cartProduct: MutableList<ProductsItem?>?) :
     RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     class ViewHolder( val itemBinding: ItemCartBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(cart: ProductsItem?) {
-            itemBinding.product = cart?.product
+        fun bind(cartProduct: ProductsItem?) {
+            itemBinding.product = cartProduct?.product
             itemBinding.apply {
                 Glide
                     .with(itemView)
@@ -23,8 +24,12 @@ class CartAdapter(private var product: MutableList<ProductsItem?>?) :
         }
 
     }
+    fun cartProductDeleted(product: ProductsItem?) {
+        cartProduct?.remove(product)
+        notifyDataSetChanged()
+    }
     fun bindProducts(product: MutableList<ProductsItem?>?){
-        this.product=product
+        this.cartProduct=product
         notifyDataSetChanged()
     }
 
@@ -35,9 +40,9 @@ class CartAdapter(private var product: MutableList<ProductsItem?>?) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(product!![position])
+        holder.bind(cartProduct!![position])
         holder.itemBinding.cartDelete.setOnClickListener {
-            onItemClickListener?.onItemClick(position,product!![position])
+            onItemClickListener?.onItemClick(position,cartProduct!![position])
         }
     }
     var onItemClickListener:OnItemClickListener?=null
@@ -45,7 +50,7 @@ class CartAdapter(private var product: MutableList<ProductsItem?>?) :
         fun onItemClick(position: Int, item: ProductsItem?)
     }
 
-    override fun getItemCount(): Int = product?.size ?: 0
+    override fun getItemCount(): Int = cartProduct?.size ?: 0
 
 
 }

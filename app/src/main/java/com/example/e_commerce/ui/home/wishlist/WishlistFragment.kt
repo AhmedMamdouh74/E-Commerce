@@ -186,7 +186,6 @@ class WishlistFragment : Fragment() {
                 }
             }
 
-
     }
 
     override fun onDestroyView() {

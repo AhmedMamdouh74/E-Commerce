@@ -77,7 +77,7 @@ interface WebServices {
         @Field("productId") productId: String
     ): Response<CartResponse?>
 
-    @POST("cart/{productId}")
+    @DELETE("cart/{productId}")
     suspend fun removeProductFromCart(
         @Header("token") token: String,
         @Path("productId") productId: String
