@@ -8,17 +8,23 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Category
 import com.example.domain.usecase.GetCategoriesUseCases
+import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
-    private val getCategoriesUseCases: GetCategoriesUseCases
+    private val getCategoriesUseCases: GetCategoriesUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel(), CategoriesContract.ViewModel {
-    private val _states = MutableLiveData<CategoriesContract.State>()
+    private val _states = MutableStateFlow<CategoriesContract.State>(CategoriesContract.State.Loading("loading"))
     override val states = _states
-    private val _event = MutableLiveData<CategoriesContract.Event>()
+    private val _event = SingleLiveEvent<CategoriesContract.Event>()
     override val events = _event
 
     override fun handleAction(action: CategoriesContract.Action) {
@@ -30,7 +36,7 @@ class CategoriesViewModel @Inject constructor(
 
             is CategoriesContract.Action.CategoryClicked -> {
                 showSubCategoryFragment(action.category)
-                Log.d("categoryVm","${action.category}")
+                Log.d("categoryVm", "${action.category}")
 
             }
 
@@ -48,28 +54,40 @@ class CategoriesViewModel @Inject constructor(
     }
 
     private fun loadCategories() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
 
-            _states.postValue(CategoriesContract.State.Loading("Loading"))
-            val response = getCategoriesUseCases.invoke()
-            when (response) {
-                is ResultWrapper.Success -> {
-                    _states.postValue(CategoriesContract.State.Success(response.data ?: listOf()))
+
+            getCategoriesUseCases.invoke()
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Success -> {
+                            _states.emit(
+                                CategoriesContract.State.Success(
+                                    response.data ?: listOf()
+                                )
+                            )
+                        }
+
+                        is ResultWrapper.ServerError -> {
+                            _states.emit(CategoriesContract.State.Error(response.error.serverMessage))
+                        }
+
+                        is ResultWrapper.Error -> {
+                            _states.emit(CategoriesContract.State.Error(response.error.localizedMessage))
+                        }
+
+                        is ResultWrapper.Loading -> _states.emit(
+                            CategoriesContract.State.Loading(
+                                "loading"
+                            )
+                        )
+
+                        else -> {}
+                    }
                 }
 
-                is ResultWrapper.ServerError -> {
-                    _states.postValue(CategoriesContract.State.Error(response.error.serverMessage))
-                }
-
-                is ResultWrapper.Error -> {
-                    _states.postValue(CategoriesContract.State.Error(response.error.localizedMessage))
-                }
-
-                is ResultWrapper.Loading -> {}
-            }
         }
     }
-
 
 
 }

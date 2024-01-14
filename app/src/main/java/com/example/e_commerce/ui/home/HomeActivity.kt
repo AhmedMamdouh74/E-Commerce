@@ -51,6 +51,7 @@ class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
     private fun pushFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
+            .addToBackStack("home")
             .replace(R.id.fragment_container, fragment)
             .commit()
 

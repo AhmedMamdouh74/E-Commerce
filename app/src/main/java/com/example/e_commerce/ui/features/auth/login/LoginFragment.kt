@@ -9,7 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.LoginResponse
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentLoginBinding
@@ -17,6 +20,7 @@ import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -47,7 +51,14 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.states.observe(viewLifecycleOwner, ::renderStates)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.states.collect {
+                    renderStates(it)
+                }
+            }
+        }
+
         viewModel.events.observe(viewLifecycleOwner, ::handelEvents)
         binding.loginBtn.setOnClickListener {
             viewModel.handleAction(LoginContract.Action.Login(viewModel.getRequest()))
@@ -55,12 +66,14 @@ class LoginFragment : Fragment() {
     }
 
     private fun handelEvents(event: LoginContract.Event?) {
-        Log.d("TAG", "handelEvents:$event ")
+
 
         when (event) {
             is LoginContract.Event.NavigateToHomeScreen -> navigateToHomeScreen()
             else -> {}
+
         }
+        Log.d("TAG", "handelEventsLogin:$event ")
     }
 
     private fun navigateToHomeScreen() {
@@ -70,15 +83,23 @@ class LoginFragment : Fragment() {
 
 
     private fun renderStates(state: LoginContract.State?) {
-        Log.d("TAG", "renderStates: $state")
+        Log.d("TAG", "renderStatesLogin: $state")
         when (state) {
             is LoginContract.State.Error -> showError(state.message)
             is LoginContract.State.Loading -> showLoading(state.message)
             is LoginContract.State.Success -> login(state.loginResponse)
-            else -> TODO()
+            LoginContract.State.Idle -> showIdle()
+            null -> TODO()
         }
 
 
+    }
+
+    private fun showIdle() {
+
+        binding.errorView.isVisible = false
+        binding.loadingView.isVisible = false
+        binding.successView.isVisible = true
     }
 
     private fun showError(message: String) {
@@ -97,12 +118,12 @@ class LoginFragment : Fragment() {
     private fun showLoading(message: String) {
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = true
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
         binding.errorText.text = message
     }
 
     private fun login(loginResponse: LoginResponse?) {
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = true
 

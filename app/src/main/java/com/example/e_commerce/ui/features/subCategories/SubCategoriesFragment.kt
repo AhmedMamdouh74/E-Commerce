@@ -7,25 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
 import com.example.e_commerce.ui.features.products.ProductFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SubCategoriesFragment : Fragment() {
-    lateinit var viewModel: SubCategoriesViewModel
-
-    //    companion object {
-//        fun getInstance(category: Category): SubCategoriesFragment {
-//            val subCategoriesFragmentRef = SubCategoriesFragment()
-//            subCategoriesFragmentRef.category = category
-//            return subCategoriesFragmentRef
-//        }
-//    }
+    private lateinit var viewModel: SubCategoriesViewModel
     lateinit var category: Category
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +44,7 @@ class SubCategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentSubCategoriesBinding.inflate(inflater, container, false)
+        Log.d("TAG", "navigateToCategoriesProductsAhmed: ")
         return binding.root
 
     }
@@ -55,8 +53,14 @@ class SubCategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.states.observe(viewLifecycleOwner, ::renderViewState)
-        viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.states.collect { renderViewState(it) }
+
+            }
+        }
+
+        viewModel.events.observe(viewLifecycleOwner,::handleEvents)
         viewModel.handleAction(
             SubCategoriesContract.Action.LoadingSubCategories(
                 category._id ?: ""
@@ -70,7 +74,7 @@ class SubCategoriesFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         SubCategoriesContract.Action.SubCategoriesClicked(
-                            category._id?: ""
+                            category._id ?: ""
                         )
                     )
                 }
@@ -130,17 +134,18 @@ class SubCategoriesFragment : Fragment() {
     }
 
     private fun navigateToCategoriesProducts(categoryId: String) {
-        val productFragment= ProductFragment()
-        val bundle=Bundle()
-        bundle.putParcelable("category",category)
-        productFragment.arguments=bundle
-        Log.d("category","$category")
+        val productFragment = ProductFragment()
+        val bundle = Bundle()
+        bundle.putParcelable("category", category)
+        productFragment.arguments = bundle
+        Log.d("category", "$category")
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
-            .addToBackStack(null)
+            .addToBackStack("subCategory")
             .replace(R.id.fragment_container, ProductFragment.getInstance(category))
             .commit()
+
 
     }
 

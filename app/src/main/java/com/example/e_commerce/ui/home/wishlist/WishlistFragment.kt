@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.api.TokenManager
 import com.example.domain.model.Product
@@ -17,6 +20,8 @@ import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,9 +61,26 @@ class WishlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.cartState.observe(viewLifecycleOwner, ::renderCartState)
-        viewModel.loggedUserCartState.observe(viewLifecycleOwner, ::renderLoggedUserCartState)
-        viewModel.state.observe(viewLifecycleOwner, ::renderStates)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.cartState.collect { renderCartState(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loggedUserCartState.collect {
+                    renderLoggedUserCartState(it)
+                }
+
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { renderStates(it) }
+
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
     }
@@ -78,11 +100,12 @@ class WishlistFragment : Fragment() {
             is WishlistContract.LoggedUserCartState.Error -> {}
             is WishlistContract.LoggedUserCartState.Loading -> {}
             is WishlistContract.LoggedUserCartState.Success ->
-                wishlistAdapter.setCart(loggedUserCartState.cart?.products?.toMutableList()
+                wishlistAdapter.setCart(
+                    loggedUserCartState.cart?.products?.toMutableList()
 
-           )
+                )
 
-          //  wishlistAdapter.setCart(loggedUserCartState.cart?.mapNotNull { it?.products?.get(0)?.product })
+            //  wishlistAdapter.setCart(loggedUserCartState.cart?.mapNotNull { it?.products?.get(0)?.product })
 
 
             null -> {}
@@ -160,7 +183,11 @@ class WishlistFragment : Fragment() {
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
 
-                    Toast.makeText(requireContext(), "Item removed from Wishlist", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Item removed from Wishlist",
+                        Toast.LENGTH_LONG
+                    ).show()
                     Log.d("TAG", "initViewsWishlist:$it ")
                 }
             }

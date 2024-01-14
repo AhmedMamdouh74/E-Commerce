@@ -2,10 +2,12 @@ package com.example.data.dataSource.wishlist
 
 import com.example.data.api.WebServices
 import com.example.data.dataSourceContract.WishListDataSourceContract
-import com.example.data.saveApiCall
+
+import com.example.data.safeApiCall
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Product
-import com.example.domain.model.WishlistResponse
+
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class WishlistDataSourceContactImpl @Inject constructor(private val webServices: WebServices) :
@@ -13,16 +15,20 @@ class WishlistDataSourceContactImpl @Inject constructor(private val webServices:
     override suspend fun addProductToWishList(
         token: String,
         productId: String
-    ): ResultWrapper<WishlistResponse?> {
-        return saveApiCall { webServices.addProductToWishlist(token, productId).data }
+    ): Flow<ResultWrapper<List<String?>?>> {
+        return safeApiCall {
+            webServices.addProductToWishlist(token, productId) }
     }
 
-    override suspend fun getLoggedUserWishList(token: String): ResultWrapper<List<Product?>?> {
-        return saveApiCall { webServices.getLoggedUserWishlist(token).data }
+    override suspend fun getLoggedUserWishList(token: String): Flow<ResultWrapper<List<Product?>?>> {
+        return safeApiCall { webServices.getLoggedUserWishlist(token) }
     }
 
-    override suspend fun removeProductFromWishlist(token: String, productId: String): Any {
-        return saveApiCall {
+    override suspend fun removeProductFromWishlist(
+        token: String,
+        productId: String
+    ): Flow<ResultWrapper<Any>> {
+        return safeApiCall {
             webServices.removeProductFromWishlist(productId, token)
         }
     }

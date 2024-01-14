@@ -1,26 +1,28 @@
 package com.example.e_commerce.ui.features.products
 
 import androidx.lifecycle.LiveData
-import com.example.domain.model.Category
 import com.example.domain.model.Product
+import kotlinx.coroutines.flow.StateFlow
 
 class ProductContract {
     interface ViewModel {
-        val state: LiveData<State>
-        val wishlistState: LiveData<WishlistState>
+        val state: StateFlow<State>
+        val wishlistState: StateFlow<WishlistState>
         val event: LiveData<Event>
-        val loggedWishlistState: LiveData<LoggedWishlistState>
+        val loggedWishlistState: StateFlow<LoggedWishlistState>
         fun handleAction(action: Action)
 
     }
 
     sealed class State {
+
         class Error(val message: String) : State()
         class Success(val product: List<Product?>) : State()
         class Loading(val message: String) : State()
     }
 
     sealed class WishlistState {
+
         class Error(val message: String) : WishlistState()
         class Loading(val message: String) : WishlistState()
         object Success : WishlistState()

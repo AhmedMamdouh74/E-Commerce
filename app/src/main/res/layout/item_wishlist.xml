@@ -56,7 +56,7 @@
                 android:layout_marginStart="8dp"
 
                 android:fontFamily="@font/poppins"
-                android:text="@{String.valueOf(product.priceAfterDiscount.toString()) +`EGP`}"
+                android:text="@{`EGP `+String.valueOf(product.priceAfterDiscount.toString()) }"
                 android:textColor="@color/primary"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -71,7 +71,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginBottom="14dp"
                 android:fontFamily="@font/poppins"
-                android:text="@{String.valueOf(product.price.toString())+`EGP`}"
+                android:text="@{`EGP `+String.valueOf(product.price.toString())}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/image"
                 tools:text="1200" />

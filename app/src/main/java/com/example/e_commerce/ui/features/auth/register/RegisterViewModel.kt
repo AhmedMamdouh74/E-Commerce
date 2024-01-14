@@ -8,18 +8,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.RegisterRequest
 import com.example.domain.usecase.GetRegisterUseCases
+import com.example.e_commerce.ui.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val getRegisterUseCases: GetRegisterUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 
-    ) :
+) :
     ViewModel(), RegisterContract.ViewModel {
-    private val _states = MutableLiveData<RegisterContract.State>()
-    override val states: LiveData<RegisterContract.State>
+    private val _states =
+        MutableStateFlow<RegisterContract.State>(RegisterContract.State.Idle)
+    override val states: StateFlow<RegisterContract.State>
         get() = _states
 
     private val _events = MutableLiveData<RegisterContract.Event>()
@@ -123,34 +130,25 @@ class RegisterViewModel @Inject constructor(
 
     private fun register(registerRequest: RegisterRequest) {
 
-        _states.postValue(RegisterContract.State.Loading("Loading"))
-        viewModelScope.launch {
-            val response = getRegisterUseCases.invoke(registerRequest)
-            Log.d("registerViewModelResponse ", "$response")
-            when (response) {
+        _states.value = RegisterContract.State.Loading("loading")
+        viewModelScope.launch(ioDispatcher) {
 
-                is ResultWrapper.Error -> _states.postValue(RegisterContract.State.Error(response.error.localizedMessage))
-                is ResultWrapper.Loading -> TODO()
-                is ResultWrapper.ServerError -> _states.postValue(
-                    RegisterContract.State.Error(
-                        response.error.serverMessage
-                    )
-                )
-
-                is ResultWrapper.Success -> {
-                    Log.d( "registerViewModelSuccess ","${response.data}")
-                    _states.postValue(RegisterContract.State.Success(response.data))
-                    navigateToLogin(registerRequest)
-                }
-
-                else -> {}
+            try {
+                val response = getRegisterUseCases.invoke(registerRequest)
+                _states.value = RegisterContract.State.Success(response)
+                navigateToLogin(registerRequest)
+            } catch (ex: Exception) {
+                _states.value = RegisterContract.State.Error(ex.message ?: "")
             }
+
+
         }
 
     }
 
     private fun navigateToLogin(registerRequest: RegisterRequest) {
-        _events.postValue(RegisterContract.Event.NavigateAuthenticatedRegisterToLogin(registerRequest)
+        _events.postValue(
+            RegisterContract.Event.NavigateAuthenticatedRegisterToLogin(registerRequest)
         )
 
     }

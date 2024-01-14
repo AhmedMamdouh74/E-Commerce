@@ -6,6 +6,7 @@ import com.example.domain.model.cart.Cart
 import com.example.domain.model.cart.CartResponse
 import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.repositories.CartRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CartRepositoryImpl @Inject constructor(private val cartDataSourceContactImpl: CartDataSourceContactImpl) :
@@ -13,15 +14,15 @@ class CartRepositoryImpl @Inject constructor(private val cartDataSourceContactIm
     override suspend fun addProductToCart(
         token: String,
         productId: String
-    ): ResultWrapper<CartResponse?> {
+    ): Flow<ResultWrapper<CartResponse?>> {
         return cartDataSourceContactImpl.addProductToCart(token, productId)
     }
 
-    override suspend fun removeProductFromCart(token: String, productId: String): Any {
+    override suspend fun removeProductFromCart(token: String, productId: String): Flow<ResultWrapper<Any>> {
         return cartDataSourceContactImpl.removeProductFromCart(token, productId)
     }
 
-    override suspend fun getLoggedUserCart(token: String): ResultWrapper<CartQuantity?> {
+    override suspend fun getLoggedUserCart(token: String): Flow<ResultWrapper<CartQuantity?>> {
         return cartDataSourceContactImpl.getLoggedUserCart(token)
     }
 }

@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductDetailsBinding
 import com.example.e_commerce.ui.features.products.ProductFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
@@ -26,7 +30,7 @@ class ProductDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[ProductDetailsViewModel::class.java]
-       // getProduct()
+        // getProduct()
 
 
     }
@@ -46,18 +50,24 @@ class ProductDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        binding.lifecycleOwner=this
-        viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { renderViewStates(it) }
+            }
+        }
+
+
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
     }
 
     private fun initViews() {
-        binding.icBack.setOnClickListener{
+        binding.icBack.setOnClickListener {
             requireActivity()
                 .onBackPressed()
 
         }
+        binding.lifecycleOwner = this
     }
 
     private fun handleEvents(event: ProductsDetailsContract.Event?) {
@@ -85,7 +95,7 @@ class ProductDetailsFragment : Fragment() {
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
-        binding.product=product
+        binding.product = product
 
         binding.apply {
             view?.let {
@@ -112,10 +122,9 @@ class ProductDetailsFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
-            viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id?:""))
+            viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
         }
     }
-
 
 
     companion object {
@@ -133,6 +142,7 @@ class ProductDetailsFragment : Fragment() {
         super.onDestroyView()
         viewBinding = null
     }
+
     private fun getProduct() {
         val bundle: Bundle? = this.arguments
         if (bundle != null) {

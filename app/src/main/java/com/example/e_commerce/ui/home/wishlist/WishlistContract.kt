@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import com.example.domain.model.cart.Cart
 import com.example.domain.model.Product
 import com.example.domain.model.cart.loggedCart.CartQuantity
+import kotlinx.coroutines.flow.StateFlow
 
 class WishlistContract {
     interface ViewModel {
-        val state: LiveData<State>
-        val cartState: LiveData<CartState>
-        val loggedUserCartState: LiveData<LoggedUserCartState>
+        val state: StateFlow<State>
+        val cartState: StateFlow<CartState>
+        val loggedUserCartState: StateFlow<LoggedUserCartState>
         val event: LiveData<Event>
         fun handleAction(action: Action)
     }

@@ -8,13 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
 import com.example.e_commerce.ui.features.cart.CartFragment
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
@@ -40,16 +44,22 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.states.observe(viewLifecycleOwner, ::renderViewState)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.states.collect { renderViewState(it) }
+
+            }
+        }
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
     }
 
     private fun initViews() {
-        categoriesAdapter.onItemClickListener= CategoriesAdapter.OnItemClickListener{ _, item ->
-            item?.let {
-                viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
-            }
+        categoriesAdapter.onItemClickListener = CategoriesAdapter.OnItemClickListener { _, item ->
+//            item?.let {
+//                viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
+//            }
+            navigateToSubCategory(item!!)
 
 
         }
@@ -73,8 +83,8 @@ class CategoriesFragment : Fragment() {
         binding.loadingView.isVisible = false
         binding.errorView.isVisible = true
         binding.successView.isVisible = false
-        binding.errorText.text=message
-        binding.btnTryAgain.setOnClickListener{
+        binding.errorText.text = message
+        binding.btnTryAgain.setOnClickListener {
             viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
 
         }
@@ -84,7 +94,7 @@ class CategoriesFragment : Fragment() {
         binding.loadingView.isVisible = true
         binding.errorView.isVisible = false
         binding.successView.isVisible = false
-        binding.loadingText.text=message
+        binding.loadingText.text = message
     }
 
     private fun bindCategories(category: List<Category?>) {
@@ -109,22 +119,24 @@ class CategoriesFragment : Fragment() {
     private fun navigateToCart() {
         requireActivity()
             .supportFragmentManager
-
             .beginTransaction()
+            .replace(R.id.fragment_container, CartFragment())
             .addToBackStack(null)
-            .replace(R.id.cart_container,CartFragment())
             .commit()
     }
 
     private fun navigateToSubCategory(category: Category) {
-        val subCategoriesFragment= SubCategoriesFragment()
-        val bundle=Bundle()
-        bundle.putParcelable("category",category)
-        subCategoriesFragment.arguments=bundle
-        Log.d("category","$category")
+        val subCategoriesFragment = SubCategoriesFragment()
+        val bundle = Bundle()
+        bundle.putParcelable("category", category)
+        subCategoriesFragment.arguments = bundle
+        Log.d("categoryAhmed", "$category")
+        //     requireActivity()
+//            .supportFragmentManager
         childFragmentManager
             .beginTransaction()
-            .replace(R.id.subcategories_fragment,subCategoriesFragment)
+            .addToBackStack("category")
+            .replace(R.id.subcategories_fragment, subCategoriesFragment)
             .commit()
 
     }

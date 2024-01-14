@@ -7,7 +7,11 @@ import com.example.data.api.TokenManager
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.RemoveProductFromCartUseCase
+import com.example.e_commerce.ui.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,10 +20,11 @@ class CartViewModel @Inject constructor(
     tokenManager: TokenManager,
     private val removeProductFromCartUseCase: RemoveProductFromCartUseCase,
     private val getLoggedUserCartUseCases: GetLoggedUserCartUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel(), CartContract.ViewModel {
     private var _event = MutableLiveData<CartContract.Event>()
     override val event = _event
-    private var _state = MutableLiveData<CartContract.State>()
+    private var _state = MutableStateFlow<CartContract.State>(CartContract.State.Loading("loading"))
     override val state = _state
 
 
@@ -38,26 +43,48 @@ class CartViewModel @Inject constructor(
     }
 
     private fun removeProductFromCart(token: String, productId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             removeProductFromCartUseCase.invoke(token, productId)
-            _state.postValue(CartContract.State.Idle)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _state.emit(CartContract.State.Error(response.error.localizedMessage))
+                        ResultWrapper.Loading -> _state.emit(CartContract.State.Loading("loading"))
+                        is ResultWrapper.ServerError -> _state.emit(
+                            CartContract.State.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _state.emit(CartContract.State.Idle)
+                        else -> {}
+                    }
+                }
+
         }
     }
 
     private val token = tokenManager.getToken().toString()
 
     private fun loadingLoggedUserCarts() {
-        viewModelScope.launch {
-            _state.postValue(CartContract.State.Loading("Loading"))
-            val response = getLoggedUserCartUseCases.invoke(token)
-            when (response) {
-                is ResultWrapper.Error -> _state.postValue(CartContract.State.Error(response.error.localizedMessage))
-                ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> _state.postValue(CartContract.State.Error(response.error.serverMessage))
-                is ResultWrapper.Success -> _state.postValue(CartContract.State.Success(response.data))
+        viewModelScope.launch(ioDispatcher) {
 
-                else -> {}
-            }
+            getLoggedUserCartUseCases.invoke(token)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _state.emit(CartContract.State.Error(response.error.localizedMessage))
+                        ResultWrapper.Loading -> _state.emit(CartContract.State.Loading("loading"))
+                        is ResultWrapper.ServerError -> _state.emit(
+                            CartContract.State.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _state.emit(CartContract.State.Success(response.data))
+
+                        else -> {}
+                    }
+                }
+
         }
 
     }

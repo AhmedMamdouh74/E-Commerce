@@ -1,12 +1,20 @@
 package com.example.data.model.register
 
-import com.example.data.model.BaseResponse
 import com.google.gson.annotations.SerializedName
 
-data class RegisterResponse(
+data class RegisterResponseDto(
+
+	@field:SerializedName("message")
+	val message: String? = null,
+
+	@field:SerializedName("user")
+	val userModel: UserDto? = null,
+
 	@field:SerializedName("token")
-	val token: String? = null
-):BaseResponse<UserDto>()
+	val token: String? = null,
+	@field:SerializedName("statusMsg")
+	val statusMsg : String?=null
+)
 
 data class UserDto(
 

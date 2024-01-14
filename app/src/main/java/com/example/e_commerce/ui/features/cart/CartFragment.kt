@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Product
 import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.model.cart.loggedCart.ProductsItem
@@ -16,6 +19,7 @@ import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCartBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CartFragment : Fragment() {
@@ -45,7 +49,12 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.state.observe(viewLifecycleOwner, ::renderState)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { renderState(it) }
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
 
@@ -61,10 +70,15 @@ class CartFragment : Fragment() {
                     )
                 )
                 cartAdapter.cartProductDeleted(it)
-                Toast.makeText(requireContext(),"Item Cart Deleted",Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Item Cart Deleted", Toast.LENGTH_LONG).show()
+
             }
         }
         binding.cartRecycler.adapter = cartAdapter
+        binding.icBack.setOnClickListener {
+            requireActivity()
+                .onBackPressed()
+        }
 
     }
 
@@ -80,7 +94,11 @@ class CartFragment : Fragment() {
         when (state) {
             is CartContract.State.Error -> showError(state.message)
             is CartContract.State.Loading -> showLoading(state.message)
-            is CartContract.State.Success -> bindsCarts(state.cart?.products?.toMutableList())
+            is CartContract.State.Success -> bindsCarts(
+                state.cart?.products?.toMutableList(),
+                state.cart
+            )
+
             CartContract.State.Idle -> showIdle()
             null -> TODO()
             else -> {}
@@ -113,11 +131,12 @@ class CartFragment : Fragment() {
         }
     }
 
-    private fun bindsCarts(product: MutableList<ProductsItem?>?) {
+    private fun bindsCarts(product: MutableList<ProductsItem?>?, cartQuantity: CartQuantity?) {
         binding.loadingView.isVisible = false
         binding.errorView.isVisible = false
         binding.successView.isVisible = true
         cartAdapter.bindProducts(product)
+        binding.cart = cartQuantity
     }
 
     override fun onDestroyView() {

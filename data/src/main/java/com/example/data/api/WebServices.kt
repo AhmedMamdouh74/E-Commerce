@@ -1,17 +1,18 @@
 package com.example.data.api
 
 import com.example.data.model.BaseResponse
-import com.example.domain.model.cart.Cart
+import com.example.data.model.login.LoginResponseDto
+import com.example.data.model.register.RegisterResponseDto
 import com.example.domain.model.Category
 import com.example.domain.model.LoginRequest
 import com.example.domain.model.LoginResponse
 import com.example.domain.model.Product
 import com.example.domain.model.RegisterRequest
-import com.example.domain.model.RegisterResponse
 import com.example.domain.model.SubCategories
-import com.example.domain.model.WishlistResponse
+import com.example.domain.model.wishlist.WishlistResponse
 import com.example.domain.model.cart.CartResponse
 import com.example.domain.model.cart.loggedCart.CartQuantity
+import com.example.domain.model.wishlist.AddToWishlistResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -49,17 +50,17 @@ interface WebServices {
     fun refreshToken(oldToken: String): Response<LoginResponse>
 
     @POST("auth/signup")
-    suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse?>
+    suspend fun register(@Body registerRequest: RegisterRequest): RegisterResponseDto?
 
     @POST("auth/signin")
-    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse?>
+    suspend fun login(@Body loginRequest: LoginRequest): LoginResponseDto?
 
     @POST("wishlist")
     @FormUrlEncoded
     suspend fun addProductToWishlist(
         @Header("token") token: String,
         @Field("productId") productId: String
-    ): BaseResponse<WishlistResponse?>
+    ): BaseResponse<List<String?>?>
 
     @DELETE("wishlist/{productId}")
     suspend fun removeProductFromWishlist(
@@ -75,7 +76,7 @@ interface WebServices {
     suspend fun addProductToCart(
         @Header("token") token: String,
         @Field("productId") productId: String
-    ): Response<CartResponse?>
+    ): BaseResponse<CartResponse?>
 
     @DELETE("cart/{productId}")
     suspend fun removeProductFromCart(

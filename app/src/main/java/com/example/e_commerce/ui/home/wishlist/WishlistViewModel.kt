@@ -12,7 +12,11 @@ import com.example.domain.usecase.AddProductToCartUseCase
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
+import com.example.e_commerce.ui.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,15 +28,19 @@ class WishlistViewModel @Inject constructor(
     private val tokenManager: TokenManager,
     private val addProductToCartUseCase: AddProductToCartUseCase,
     private val getLoggedUserCartUseCases: GetLoggedUserCartUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 
-    ) :
+) :
     ViewModel(), WishlistContract.ViewModel {
-    private val _state = MutableLiveData<WishlistContract.State>()
-    override val state: LiveData<WishlistContract.State>
-        get() = _state
-    private val _cartState = MutableLiveData<WishlistContract.CartState>()
+    private val _state =
+        MutableStateFlow<WishlistContract.State>(WishlistContract.State.Loading("loading"))
+    override val state = _state
+    private val _cartState =
+        MutableStateFlow<WishlistContract.CartState>(WishlistContract.CartState.Loading("loading"))
     override val cartState = _cartState
-    private val _loggedUserCartState = MutableLiveData<WishlistContract.LoggedUserCartState>()
+    private val _loggedUserCartState = MutableStateFlow<WishlistContract.LoggedUserCartState>(
+        WishlistContract.LoggedUserCartState.Loading("loading")
+    )
     override val loggedUserCartState = _loggedUserCartState
 
     private val _event = MutableLiveData<WishlistContract.Event>()
@@ -60,83 +68,138 @@ class WishlistViewModel @Inject constructor(
     }
 
     fun getLoggedUserCart(token: String) {
-        viewModelScope.launch {
-            _loggedUserCartState.postValue(WishlistContract.LoggedUserCartState.Loading("loading"))
-            val response = getLoggedUserCartUseCases.invoke(token)
-            when (response) {
-                is ResultWrapper.Error -> {}
-                ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> {}
-                is ResultWrapper.Success -> {
-                    _loggedUserCartState.postValue(
-                        WishlistContract.LoggedUserCartState.Success(
-                            response.data
+        viewModelScope.launch(ioDispatcher) {
+            getLoggedUserCartUseCases.invoke(token)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _loggedUserCartState.emit(
+                            WishlistContract.LoggedUserCartState.Error(
+                                response.error.localizedMessage
+                            )
                         )
-                    )
-                    Log.d("TAG", "getLoggedUserCartViewModel:${response.data} ")
 
+                        ResultWrapper.Loading ->
+                            _loggedUserCartState.emit(WishlistContract.LoggedUserCartState.Loading("loading"))
+
+
+                        is ResultWrapper.ServerError -> _loggedUserCartState.emit(
+                            WishlistContract.LoggedUserCartState.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> {
+                            _loggedUserCartState.emit(
+                                WishlistContract.LoggedUserCartState.Success(
+                                    response.data
+                                )
+                            )
+                            Log.d("TAG", "getLoggedUserCartViewModel:${response.data} ")
+
+                        }
+
+                        else -> {}
+                    }
                 }
 
-                else -> {}
-            }
         }
     }
 
     private fun addProductToCart(token: String, productId: String) {
 
-        viewModelScope.launch {
-            _cartState.postValue(WishlistContract.CartState.Loading("Loading"))
-            val response = addProductToCartUseCase.invoke(token, productId)
-            when (response) {
-                is ResultWrapper.Error -> {}
-                ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> {}
-                is ResultWrapper.Success -> {
-                    _cartState.postValue(WishlistContract.CartState.Success)
-                    Log.d("TAG", "addProductToCartViewModel:${response} ")
+        viewModelScope.launch(ioDispatcher) {
+
+            addProductToCartUseCase.invoke(token, productId)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error ->
+                            _cartState.emit(
+                                WishlistContract.CartState.Error(
+                                    response.error
+                                        .localizedMessage
+                                )
+                            )
 
 
+                        ResultWrapper.Loading -> {
+                            _cartState.emit(WishlistContract.CartState.Loading("Loading"))
+                        }
+
+                        is ResultWrapper.ServerError ->
+                            _cartState.emit(
+                                WishlistContract.CartState.Error(
+                                    response.error
+                                        .serverMessage
+                                )
+                            )
+
+
+                        is ResultWrapper.Success -> {
+                            _cartState.emit(WishlistContract.CartState.Success)
+                            Log.d("TAG", "addProductToCartViewModel:${response} ")
+
+
+                        }
+
+                        else -> {}
+                    }
                 }
 
-                else -> {}
-            }
         }
     }
 
     private fun removeProductFromWishlist(productId: String, token: String) {
 
-        _state.postValue(WishlistContract.State.Loading("loading"))
-        viewModelScope.launch {
+
+        viewModelScope.launch(ioDispatcher) {
             removeProductFromWishlistUseCase.invoke(productId, token)
-            _state.postValue(WishlistContract.State.Idle)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _state.emit(WishlistContract.State.Error(response.error.localizedMessage))
+                        ResultWrapper.Loading -> _state.emit(WishlistContract.State.Loading("loading"))
+                        is ResultWrapper.ServerError -> _state.emit(
+                            WishlistContract.State.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _state.emit(WishlistContract.State.Idle)
+                        else -> {}
+                    }
+                }
+
 
         }
     }
 
     private fun loadingFavouriteProducts() {
-        _state.postValue(WishlistContract.State.Loading("loading"))
-        viewModelScope.launch {
-            val response = getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
-            Log.d("TAG", "loadingFavouriteProductsInvoke:$response ")
-            when (response) {
-                is ResultWrapper.Error -> _state.postValue(WishlistContract.State.Error(response.error.localizedMessage))
-                is ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> _state.postValue(
-                    WishlistContract.State.Error(
-                        response.error.serverMessage
-                    )
-                )
+        viewModelScope.launch(ioDispatcher) {
+            getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _state.emit(WishlistContract.State.Error(response.error.localizedMessage))
+                        is ResultWrapper.Loading -> {
+                            _state.emit(WishlistContract.State.Loading("loading"))
+                        }
 
-                is ResultWrapper.Success -> _state.postValue(
-                    WishlistContract.State.Success(
-                        response.data ?: listOf()
-                    )
-                )
+                        is ResultWrapper.ServerError -> _state.emit(
+                            WishlistContract.State.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _state.emit(
+                            WishlistContract.State.Success(
+                                response.data ?: listOf()
+                            )
+                        )
 
 
-                else -> {}
-            }
-            Log.d("TAG", "loadingFavouriteProducts:$response ")
+                        else -> {}
+                    }
+                    Log.d("TAG", "loadingFavouriteProducts:$response ")
+                }
+
 
         }
 

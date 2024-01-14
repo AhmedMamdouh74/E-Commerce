@@ -12,13 +12,13 @@ data class CartQuantityResponse(
 
 @Parcelize
 data class CartQuantity(
-	val cartOwner: String? = null,
-	val createdAt: String? = null,
-	val totalCartPrice: Int? = null,
-	val __v: Int? = null,
-	val _id: String? = null,
-	val products: List<ProductsItem?>? = null,
-	val updatedAt: String? = null
+    val cartOwner: String? = null,
+    val createdAt: String? = null,
+    val totalCartPrice: Int? = null,
+    val __v: Int? = null,
+    val _id: String? = null,
+    var products: List<ProductsItem?>? = null,
+    val updatedAt: String? = null
 ) : Parcelable
 
 @Parcelize

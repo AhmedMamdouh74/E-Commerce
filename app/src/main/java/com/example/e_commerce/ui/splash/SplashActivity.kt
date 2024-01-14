@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.spalsh
+package com.example.e_commerce.ui.splash
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +9,6 @@ import android.util.Log
 import com.example.data.api.TokenManager
 import com.example.e_commerce.R
 import com.example.e_commerce.ui.features.auth.login.LoginFragment
-import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

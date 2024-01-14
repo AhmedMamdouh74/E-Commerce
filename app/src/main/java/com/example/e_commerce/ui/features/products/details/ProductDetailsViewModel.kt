@@ -6,16 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetSpecificProductUseCases
+import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductDetailsViewModel @Inject constructor(private val getSpecificProductUseCases: GetSpecificProductUseCases) :
+class ProductDetailsViewModel @Inject constructor(
+    private val getSpecificProductUseCases: GetSpecificProductUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) :
     ViewModel(), ProductsDetailsContract.ViewModel {
-    private var _states = MutableLiveData<ProductsDetailsContract.State>()
+    private var _states =
+        MutableStateFlow<ProductsDetailsContract.State>(ProductsDetailsContract.State.Loading("loading"))
     override val state = _states
-    private var _event = MutableLiveData<ProductsDetailsContract.Event>()
+    private var _event = SingleLiveEvent<ProductsDetailsContract.Event>()
     override val event = _event
 
     override fun handleAction(action: ProductsDetailsContract.Action) {
@@ -23,12 +32,15 @@ class ProductDetailsViewModel @Inject constructor(private val getSpecificProduct
             is ProductsDetailsContract.Action.AddToCart -> {
 
             }
+
             is ProductsDetailsContract.Action.AddToWishlist -> {
 
             }
+
             is ProductsDetailsContract.Action.ClickOnCartIcon -> {
 
             }
+
             is ProductsDetailsContract.Action.LoadingProduct -> {
                 loadingProductDetails(action.productId)
             }
@@ -38,25 +50,44 @@ class ProductDetailsViewModel @Inject constructor(private val getSpecificProduct
     }
 
     private fun loadingProductDetails(productId: String) {
-        viewModelScope.launch {
-            _states.postValue(ProductsDetailsContract.State.Loading("Loading"))
-            when (val response = getSpecificProductUseCases.invoke(productId)) {
-                is ResultWrapper.Error -> {_states.postValue( ProductsDetailsContract.State.Error(
-                    response.error.localizedMessage
-                ))
+        viewModelScope.launch(ioDispatcher) {
 
+
+            getSpecificProductUseCases.invoke(productId)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> {
+                            _states.emit(
+                                ProductsDetailsContract.State.Error(
+                                    response.error.localizedMessage
+                                )
+                            )
+
+                        }
+
+
+                        is ResultWrapper.ServerError -> _states.emit(
+                            ProductsDetailsContract.State.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _states.emit(
+                            ProductsDetailsContract.State.Success(
+                                response.data
+                            )
+                        )
+
+                        is ResultWrapper.Loading -> _states.emit(
+                            ProductsDetailsContract.State.Loading(
+                                "Loading"
+                            )
+                        )
+
+                        else -> {}
+                    }
                 }
 
-
-                is ResultWrapper.ServerError ->_states.postValue( ProductsDetailsContract.State.Error(
-                    response.error.serverMessage
-                ))
-
-                is ResultWrapper.Success -> _states.postValue(ProductsDetailsContract.State.Success(response.data))
-
-                is ResultWrapper.Loading -> TODO()
-                else -> {}
-            }
         }
     }
 }

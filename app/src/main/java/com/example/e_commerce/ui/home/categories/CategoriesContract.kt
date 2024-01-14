@@ -2,10 +2,11 @@ package com.example.e_commerce.ui.home.categories
 
 import androidx.lifecycle.LiveData
 import com.example.domain.model.Category
+import kotlinx.coroutines.flow.StateFlow
 
 class CategoriesContract {
     interface ViewModel {
-        val states: LiveData<State>
+        val states: StateFlow<State>
         val events: LiveData<Event>
         fun handleAction(action: Action)
 

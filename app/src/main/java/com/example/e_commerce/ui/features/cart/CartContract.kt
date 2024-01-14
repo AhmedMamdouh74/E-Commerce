@@ -2,11 +2,12 @@ package com.example.e_commerce.ui.features.cart
 
 import androidx.lifecycle.LiveData
 import com.example.domain.model.cart.loggedCart.CartQuantity
+import kotlinx.coroutines.flow.StateFlow
 
 class CartContract {
     interface ViewModel {
         val event: LiveData<Event>
-        val state: LiveData<State>
+        val state: StateFlow<State>
         fun handleAction(action: Action)
     }
 

@@ -13,11 +13,11 @@ class CartAdapter(private var cartProduct: MutableList<ProductsItem?>?) :
     class ViewHolder( val itemBinding: ItemCartBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(cartProduct: ProductsItem?) {
-            itemBinding.product = cartProduct?.product
+            itemBinding.product = cartProduct
             itemBinding.apply {
                 Glide
                     .with(itemView)
-                    .load(product?.imageCover)
+                    .load(product?.product?.imageCover)
                     .into(image)
             }
 

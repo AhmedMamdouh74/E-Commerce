@@ -1,7 +1,8 @@
-package com.example.domain.model
+package com.example.domain.model.wishlist
 
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
+import com.example.domain.model.Product
 
 @Parcelize
 data class WishlistResponse(

@@ -8,17 +8,24 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.LoginRequest
 import com.example.domain.usecase.GetLoginUseCases
+import com.example.e_commerce.ui.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val getLoginUseCases: GetLoginUseCases) :
+class LoginViewModel @Inject constructor(
+    private val getLoginUseCases: GetLoginUseCases,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) :
     ViewModel(),
     LoginContract.ViewModel {
-    private val _states = MutableLiveData<LoginContract.State>()
-    override val states: MutableLiveData<LoginContract.State>
-        get() = _states
+    private val _states =
+        MutableStateFlow<LoginContract.State>(LoginContract.State.Idle)
+    override val states = _states
 
     private val _events = MutableLiveData<LoginContract.Event>()
     override val events: LiveData<LoginContract.Event>
@@ -34,26 +41,27 @@ class LoginViewModel @Inject constructor(private val getLoginUseCases: GetLoginU
 
     private fun validateAndLogin() {
         if (validFields()) {
-            val loginRequest=getRequest()
+            val loginRequest = getRequest()
             login(loginRequest)
 
         }
     }
 
     private fun login(loginRequest: LoginRequest) {
+        _states.value=LoginContract.State.Loading("loading")
 
-        _states.postValue(LoginContract.State.Loading("loading"))
-        viewModelScope.launch {
-            val response = getLoginUseCases.invoke(getRequest())
-            when (response) {
-                is ResultWrapper.Error -> _states.postValue(LoginContract.State.Error(response.error.localizedMessage))
-               is ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> _states.postValue(LoginContract.State.Error(response.error.serverMessage))
-                is ResultWrapper.Success -> {_states.postValue(LoginContract.State.Success(response.data))
-                    Log.d("TAG", "login: ${response.data}")
-                    navigateToHome(loginRequest)
-                }
+        viewModelScope.launch(ioDispatcher) {
+
+            try {
+                val response = getLoginUseCases.invoke(getRequest())
+                _states.value = LoginContract.State.Success(response)
+
+                navigateToHome(loginRequest)
+            } catch (ex: Exception) {
+                _states.value = LoginContract.State.Error(ex.localizedMessage?:"")
             }
+
+
         }
 
     }

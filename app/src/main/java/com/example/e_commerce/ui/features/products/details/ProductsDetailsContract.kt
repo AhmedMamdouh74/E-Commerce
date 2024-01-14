@@ -2,10 +2,11 @@ package com.example.e_commerce.ui.features.products.details
 
 import androidx.lifecycle.LiveData
 import com.example.domain.model.Product
+import kotlinx.coroutines.flow.StateFlow
 
 class ProductsDetailsContract {
     interface ViewModel {
-        val state: LiveData<State>
+        val state: StateFlow<State>
         val event: LiveData<Event>
         fun handleAction(action: Action)
 

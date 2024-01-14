@@ -1,7 +1,5 @@
 package com.example.e_commerce.ui.features.products
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
@@ -11,7 +9,11 @@ import com.example.domain.usecase.AddProductToWishlistUseCase
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.GetProductUseCases
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
+import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,21 +23,27 @@ class ProductsViewModel @Inject constructor(
     private val addProductToWishlistUseCase: AddProductToWishlistUseCase,
     private val removeProductFromWishlistUseCase: RemoveProductFromWishlistUseCase,
     private val getLoggedUserWishlistUseCase: GetLoggedUserWishlistUseCase,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+
 ) :
     ViewModel(), ProductContract.ViewModel {
-    private var _states = MutableLiveData<ProductContract.State>()
-
-
+    private var _states =
+        MutableStateFlow<ProductContract.State>(ProductContract.State.Loading("loading"))
     override val state = _states
-    private val _wishlistState = MutableLiveData<ProductContract.WishlistState>()
-    override val wishlistState: LiveData<ProductContract.WishlistState>
-        get() = _wishlistState
-    private var _loggedWishlistState = MutableLiveData<ProductContract.LoggedWishlistState>()
-    override val loggedWishlistState: LiveData<ProductContract.LoggedWishlistState>
-        get() = _loggedWishlistState
+    private val _wishlistState =
+        MutableStateFlow<ProductContract.WishlistState>(
+            ProductContract.WishlistState.Loading(
+                "loading"
+            )
+        )
+    override val wishlistState = _wishlistState
+    private var _loggedWishlistState = MutableStateFlow<ProductContract.LoggedWishlistState>(
+        ProductContract.LoggedWishlistState.Loading("loading")
+    )
+    override val loggedWishlistState = _loggedWishlistState
 
-    private var _events = MutableLiveData<ProductContract.Event>()
+    private var _events = SingleLiveEvent<ProductContract.Event>()
 
     override val event = _events
 
@@ -65,39 +73,55 @@ class ProductsViewModel @Inject constructor(
 
     private fun removeProductFromWishlist(productId: String, token: String) {
 
-        viewModelScope.launch {
-            _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
+        viewModelScope.launch(ioDispatcher) {
+
             removeProductFromWishlistUseCase.invoke(productId, token)
-            _wishlistState.postValue(ProductContract.WishlistState.Success)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.localizedMessage
+                            )
+                        )
+
+                        ResultWrapper.Loading -> _wishlistState.emit(
+                            ProductContract.WishlistState.Loading(
+                                "Loading"
+                            )
+                        )
+
+                        is ResultWrapper.ServerError -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _wishlistState.emit(ProductContract.WishlistState.Success)
+                        else -> {}
+                    }
+                }
+
 
         }
     }
 
     private fun addProductToWishlist(productId: String, token: String) {
-        viewModelScope.launch {
-            _wishlistState.postValue(ProductContract.WishlistState.Loading("Loading"))
+        // _wishlistStateAdd.postValue(ProductContract.WishlistStateAdd.Loading("loading"))
+        viewModelScope.launch(ioDispatcher) {
+
             addProductToWishlistUseCase.invoke(token, productId)
-            _wishlistState.postValue(
-                ProductContract.WishlistState.Success
-            )
-//            when (response) {
-//                is ResultWrapper.Error -> _wishlistState.postValue(
-//                    ProductContract.WishlistState.Error(
-//                        response.error.localizedMessage
-//                    )
-//                )
-//
-//                ResultWrapper.Loading -> {}
-//                is ResultWrapper.ServerError -> _wishlistState.postValue(
-//                    ProductContract.WishlistState.Error(
-//                        response.error.serverMessage
-//                    )
-//                )
-//
-//                is ResultWrapper.Success ->{}
-//
-//                else -> {}
-//            }
+                .collect{response->
+                    when(response){
+                        is ResultWrapper.Error -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.localizedMessage))
+                        ResultWrapper.Default -> {}
+                        ResultWrapper.Loading -> _wishlistState.emit(ProductContract.WishlistState.Loading("Loading"))
+                        is ResultWrapper.ServerError -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.serverMessage))
+                        is ResultWrapper.Success -> _wishlistState.emit(
+                            ProductContract.WishlistState.Success
+                        )
+                    }
+                }
+
 
 
         }
@@ -109,57 +133,79 @@ class ProductsViewModel @Inject constructor(
 
 
     private fun loadingProducts(categoryId: String) {
-        viewModelScope.launch {
-            _states.postValue(ProductContract.State.Loading("Loading"))
-            val getProductResponse = getProductUseCases.invoke(categoryId)
+        viewModelScope.launch(ioDispatcher) {
+            _states.emit(ProductContract.State.Loading("Loading"))
+            getProductUseCases.invoke(categoryId)
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Success -> {
+                            _states.emit(
+                                ProductContract.State.Success(
+                                    response.data ?: listOf()
+                                )
+                            )
+                        }
 
-            when (getProductResponse) {
-                is ResultWrapper.Success -> {
-                    _states.postValue(
-                        ProductContract.State.Success(
-                            getProductResponse.data ?: listOf()
-                        )
-                    )
+                        is ResultWrapper.Error -> {
+                            _states.emit(
+                                ProductContract.State.Error(response.error.localizedMessage)
+                            )
+                        }
+
+
+                        is ResultWrapper.ServerError -> {
+                            _states.emit(
+                                ProductContract.State.Error(
+                                    response.error.serverMessage
+                                )
+                            )
+                        }
+
+
+                        ResultWrapper.Loading -> {}
+
+                        else -> {}
+                    }
                 }
-
-                is ResultWrapper.Error -> {
-                    _states.postValue(
-                        ProductContract.State.Error(getProductResponse.error.localizedMessage)
-                    )
-                }
-
-
-                is ResultWrapper.ServerError -> {
-                    _states.postValue(
-                        ProductContract.State.Error(
-                            getProductResponse.error.serverMessage
-                        )
-                    )
-                }
-
-
-                ResultWrapper.Loading -> {}
-            }
-
         }
 
     }
 
     fun getLoggedWishlist() {
-        viewModelScope.launch {
-            val getWishlistResponse =
-                getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
-            when (getWishlistResponse) {
-                is ResultWrapper.Error -> {}
-                ResultWrapper.Loading -> {}
-                is ResultWrapper.ServerError -> {}
-                is ResultWrapper.Success -> _loggedWishlistState.postValue(
-                    ProductContract.LoggedWishlistState.Success(
-                        getWishlistResponse.data ?: listOf()
-                    )
+        viewModelScope.launch(ioDispatcher) {
 
-                )
-            }
+            getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _loggedWishlistState.emit(
+                            ProductContract.LoggedWishlistState.Error(
+                                response.error.localizedMessage
+                            )
+                        )
+
+                        ResultWrapper.Loading -> _loggedWishlistState.emit(
+                            ProductContract.LoggedWishlistState.Loading(
+                                "loading"
+                            )
+                        )
+
+                        is ResultWrapper.ServerError -> _loggedWishlistState.emit(
+                            ProductContract.LoggedWishlistState.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
+                        is ResultWrapper.Success -> _loggedWishlistState.emit(
+                            ProductContract.LoggedWishlistState.Success(
+                                response.data ?: listOf()
+                            )
+
+                        )
+
+                        else -> {}
+                    }
+                }
+
         }
     }
 }

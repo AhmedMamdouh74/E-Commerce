@@ -6,10 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.R
@@ -17,6 +19,7 @@ import com.example.e_commerce.databinding.FragmentProductBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.products.details.ProductDetailsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
@@ -53,6 +56,7 @@ class ProductFragment : Fragment() {
                         )
                     )
                 }
+                Log.d("TAG", "initViewsAndroid: ")
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
@@ -63,16 +67,11 @@ class ProductFragment : Fragment() {
                                 it.id ?: "", tokenViewModel.getToken()
                             )
                         )
-
-
                     } else {
-
                         viewModel.handleAction(
                             ProductContract.Action.AddProductToWishlist(
                                 it.id ?: "",
                                 tokenViewModel.getToken()
-
-
                             )
                         )
                         Log.d("TAG", "initViews:${tokenViewModel.getToken()} ")
@@ -101,19 +100,36 @@ class ProductFragment : Fragment() {
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
+            .addToBackStack("Product")
             .replace(R.id.fragment_container, ProductDetailsFragment.getInstance(product))
             .commit()
+        Log.d("TAG", "navigateToProductsDetails: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.wishlistState.observe(viewLifecycleOwner, ::renderWishlistState)
-        viewModel.loggedWishlistState.observe(viewLifecycleOwner, ::renderLoggedWishlistState)
-        viewModel.state.observe(viewLifecycleOwner, ::renderViewStates)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.wishlistState.collect { renderWishlistState(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loggedWishlistState.collect { renderLoggedWishlistState(it) }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { renderViewStates(it) }
+
+            }
+        }
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
     }
+
+
 
     private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
         when (wishlistState) {
@@ -121,7 +137,7 @@ class ProductFragment : Fragment() {
             is ProductContract.WishlistState.Loading -> {}
             is ProductContract.WishlistState.Success -> {
                 viewModel.getLoggedWishlist()
-                Log.d("TAG", "renderWishlistStateAhmed:$ ")
+                Log.d("TAG", "renderWishlistStateAhmed:$wishlistState ")
             }
 
 

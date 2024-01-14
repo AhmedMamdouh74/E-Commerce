@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.example.data.api.TokenManager
 import com.example.domain.model.RegisterRequest
@@ -18,6 +21,7 @@ import com.example.e_commerce.databinding.FragmentRegisterBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.auth.login.LoginFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
@@ -94,7 +98,13 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         binding.vm = viewModel
-        viewModel.states.observe(viewLifecycleOwner, ::renderStates)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.states.collect {
+                    renderStates(it) }
+            }
+        }
+
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         binding.btnSignUp.setOnClickListener {
             viewModel.handleAction(RegisterContract.Action.Register(viewModel.getRegisterRequest()))
@@ -119,7 +129,7 @@ class RegisterFragment : Fragment() {
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
-            .replace(R.id.register_login_container,LoginFragment())
+            .replace(R.id.register_login_container, LoginFragment())
             .commit()
     }
 
