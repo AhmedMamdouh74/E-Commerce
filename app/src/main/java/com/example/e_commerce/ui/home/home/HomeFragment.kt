@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentHomeBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
-import com.example.e_commerce.ui.features.cart.CartFragment
+import com.example.e_commerce.ui.features.auth.login.LoginFragment
 import com.example.e_commerce.ui.splash.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,20 +39,10 @@ class HomeFragment : Fragment() {
             tokenViewModel.deleteToken()
            val intent=Intent(requireActivity(),SplashActivity::class.java)
             startActivity(intent)
-//            requireActivity()
-//                .supportFragmentManager
-//                .beginTransaction()
-//                .replace(R.id.register_login_container,LoginFragment())
-//                .commit()
+
 
         }
-        binding.icCart.setOnClickListener {
-            requireActivity()
-                .supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container,CartFragment())
-                .commit()
-        }
+
     }
 
 

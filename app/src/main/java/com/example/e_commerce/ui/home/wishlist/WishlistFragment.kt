@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.home.wishlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,16 +14,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.data.api.TokenManager
 import com.example.domain.model.Product
-import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.features.cart.CartActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class WishlistFragment : Fragment() {
@@ -51,10 +48,15 @@ class WishlistFragment : Fragment() {
 
     private fun handleEvents(event: WishlistContract.Event) {
         when (event) {
-            WishlistContract.Event.NavigateToCartScreen -> {}
+            WishlistContract.Event.NavigateToCartScreen -> navigateToCartScreen()
             else -> {}
         }
 
+
+    }
+
+    private fun navigateToCartScreen() {
+        startActivity(Intent(requireActivity(),CartActivity::class.java))
 
     }
 
@@ -83,6 +85,9 @@ class WishlistFragment : Fragment() {
 
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
+        binding.icCart.setOnClickListener {
+            viewModel.handleAction(WishlistContract.Action.CartClicked)
+        }
     }
 
     private fun renderCartState(cartState: WishlistContract.CartState?) {
@@ -107,8 +112,6 @@ class WishlistFragment : Fragment() {
 
             //  wishlistAdapter.setCart(loggedUserCartState.cart?.mapNotNull { it?.products?.get(0)?.product })
 
-
-            null -> {}
             else -> {}
         }
 

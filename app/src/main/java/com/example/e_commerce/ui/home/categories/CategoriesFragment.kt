@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.home.categories
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
-import com.example.e_commerce.ui.features.cart.CartFragment
+import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -117,12 +117,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun navigateToCart() {
-        requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, CartFragment())
-            .addToBackStack(null)
-            .commit()
+      startActivity(Intent(requireActivity(),CartActivity::class.java))
     }
 
     private fun navigateToSubCategory(category: Category) {

@@ -13,6 +13,7 @@ import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
 import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -43,13 +44,13 @@ class WishlistViewModel @Inject constructor(
     )
     override val loggedUserCartState = _loggedUserCartState
 
-    private val _event = MutableLiveData<WishlistContract.Event>()
+    private val _event = SingleLiveEvent<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
         get() = _event
 
     override fun handleAction(action: WishlistContract.Action) {
         when (action) {
-            is WishlistContract.Action.CartClicked -> {}
+            is WishlistContract.Action.CartClicked -> navigateToCart()
             is WishlistContract.Action.RemoveProductFromWishlist -> {
                 removeProductFromWishlist(action.productId, action.token)
             }
@@ -65,6 +66,11 @@ class WishlistViewModel @Inject constructor(
 
             else -> {}
         }
+    }
+
+    private fun navigateToCart() {
+        _event.postValue(WishlistContract.Event.NavigateToCartScreen)
+
     }
 
     fun getLoggedUserCart(token: String) {

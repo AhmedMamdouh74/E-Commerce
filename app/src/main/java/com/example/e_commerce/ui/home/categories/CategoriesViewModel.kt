@@ -2,7 +2,6 @@ package com.example.e_commerce.ui.home.categories
 
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
@@ -12,7 +11,6 @@ import com.example.e_commerce.ui.IoDispatcher
 import com.example.e_commerce.ui.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,12 +38,12 @@ class CategoriesViewModel @Inject constructor(
 
             }
 
-            CategoriesContract.Action.CartClicked -> showCartFragment()
+            CategoriesContract.Action.CartClicked -> showCartActivity()
         }
 
     }
 
-    private fun showCartFragment() {
+    private fun showCartActivity() {
         _event.postValue(CategoriesContract.Event.NavigateToCart)
     }
 

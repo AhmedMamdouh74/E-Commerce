@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.features.products
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,10 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.domain.model.Product
-import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentProductBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
-import com.example.e_commerce.ui.features.products.details.ProductDetailsFragment
+import com.example.e_commerce.ui.features.products.details.ProductDetailsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -97,12 +97,9 @@ class ProductFragment : Fragment() {
     }
 
     private fun navigateToProductsDetails(product: Product) {
-        requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("Product")
-            .replace(R.id.fragment_container, ProductDetailsFragment.getInstance(product))
-            .commit()
+        val intent = Intent(requireActivity(), ProductDetailsActivity::class.java)
+        intent.putExtra("product", product)
+        startActivity(intent)
         Log.d("TAG", "navigateToProductsDetails: ")
     }
 

@@ -10,12 +10,10 @@
             type="com.example.domain.model.cart.loggedCart.CartQuantity" />
 
     </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.features.cart.CartFragment">
-
+        tools:context=".ui.features.cart.CartActivity">
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/cart_appbar"
             android:layout_width="match_parent"
@@ -164,4 +162,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
-
