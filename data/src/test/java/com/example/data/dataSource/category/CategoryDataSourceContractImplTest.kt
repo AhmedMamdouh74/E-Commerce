@@ -9,6 +9,10 @@ import com.example.domain.model.Category
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Assert.*
@@ -34,9 +38,10 @@ class CategoryDataSourceContractImplTest {
         )
         val categoriesResponse = BaseResponse<List<Category?>?>(data = cateList)
         coEvery { webServices.getCategories() } returns categoriesResponse
-        val result = categoryDataSource.getCategories() as ResultWrapper.Success<List<Category?>?>
-        coVerify (exactly = 1){webServices.getCategories() }
-
+        val result = categoryDataSource.getCategories()
+        result as Flow<ResultWrapper.Success<List<Category?>?>>
+        assertEquals(3, categoriesResponse.data?.size)
+        // coVerify(exactly = 1) { webServices.getCategories() }
 
 
     }

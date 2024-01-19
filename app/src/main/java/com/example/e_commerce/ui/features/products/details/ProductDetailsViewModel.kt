@@ -38,6 +38,7 @@ class ProductDetailsViewModel @Inject constructor(
             }
 
             is ProductsDetailsContract.Action.ClickOnCartIcon -> {
+                navigateToCartActivity()
 
             }
 
@@ -47,6 +48,11 @@ class ProductDetailsViewModel @Inject constructor(
 
             else -> {}
         }
+    }
+
+    private fun navigateToCartActivity() {
+
+        _event.postValue(ProductsDetailsContract.Event.NavigateToCart)
     }
 
     private fun loadingProductDetails(productId: String) {

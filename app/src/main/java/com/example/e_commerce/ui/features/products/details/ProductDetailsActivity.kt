@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.features.products.details
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -10,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
 import com.example.e_commerce.databinding.ActivityProductDetailsBinding
+import com.example.e_commerce.ui.features.cart.CartActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -57,10 +59,15 @@ ProductDetailsActivity : AppCompatActivity() {
 
     private fun handleEvents(event: ProductsDetailsContract.Event?) {
         when (event) {
-            ProductsDetailsContract.Event.NavigateToCart -> {}
+            ProductsDetailsContract.Event.NavigateToCart -> navigateToCart()
 
             else -> {}
         }
+
+    }
+
+    private fun navigateToCart() {
+        startActivity(Intent(this, CartActivity::class.java))
 
     }
 
@@ -96,10 +103,11 @@ ProductDetailsActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        binding.lifecycleOwner = this
         binding.icBack.setOnClickListener {
             onBackPressed()
         }
-        binding.lifecycleOwner = this
+        binding.icCart.setOnClickListener { viewModel.handleAction(ProductsDetailsContract.Action.ClickOnCartIcon) }
     }
 
     private fun getProduct() {
