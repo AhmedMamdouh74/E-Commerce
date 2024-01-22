@@ -42,11 +42,10 @@ object ApiModule {
         loggingInterceptor: HttpLoggingInterceptor,
         tokenInterceptor: TokenInterceptor
     ): OkHttpClient {
-        val okHttpClient = OkHttpClient.Builder()
+        return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(tokenInterceptor)
             .build()
-        return okHttpClient
     }
 
     @Singleton
