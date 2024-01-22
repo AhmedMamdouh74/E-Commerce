@@ -27,13 +27,12 @@ object ApiModule {
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
-        val retrofit = Retrofit
+        return Retrofit
             .Builder()
             .client(okHttpClient)
             .baseUrl("https://ecommerce.routemisr.com/api/v1/")
             .addConverterFactory(gsonConverterFactory)
             .build()
-        return retrofit
 
     }
 

@@ -3,19 +3,18 @@ package com.example.data.dataSource.category
 import com.example.data.api.WebServices
 import com.example.data.dataSourceContract.CategoryDataSourceContract
 import com.example.data.model.BaseResponse
-import com.example.data.model.category.CategoryDto
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Category
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
-import org.junit.Assert.*
+
 
 import org.junit.Before
 import org.junit.Test
@@ -38,11 +37,17 @@ class CategoryDataSourceContractImplTest {
         )
         val categoriesResponse = BaseResponse<List<Category?>?>(data = cateList)
         coEvery { webServices.getCategories() } returns categoriesResponse
-        val result = categoryDataSource.getCategories()
-        result as Flow<ResultWrapper.Success<List<Category?>?>>
-        assertEquals(3, categoriesResponse.data?.size)
-        // coVerify(exactly = 1) { webServices.getCategories() }
+
+        webServices.getCategories()
+        coVerify(exactly = 1) { webServices.getCategories() }
+        val result =
+            categoryDataSource.getCategories()
+                .filterIsInstance<ResultWrapper.Success<List<Category?>?>>()
+                .first()
+
+        assertEquals(3, result.data?.size
+    )
 
 
-    }
+}
 }

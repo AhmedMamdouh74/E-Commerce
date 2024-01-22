@@ -56,11 +56,9 @@ class CategoriesFragment : Fragment() {
 
     private fun initViews() {
         categoriesAdapter.onItemClickListener = CategoriesAdapter.OnItemClickListener { _, item ->
-//            item?.let {
-//                viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
-//            }
-            navigateToSubCategory(item!!)
-
+            item?.let {
+                viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
+            }
 
         }
         binding.categoriesRecycler.adapter = categoriesAdapter

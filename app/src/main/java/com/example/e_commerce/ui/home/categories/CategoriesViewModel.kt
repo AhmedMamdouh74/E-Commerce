@@ -33,22 +33,22 @@ class CategoriesViewModel @Inject constructor(
             }
 
             is CategoriesContract.Action.CategoryClicked -> {
-                showSubCategoryFragment(action.category)
-                Log.d("categoryVm", "${action.category}")
+                navigateToSubCategoryFragment(action.category)
+
 
             }
 
-            CategoriesContract.Action.CartClicked -> showCartActivity()
+            CategoriesContract.Action.CartClicked -> navigateToCartActivity()
         }
 
     }
 
-    private fun showCartActivity() {
+    private fun navigateToCartActivity() {
         _event.postValue(CategoriesContract.Event.NavigateToCart)
     }
 
-    private fun showSubCategoryFragment(category: Category?) {
-        _event.postValue(CategoriesContract.Event.NavigateToSubCategories(category!!))
+    private fun navigateToSubCategoryFragment(category: Category) {
+        _event.postValue(CategoriesContract.Event.NavigateToSubCategories(category))
     }
 
     private fun loadCategories() {

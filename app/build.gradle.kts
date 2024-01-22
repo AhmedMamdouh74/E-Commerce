@@ -58,6 +58,15 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    //mockk for test
+    val mockkVersion = "1.13.8"
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation("io.mockk:mockk-android:${mockkVersion}")
+    testImplementation("io.mockk:mockk-agent:${mockkVersion}")
+    // kotlin coroutines run test
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0-RC2")
+    // instantTaskExecutorRule dependency
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
@@ -77,5 +86,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core: 1.7.1")
+
+
 
 }
