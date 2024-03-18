@@ -44,7 +44,7 @@ class SubCategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentSubCategoriesBinding.inflate(inflater, container, false)
-        Log.d("TAG", "navigateToCategoriesProductsAhmed: ")
+        Log.d(TAG, "navigateToCategoriesProductsAhmed: ")
         return binding.root
 
     }
@@ -162,6 +162,9 @@ class SubCategoriesFragment : Fragment() {
             Log.d("subcategory", "$category")
         }
 
+    }
+    companion object{
+        private const val TAG = "SubCategoriesFragment"
     }
 
 

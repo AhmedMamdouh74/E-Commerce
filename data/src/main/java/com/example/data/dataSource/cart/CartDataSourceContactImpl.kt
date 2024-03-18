@@ -9,7 +9,8 @@ import com.example.domain.model.cart.loggedCart.CartQuantity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CartDataSourceContactImpl @Inject constructor (private val webServices: WebServices) : CartDataSourceContact {
+class CartDataSourceContactImpl @Inject constructor(private val webServices: WebServices) :
+    CartDataSourceContact {
     override suspend fun addProductToCart(
         token: String,
         productId: String
@@ -17,11 +18,14 @@ class CartDataSourceContactImpl @Inject constructor (private val webServices: We
         return safeApiCall { webServices.addProductToCart(token, productId) }
     }
 
-    override suspend fun removeProductFromCart(token: String, productId: String):Flow<ResultWrapper<Any>> {
+    override suspend fun removeProductFromCart(
+        token: String,
+        productId: String
+    ): Flow<ResultWrapper<Any>> {
         return safeApiCall { webServices.removeProductFromCart(token, productId) }
     }
 
-    override suspend fun getLoggedUserCart(token: String): Flow<ResultWrapper<CartQuantity?>>{
+    override suspend fun getLoggedUserCart(token: String): Flow<ResultWrapper<CartQuantity?>> {
         return safeApiCall { webServices.getLoggedUserCart(token) }
     }
 }

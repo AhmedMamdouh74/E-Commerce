@@ -7,11 +7,10 @@ import com.example.data.api.TokenManager
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.RemoveProductFromCartUseCase
-import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

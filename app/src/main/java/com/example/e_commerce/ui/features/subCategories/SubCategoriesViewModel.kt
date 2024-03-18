@@ -2,19 +2,15 @@ package com.example.e_commerce.ui.features.subCategories
 
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
-import com.example.domain.model.Category
 import com.example.domain.usecase.GetSubCategoriesUseCases
-import com.example.e_commerce.ui.IoDispatcher
-import com.example.e_commerce.ui.MainDispatcher
-import com.example.e_commerce.ui.SingleLiveEvent
-import com.example.e_commerce.ui.home.categories.CategoriesContract
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.MainDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.LoginResponse
@@ -24,17 +23,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private lateinit var viewModel: LoginViewModel
+    private val viewModel: LoginViewModel by viewModels()
     private val tokenViewModel: TokenViewModel by viewModels()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
-
-
-    }
-
     private var viewBinding: FragmentLoginBinding? = null
     private val binding get() = viewBinding!!
 
@@ -73,7 +63,7 @@ class LoginFragment : Fragment() {
             else -> {}
 
         }
-        Log.d("TAG", "handelEventsLogin:$event ")
+        Log.d(TAG, "handelEventsLogin:$event ")
     }
 
     private fun navigateToHomeScreen() {
@@ -83,7 +73,7 @@ class LoginFragment : Fragment() {
 
 
     private fun renderStates(state: LoginContract.State?) {
-        Log.d("TAG", "renderStatesLogin: $state")
+        Log.d(TAG, "renderStatesLogin: $state")
         when (state) {
             is LoginContract.State.Error -> showError(state.message)
             is LoginContract.State.Loading -> showLoading(state.message)
@@ -159,5 +149,9 @@ class LoginFragment : Fragment() {
         super.onDestroy()
         viewBinding = null
 
+    }
+    companion object {
+
+        private const val TAG = "LoginFragment"
     }
 }

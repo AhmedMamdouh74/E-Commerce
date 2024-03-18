@@ -9,8 +9,8 @@ import com.example.domain.usecase.AddProductToWishlistUseCase
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.GetProductUseCases
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.IoDispatcher
-import com.example.e_commerce.ui.SingleLiveEvent
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -110,18 +110,32 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
 
             addProductToWishlistUseCase.invoke(token, productId)
-                .collect{response->
-                    when(response){
-                        is ResultWrapper.Error -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.localizedMessage))
-                        ResultWrapper.Default -> {}
-                        ResultWrapper.Loading -> _wishlistState.emit(ProductContract.WishlistState.Loading("Loading"))
-                        is ResultWrapper.ServerError -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.serverMessage))
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.localizedMessage
+                            )
+                        )
+
+                        
+                        ResultWrapper.Loading -> _wishlistState.emit(
+                            ProductContract.WishlistState.Loading(
+                                "Loading"
+                            )
+                        )
+
+                        is ResultWrapper.ServerError -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
                         is ResultWrapper.Success -> _wishlistState.emit(
                             ProductContract.WishlistState.Success
                         )
                     }
                 }
-
 
 
         }

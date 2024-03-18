@@ -2,6 +2,7 @@ package com.example.e_commerce.ui.features.cart
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
@@ -14,6 +15,7 @@ import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityCartBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -50,7 +52,10 @@ class CartActivity : AppCompatActivity() {
                     )
                 )
                 cartAdapter.cartProductDeleted(it)
-                Toast.makeText(this, "Item Cart Deleted", Toast.LENGTH_LONG).show()
+             //  Toast.makeText(this, "Item Cart Deleted", Toast.LENGTH_LONG).show()
+                Snackbar.make(viewBinding.root,"Item Cart Deleted",Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(getColor(R.color.primary))
+                    .show()
 
             }
         }
@@ -88,6 +93,7 @@ class CartActivity : AppCompatActivity() {
 
     }
 
+
     private fun showLoading(message: String) {
         viewBinding.loadingView.isVisible = true
         viewBinding.errorView.isVisible = false
@@ -112,5 +118,9 @@ class CartActivity : AppCompatActivity() {
         viewBinding.successView.isVisible = true
         cartAdapter.bindProducts(product)
         viewBinding.cart = cartQuantity
+    }
+    companion object {
+
+        private const val TAG = "CartActivity"
     }
 }

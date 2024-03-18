@@ -22,15 +22,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ProductFragment : Fragment() {
+class  ProductFragment : Fragment() {
     lateinit var category: Category
-    private lateinit var viewModel: ProductsViewModel
+   // private late init var viewModel: ProductsViewModel
+    private val viewModel: ProductsViewModel by viewModels()
     private val tokenViewModel: TokenViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
+       // viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
     }
 
     private var viewBinding: FragmentProductBinding? = null
@@ -56,7 +57,7 @@ class ProductFragment : Fragment() {
                         )
                     )
                 }
-                Log.d("TAG", "initViewsAndroid: ")
+                Log.d(TAG, "initViewsAndroid: ")
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
@@ -74,8 +75,8 @@ class ProductFragment : Fragment() {
                                 tokenViewModel.getToken()
                             )
                         )
-                        Log.d("TAG", "initViews:${tokenViewModel.getToken()} ")
-                        Log.d("TAG", "initViews:${it.id} ")
+                        Log.d(TAG, "initViews:${tokenViewModel.getToken()} ")
+                        Log.d(TAG, "initViews:${it.id} ")
 
                     }
 
@@ -100,7 +101,7 @@ class ProductFragment : Fragment() {
         val intent = Intent(requireActivity(), ProductDetailsActivity::class.java)
         intent.putExtra("product", product)
         startActivity(intent)
-        Log.d("TAG", "navigateToProductsDetails: ")
+        Log.d(TAG, "navigateToProductsDetails: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -134,7 +135,7 @@ class ProductFragment : Fragment() {
             is ProductContract.WishlistState.Loading -> {}
             is ProductContract.WishlistState.Success -> {
                 viewModel.getLoggedWishlist()
-                Log.d("TAG", "renderWishlistStateAhmed:$wishlistState ")
+                Log.d(TAG, "renderWishlistStateAhmed:$wishlistState ")
             }
 
 
@@ -195,10 +196,12 @@ class ProductFragment : Fragment() {
             productFragmentRef.category = category
             return productFragmentRef
         }
+        private const val TAG = "LoginFragment"
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
     }
+
 }

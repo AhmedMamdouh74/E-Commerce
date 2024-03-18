@@ -25,17 +25,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
-    private lateinit var viewModel: RegisterViewModel
+    private val viewModel: RegisterViewModel by viewModels()
     private val tokenViewModel: TokenViewModel by viewModels()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
-
-
-    }
-
     private var viewBinding: FragmentRegisterBinding? = null
     private val binding get() = viewBinding!!
 
@@ -49,7 +40,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun renderStates(state: RegisterContract.State?) {
-        Log.d("renderStates: ", "$state")
+        Log.d(TAG, "$state")
         when (state) {
             is RegisterContract.State.Error -> showError(state.message)
             is RegisterContract.State.Loading -> showLoading(state.message)
@@ -62,14 +53,14 @@ class RegisterFragment : Fragment() {
     }
 
     private fun register(registerResponse: RegisterResponse?) {
-        Log.d("register33: ", "${registerResponse?.token}")
+        Log.d(TAG, "${registerResponse?.token}")
         binding.successView.isVisible = true
         binding.errorView.isVisible = false
         binding.loadingView.isVisible = false
 
 
         registerResponse?.user?.let { tokenViewModel.saveToken(registerResponse?.token ?: "", it) }
-        Log.d("register: ", "${registerResponse?.token}")
+        Log.d(TAG, "${registerResponse?.token}")
 
 
     }
@@ -136,6 +127,10 @@ class RegisterFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
+    }
+    companion object {
+
+        private const val TAG = "RegisterFragment"
     }
 
 
