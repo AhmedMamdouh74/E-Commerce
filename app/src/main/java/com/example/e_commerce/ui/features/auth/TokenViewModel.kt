@@ -20,8 +20,9 @@ class TokenViewModel @Inject constructor(
 
     fun getToken(): String {
 
-        return tokenManager.getToken().toString()
-
+        return viewModelScope.launch(Dispatchers.IO) {
+            tokenManager.getToken()
+        }.toString()
     }
 
 
