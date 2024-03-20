@@ -17,6 +17,9 @@
         android:theme="@style/Theme.ECommerce"
         tools:targetApi="31">
         <activity
+            android:name=".ui.features.auth.AuthActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.features.products.details.ProductDetailsActivity"
             android:exported="false" />
         <activity
@@ -31,8 +34,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.home.HomeActivity"
-            android:exported="true"/>
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
