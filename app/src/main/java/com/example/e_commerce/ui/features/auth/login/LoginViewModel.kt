@@ -1,17 +1,14 @@
 package com.example.e_commerce.ui.features.auth.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.common.ResultWrapper
 import com.example.domain.model.LoginRequest
 import com.example.domain.usecase.GetLoginUseCases
-import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -89,9 +86,9 @@ class LoginViewModel @Inject constructor(
         return isValid
     }
 
-    var email = MutableLiveData("")
+    var email = MutableStateFlow("")
     var emailError = MutableLiveData<String?>()
-    var password = MutableLiveData("")
+    var password = MutableStateFlow("")
     var passwordError = MutableLiveData<String?>()
     fun getRequest(): LoginRequest {
         return LoginRequest(

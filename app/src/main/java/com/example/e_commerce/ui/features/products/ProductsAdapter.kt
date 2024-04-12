@@ -1,6 +1,5 @@
 package com.example.e_commerce.ui.features.products
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -30,19 +29,18 @@ class ProductsAdapter(private var product: List<Product?>?) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(product!![position], wishlist)
         //  onItemClickListener.let {
-        holder.itemView.setOnClickListener {
-            notifyItemChanged(position)
-            onItemClickListener?.onItemClick(position, product!![position])
-        }
-        // }
+        holder.apply {
+            itemView.setOnClickListener {
+                notifyItemChanged(position)
+                onItemClickListener?.onItemClick(position, product!![position])
+            }
+            itemBinding.addToFavourites.setOnClickListener {
+                onIconWishlistClickListener?.onItemClick(position, product!![position])
+                notifyItemChanged(position)
 
-        // onIconWishlistClickListener.let {
-        holder.itemBinding.addToFavourites.setOnClickListener {
-            onIconWishlistClickListener?.onItemClick(position, product!![position])
-            notifyItemChanged(position)
-
+            } 
         }
-        //   }
+
 
     }
 
@@ -67,7 +65,7 @@ class ProductsAdapter(private var product: List<Product?>?) :
         fun bind(product: Product?, wishlist: List<Product?>?) {
             itemBinding.product = product
             itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
-            product?.isAdded=false
+            product?.isAdded = false
             wishlist?.forEach {
                 if (it?.id == product?.id) {
                     itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)

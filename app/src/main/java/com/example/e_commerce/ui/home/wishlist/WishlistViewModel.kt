@@ -2,21 +2,18 @@ package com.example.e_commerce.ui.home.wishlist
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
 import com.example.domain.common.ResultWrapper
-import com.example.domain.model.Product
 import com.example.domain.usecase.AddProductToCartUseCase
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.IoDispatcher
-import com.example.e_commerce.ui.SingleLiveEvent
+import com.example.e_commerce.ui.utils.IoDispatcher
+import com.example.e_commerce.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,6 +44,7 @@ class WishlistViewModel @Inject constructor(
     private val _event = SingleLiveEvent<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
         get() = _event
+    val token=tokenManager.getToken().toString()
 
     override fun handleAction(action: WishlistContract.Action) {
         when (action) {

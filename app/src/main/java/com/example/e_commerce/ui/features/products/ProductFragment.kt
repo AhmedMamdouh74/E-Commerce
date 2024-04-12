@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.databinding.FragmentProductBinding
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.details.ProductDetailsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ import kotlinx.coroutines.launch
 class ProductFragment : Fragment() {
     lateinit var category: Category
     private lateinit var viewModel: ProductsViewModel
-    private val tokenViewModel: TokenViewModel by viewModels()
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,18 +63,17 @@ class ProductFragment : Fragment() {
                     if (it.isAdded == true) {
                         viewModel.handleAction(
                             ProductContract.Action.RemoveProductToWishlist(
-                                it.id ?: "", tokenViewModel.getToken()
+                                it.id ?: "", viewModel.token
                             )
                         )
                     } else {
                         viewModel.handleAction(
                             ProductContract.Action.AddProductToWishlist(
                                 it.id ?: "",
-                                tokenViewModel.getToken()
+                                viewModel.token
                             )
                         )
-                        Log.d("TAG", "initViews:${tokenViewModel.getToken()} ")
-                        Log.d("TAG", "initViews:${it.id} ")
+
 
                     }
 
@@ -127,7 +125,6 @@ class ProductFragment : Fragment() {
     }
 
 
-
     private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
         when (wishlistState) {
             is ProductContract.WishlistState.Error -> {}
@@ -157,7 +154,7 @@ class ProductFragment : Fragment() {
     private fun renderViewStates(state: ProductContract.State?) {
         when (state) {
             is ProductContract.State.Error -> showError(state.message)
-            is ProductContract.State.Loading -> showLoading(state.message)
+            is ProductContract.State.Loading -> showLoading()
             is ProductContract.State.Success -> bindsProducts(state.product)
 
 
@@ -166,23 +163,23 @@ class ProductFragment : Fragment() {
     }
 
     private fun bindsProducts(product: List<Product?>) {
-        binding.loadingView.isVisible = false
+        progressDialog.dismiss()
         binding.errorView.isVisible = false
         binding.successView.isVisible = true
         productsAdapter.bindProducts(product)
     }
 
-    private fun showLoading(message: String) {
-        binding.loadingView.isVisible = true
+    private fun showLoading() {
+        progressDialog.show()
         binding.errorView.isVisible = false
         binding.successView.isVisible = false
-        binding.loadingText.text = message
+
     }
 
     private fun showError(message: String) {
         binding.errorView.isVisible = true
         binding.successView.isVisible = false
-        binding.loadingView.isVisible = false
+        progressDialog.dismiss()
         binding.errorText.text = message
         binding.btnTryAgain.setOnClickListener {
             viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))

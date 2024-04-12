@@ -95,7 +95,7 @@ class WishlistFragment : Fragment() {
         when (cartState) {
             is WishlistContract.CartState.Error -> {}
             is WishlistContract.CartState.Loading -> {}
-            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(tokenViewModel.getToken())
+            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(viewModel.token)
             null -> {}
         }
     }
@@ -181,7 +181,7 @@ class WishlistFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         WishlistContract.Action.RemoveProductFromWishlist(
-                            it.id ?: "", tokenViewModel.getToken()
+                            it.id ?: "", viewModel.token
                         )
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
@@ -204,7 +204,7 @@ class WishlistFragment : Fragment() {
                     } else {
                         viewModel.handleAction(
                             WishlistContract.Action.AddProductToCart(
-                                tokenViewModel.getToken(),
+                                viewModel.token,
                                 it.id ?: ""
                             )
                         )

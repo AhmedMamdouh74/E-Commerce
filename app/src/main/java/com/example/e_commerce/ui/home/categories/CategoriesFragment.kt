@@ -16,13 +16,13 @@ import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
 import com.example.e_commerce.ui.features.cart.CartActivity
-import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
+import com.example.e_commerce.ui.features.subcategories.SubCategoriesFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
-    lateinit var viewModel: CategoriesViewModel
+    private lateinit var viewModel: CategoriesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[CategoriesViewModel::class.java]
@@ -37,6 +37,7 @@ class CategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentCategoriesBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 

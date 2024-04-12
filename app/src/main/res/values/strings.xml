@@ -1,19 +1,21 @@
 <resources>
     <string name="app_name">E-Commerce</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="try_again">Try Again</string>
-    <string name="product_details">Product Details</string>
-    <string name="egy">EGY</string>
-    <string name="sold">Sold</string>
+
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="try_again" translatable="false">Try Again</string>
+    <string name="product_details" translatable="false">Product Details</string>
+    <string name="egy" translatable="false">EGY</string>
+    <string name="sold" translatable="false">Sold</string>
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="cart">Cart</string>
+    <string name="prompt_email" translatable="false">Email</string>
+    <string name="prompt_password" translatable="false">Password</string>
+    <string name="action_sign_in" translatable="false">Sign in or register</string>
+    <string name="action_sign_in_short" translatable="false">Sign in</string>
+    <string name="welcome" translatable="false">"Welcome!"</string>
+    <string name="invalid_username" translatable="false">Not a valid username</string>
+    <string name="invalid_password" translatable="false">Password must be >5 characters</string>
+    <string name="login_failed" translatable="false">"Login failed"</string>
+    <string name="cart" translatable="false">Cart</string>
+    <string name="loading" translatable="false">Loading</string>
 </resources>

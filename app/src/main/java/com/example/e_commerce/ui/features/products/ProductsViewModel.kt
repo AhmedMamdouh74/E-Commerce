@@ -9,8 +9,8 @@ import com.example.domain.usecase.AddProductToWishlistUseCase
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.GetProductUseCases
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.IoDispatcher
-import com.example.e_commerce.ui.SingleLiveEvent
+import com.example.e_commerce.ui.utils.IoDispatcher
+import com.example.e_commerce.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +46,7 @@ class ProductsViewModel @Inject constructor(
     private var _events = SingleLiveEvent<ProductContract.Event>()
 
     override val event = _events
+    val token=tokenManager.getToken().toString()
 
     override fun handleAction(action: ProductContract.Action) {
         when (action) {

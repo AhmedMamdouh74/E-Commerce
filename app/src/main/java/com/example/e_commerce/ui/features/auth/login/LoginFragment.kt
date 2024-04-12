@@ -20,6 +20,7 @@ import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -44,14 +45,14 @@ class LoginFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         viewBinding = FragmentLoginBinding.inflate(inflater, container, false)
-
+        binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        lifecycleScope.launch {
+        lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.states.collect {
                     renderStates(it)
@@ -138,7 +139,7 @@ class LoginFragment : Fragment() {
 
 
     private fun initViews() {
-        binding.lifecycleOwner = this
+
         binding.vm = viewModel
         binding.createAccount.setOnClickListener {
             createAccount()

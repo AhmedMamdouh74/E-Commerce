@@ -1,6 +1,6 @@
 package com.example.data.repository.product
 
-import com.example.data.dataSourceContract.ProductDataSourceContract
+import com.example.data.datasourcecontract.ProductDataSourceContract
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Product
 import com.example.domain.repositories.ProductRepository
