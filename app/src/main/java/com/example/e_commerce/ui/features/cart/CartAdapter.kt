@@ -1,7 +1,9 @@
 package com.example.e_commerce.ui.features.cart
 
+import CartDiffCallback
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
@@ -27,10 +29,15 @@ class CartAdapter(private var cartProduct: MutableList<ProductsItem?>?) :
     fun cartProductDeleted(product: ProductsItem?) {
         cartProduct?.remove(product)
         notifyDataSetChanged()
+
+
     }
-    fun bindProducts(product: MutableList<ProductsItem?>?){
-        this.cartProduct=product
-        notifyDataSetChanged()
+    fun bindProducts(newList: MutableList<ProductsItem?>?) {
+        if (newList != null) {
+            val diffResult = DiffUtil.calculateDiff(CartDiffCallback(cartProduct?: mutableListOf(), newList))
+            cartProduct = newList
+            diffResult.dispatchUpdatesTo(this@CartAdapter) // Dispatch updates efficiently
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
