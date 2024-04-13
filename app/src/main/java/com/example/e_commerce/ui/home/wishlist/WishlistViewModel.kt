@@ -44,7 +44,7 @@ class WishlistViewModel @Inject constructor(
     private val _event = SingleLiveEvent<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
         get() = _event
-    val token=tokenManager.getToken().toString()
+    val token = tokenManager.getToken().toString()
 
     override fun handleAction(action: WishlistContract.Action) {
         when (action) {

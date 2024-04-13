@@ -56,7 +56,9 @@ class CartViewModel @Inject constructor(
                             )
                         )
 
-                        is ResultWrapper.Success -> _state.emit(CartContract.State.Idle)
+                        is ResultWrapper.Success -> {_state.emit(CartContract.State.Idle)
+                        }
+
                         else -> {}
                     }
                 }

@@ -9,11 +9,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityCartBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
+import com.example.e_commerce.ui.features.products.ProductContract
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
 class CartActivity : AppCompatActivity() {
     private val viewModel: CartViewModel by viewModels()
     private val progressDialog by lazy { ProgressDialog.createProgressDialog(this) }
-    private val cartAdapter = CartAdapter(null)
+    private val cartAdapter = CartAdapter()
     private lateinit var viewBinding: ActivityCartBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +45,7 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+
         cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { _, item ->
             item.let {
                 viewModel.handleAction(
@@ -51,8 +54,11 @@ class CartActivity : AppCompatActivity() {
                         it?.product?.id ?: ""
                     )
                 )
-                cartAdapter.cartProductDeleted(it)
-                Snackbar.make(viewBinding.root, "Item Cart Deleted", Toast.LENGTH_LONG).show()
+                it.apply {
+                    cartAdapter.cartProductDeleted(it)
+                }
+
+                Snackbar.make(viewBinding.root, "Item Cart Deleted", Snackbar.LENGTH_SHORT).show()
 
             }
         }
@@ -71,10 +77,12 @@ class CartActivity : AppCompatActivity() {
         when (state) {
             is CartContract.State.Error -> showError(state.message)
             is CartContract.State.Loading -> showLoading()
-            is CartContract.State.Success -> bindsCarts(
-                state.cart?.products?.toMutableList(),
-                state.cart
-            )
+            is CartContract.State.Success -> {
+                bindsCarts(
+                    state.cart?.products?.toMutableList(),
+                    state.cart
+                )
+            }
 
             CartContract.State.Idle -> showIdle()
 
@@ -93,7 +101,7 @@ class CartActivity : AppCompatActivity() {
     private fun showLoading() {
         progressDialog.show()
         viewBinding.errorView.isVisible = false
-        viewBinding.successView.isVisible = false
+        viewBinding.successView.isVisible = true
 
 
     }

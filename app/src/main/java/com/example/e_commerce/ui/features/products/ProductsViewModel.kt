@@ -46,7 +46,7 @@ class ProductsViewModel @Inject constructor(
     private var _events = SingleLiveEvent<ProductContract.Event>()
 
     override val event = _events
-    val token=tokenManager.getToken().toString()
+    val token = tokenManager.getToken().toString()
 
     override fun handleAction(action: ProductContract.Action) {
         when (action) {
@@ -107,22 +107,35 @@ class ProductsViewModel @Inject constructor(
     }
 
     private fun addProductToWishlist(productId: String, token: String) {
-        // _wishlistStateAdd.postValue(ProductContract.WishlistStateAdd.Loading("loading"))
         viewModelScope.launch(ioDispatcher) {
 
             addProductToWishlistUseCase.invoke(token, productId)
-                .collect{response->
-                    when(response){
-                        is ResultWrapper.Error -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.localizedMessage))
+                .collect { response ->
+                    when (response) {
+                        is ResultWrapper.Error -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.localizedMessage
+                            )
+                        )
+
                         ResultWrapper.Default -> {}
-                        ResultWrapper.Loading -> _wishlistState.emit(ProductContract.WishlistState.Loading("Loading"))
-                        is ResultWrapper.ServerError -> _wishlistState.emit(ProductContract.WishlistState.Error(response.error.serverMessage))
+                        ResultWrapper.Loading -> _wishlistState.emit(
+                            ProductContract.WishlistState.Loading(
+                                "Loading"
+                            )
+                        )
+
+                        is ResultWrapper.ServerError -> _wishlistState.emit(
+                            ProductContract.WishlistState.Error(
+                                response.error.serverMessage
+                            )
+                        )
+
                         is ResultWrapper.Success -> _wishlistState.emit(
                             ProductContract.WishlistState.Success
                         )
                     }
                 }
-
 
 
         }

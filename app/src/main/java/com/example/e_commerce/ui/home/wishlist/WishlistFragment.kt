@@ -18,6 +18,7 @@ import com.example.domain.model.Product
 import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.cart.CartActivity
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -186,12 +187,12 @@ class WishlistFragment : Fragment() {
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
 
-                    Toast.makeText(
-                        requireContext(),
+                    Snackbar.make(
+                        binding.root,
                         "Item removed from Wishlist",
-                        Toast.LENGTH_LONG
+                        Snackbar.LENGTH_LONG
                     ).show()
-                    Log.d("TAG", "initViewsWishlist:$it ")
+
                 }
             }
 
@@ -200,7 +201,7 @@ class WishlistFragment : Fragment() {
                 item?.let {
 
                     if (it.addedToCart == true) {
-                        Toast.makeText(context, "Added To Cart Already", Toast.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, "Added To Cart Already", Snackbar.LENGTH_LONG).show()
                     } else {
                         viewModel.handleAction(
                             WishlistContract.Action.AddProductToCart(
@@ -211,7 +212,7 @@ class WishlistFragment : Fragment() {
 
 
                     }
-                    Log.d("TAG", "initViews:$it ")
+
 
                 }
             }
