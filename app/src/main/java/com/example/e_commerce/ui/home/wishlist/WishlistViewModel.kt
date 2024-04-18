@@ -98,7 +98,7 @@ class WishlistViewModel @Inject constructor(
                                     response.data
                                 )
                             )
-                            Log.d("TAG", "getLoggedUserCartViewModel:${response.data} ")
+
 
                         }
 
@@ -201,7 +201,7 @@ class WishlistViewModel @Inject constructor(
 
                         else -> {}
                     }
-                    Log.d("TAG", "loadingFavouriteProducts:$response ")
+
                 }
 
 

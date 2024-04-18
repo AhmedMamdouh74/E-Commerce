@@ -9,10 +9,12 @@ import com.example.domain.usecase.AddProductToWishlistUseCase
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.GetProductUseCases
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
+import com.example.e_commerce.ui.home.wishlist.WishlistContract
 import com.example.e_commerce.ui.utils.IoDispatcher
 import com.example.e_commerce.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -118,7 +120,6 @@ class ProductsViewModel @Inject constructor(
                             )
                         )
 
-                        ResultWrapper.Default -> {}
                         ResultWrapper.Loading -> _wishlistState.emit(
                             ProductContract.WishlistState.Loading(
                                 "Loading"
@@ -222,4 +223,34 @@ class ProductsViewModel @Inject constructor(
 
         }
     }
+
+//    private fun handleWishlist(wishlist: suspend () -> Flow<ResultWrapper<List<Product?>>>) {
+//        viewModelScope.launch(ioDispatcher) {
+//            wishlist().collect {
+//                when (it) {
+//                    is ResultWrapper.Error -> _wishlistState.emit(
+//                        ProductContract.WishlistState.Error(
+//                            it.error.localizedMessage
+//                        )
+//                    )
+//
+//                    ResultWrapper.Loading -> _wishlistState.emit(
+//                        ProductContract.WishlistState.Loading(
+//                            "loading"
+//                        )
+//                    )
+//
+//                    is ResultWrapper.ServerError -> _wishlistState.emit(
+//                        ProductContract.WishlistState.Error(
+//                            it.error.serverMessage
+//                        )
+//                    )
+//
+//                    is ResultWrapper.Success -> _wishlistState.emit(ProductContract.WishlistState.Success)
+//                }
+//            }
+//
+//        }
+//
+//    }
 }

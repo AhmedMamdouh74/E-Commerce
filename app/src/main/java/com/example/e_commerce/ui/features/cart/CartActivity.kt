@@ -1,21 +1,21 @@
 package com.example.e_commerce.ui.features.cart
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
+import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
 import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityCartBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
-import com.example.e_commerce.ui.features.products.ProductContract
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,29 +42,33 @@ class CartActivity : AppCompatActivity() {
         viewModel.event.observe(this, ::handleEvents)
         viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
 
+
     }
 
     private fun initViews() {
+        lifecycleScope.launch {
 
-        cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { _, item ->
-            item.let {
-                viewModel.handleAction(
-                    CartContract.Action.RemoveProductFromCart(
-                        viewModel.token,
-                        it?.product?.id ?: ""
+            cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { _, item ->
+
+                item.let {
+                    viewModel.handleAction(
+                        CartContract.Action.RemoveProductFromCart(
+                            viewModel.token,
+                            it?.product?.id ?: ""
+                        )
                     )
-                )
-                it.apply {
+
+
                     cartAdapter.cartProductDeleted(it)
+                    Snackbar.make(viewBinding.root, "Item Cart Deleted", Snackbar.LENGTH_SHORT)
+                        .show()
+
                 }
-
-                Snackbar.make(viewBinding.root, "Item Cart Deleted", Snackbar.LENGTH_SHORT).show()
-
             }
-        }
-        viewBinding.cartRecycler.adapter = cartAdapter
-        viewBinding.icBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            viewBinding.cartRecycler.adapter = cartAdapter
+            viewBinding.icBack.setOnClickListener {
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
 
     }
@@ -93,14 +97,12 @@ class CartActivity : AppCompatActivity() {
 
     private fun showIdle() {
         progressDialog.dismiss()
-        viewBinding.errorView.isVisible = false
         viewBinding.successView.isVisible = true
 
     }
 
     private fun showLoading() {
         progressDialog.show()
-        viewBinding.errorView.isVisible = false
         viewBinding.successView.isVisible = true
 
 
@@ -108,19 +110,18 @@ class CartActivity : AppCompatActivity() {
 
     private fun showError(message: String) {
         progressDialog.dismiss()
-        viewBinding.errorView.isVisible = true
-        viewBinding.successView.isVisible = false
-        viewBinding.errorText.text = message
-        viewBinding.btnTryAgain.setOnClickListener {
+        viewBinding.successView.isVisible = true
+        viewBinding.root.showRetrySnakeBarError(message) {
             viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
         }
     }
 
     private fun bindsCarts(product: MutableList<ProductsItem?>?, cartQuantity: CartQuantity?) {
         progressDialog.dismiss()
-        viewBinding.errorView.isVisible = false
         viewBinding.successView.isVisible = true
-        cartAdapter.bindProducts(product!!)
+        cartAdapter.bindProducts(product)
         viewBinding.cart = cartQuantity
     }
+
+
 }

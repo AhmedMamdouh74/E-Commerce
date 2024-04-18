@@ -65,7 +65,6 @@ class ProductsAdapter(private var product: List<Product?>?) :
         fun bind(product: Product?, wishlist: List<Product?>?) {
             itemBinding.product = product
             itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
-            product?.isAdded = false
             wishlist?.forEach {
                 if (it?.id == product?.id) {
                     itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
@@ -78,6 +77,8 @@ class ProductsAdapter(private var product: List<Product?>?) :
                 Glide
                     .with(itemView)
                     .load(product?.imageCover)
+                    .placeholder(R.drawable.ic_download)
+                    .error(R.drawable.ic_error)
                     .into(image)
 
             }

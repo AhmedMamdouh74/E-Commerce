@@ -17,6 +17,8 @@ import com.example.domain.model.Product
 import com.example.e_commerce.databinding.FragmentProductBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.details.ProductDetailsActivity
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -55,7 +57,7 @@ class ProductFragment : Fragment() {
                         )
                     )
                 }
-                Log.d("TAG", "initViewsAndroid: ")
+
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
@@ -98,7 +100,6 @@ class ProductFragment : Fragment() {
         val intent = Intent(requireActivity(), ProductDetailsActivity::class.java)
         intent.putExtra("product", product)
         startActivity(intent)
-        Log.d("TAG", "navigateToProductsDetails: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,11 +128,12 @@ class ProductFragment : Fragment() {
 
     private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
         when (wishlistState) {
-            is ProductContract.WishlistState.Error -> {}
+            is ProductContract.WishlistState.Error -> {
+                view?.showRetrySnakeBarError(wishlistState.message) { viewModel.getLoggedWishlist() }
+            }
             is ProductContract.WishlistState.Loading -> {}
             is ProductContract.WishlistState.Success -> {
                 viewModel.getLoggedWishlist()
-                Log.d("TAG", "renderWishlistStateAhmed:$wishlistState ")
             }
 
 
@@ -141,7 +143,10 @@ class ProductFragment : Fragment() {
 
     private fun renderLoggedWishlistState(loggedWishlistState: ProductContract.LoggedWishlistState?) {
         when (loggedWishlistState) {
-            is ProductContract.LoggedWishlistState.Error -> {}
+            is ProductContract.LoggedWishlistState.Error -> {
+                view?.showSnakeBarError(loggedWishlistState.message)
+            }
+
             is ProductContract.LoggedWishlistState.Loading -> {}
             is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
                 loggedWishlistState.wishlistProduct
@@ -164,26 +169,24 @@ class ProductFragment : Fragment() {
 
     private fun bindsProducts(product: List<Product?>) {
         progressDialog.dismiss()
-        binding.errorView.isVisible = false
         binding.successView.isVisible = true
         productsAdapter.bindProducts(product)
     }
 
     private fun showLoading() {
         progressDialog.show()
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
 
     }
 
     private fun showError(message: String) {
-        binding.errorView.isVisible = true
-        binding.successView.isVisible = false
+        binding.successView.isVisible = true
         progressDialog.dismiss()
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
-            viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
-        }
+        view?.showRetrySnakeBarError(
+            message
+        ) { viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: "")) }
+
+
     }
 
     companion object {

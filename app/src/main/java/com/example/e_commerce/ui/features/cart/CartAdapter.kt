@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.domain.model.cart.loggedCart.ProductsItem
+import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ItemCartBinding
 
 class CartAdapter :
@@ -19,6 +20,8 @@ class CartAdapter :
                 Glide
                     .with(itemView)
                     .load(product?.product?.imageCover)
+                    .placeholder(R.drawable.ic_download)
+                    .error(R.drawable.ic_error)
                     .into(image)
             }
 
@@ -26,6 +29,7 @@ class CartAdapter :
 
 
     }
+
 
     private val diffUtil = object : DiffUtil.ItemCallback<ProductsItem>() {
         override fun areItemsTheSame(oldItem: ProductsItem, newItem: ProductsItem): Boolean {
@@ -46,6 +50,7 @@ class CartAdapter :
         items.remove(product)
         asyncListDiffer.submitList(items)
     }
+
 
 
 
@@ -75,6 +80,5 @@ class CartAdapter :
     }
 
     override fun getItemCount(): Int = asyncListDiffer.currentList.size
-
 
 }
