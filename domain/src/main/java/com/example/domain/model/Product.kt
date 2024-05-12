@@ -24,7 +24,7 @@ data class Product(
 	val slug: String? = null,
 	val updatedAt: String? = null,
 	val priceAfterDiscount: Int? = null,
-	var isAdded:Boolean?=false,
+	var isAdded:Boolean?=null,
 	var addedToCart:Boolean?=false
 ) : Parcelable
 

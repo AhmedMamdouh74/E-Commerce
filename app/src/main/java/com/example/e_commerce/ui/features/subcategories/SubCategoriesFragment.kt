@@ -15,7 +15,9 @@ import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.ProductFragment
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -23,6 +25,7 @@ import kotlinx.coroutines.launch
 class SubCategoriesFragment : Fragment() {
     private lateinit var viewModel: SubCategoriesViewModel
     lateinit var category: Category
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +62,7 @@ class SubCategoriesFragment : Fragment() {
             }
         }
 
-        viewModel.events.observe(viewLifecycleOwner,::handleEvents)
+        viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(
             SubCategoriesContract.Action.LoadingSubCategories(
                 category._id ?: ""
@@ -85,7 +88,7 @@ class SubCategoriesFragment : Fragment() {
     private fun renderViewState(state: SubCategoriesContract.State) {
         when (state) {
             is SubCategoriesContract.State.Success -> bindCategories(state.subcategory)
-            is SubCategoriesContract.State.Loading -> showLoadind(state.message)
+            is SubCategoriesContract.State.Loading -> showLoading()
             is SubCategoriesContract.State.Error -> showError(state.message)
 
             else -> {}
@@ -93,11 +96,10 @@ class SubCategoriesFragment : Fragment() {
     }
 
     private fun showError(message: String) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = true
+        progressDialog.dismiss()
         binding.successView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
+
+        view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(
                 SubCategoriesContract.Action.LoadingSubCategories(
                     category._id ?: ""
@@ -106,16 +108,14 @@ class SubCategoriesFragment : Fragment() {
         }
     }
 
-    private fun showLoadind(message: String) {
-        binding.loadingView.isVisible = true
-        binding.errorView.isVisible = false
+    private fun showLoading() {
+        progressDialog.show()
         binding.successView.isVisible = false
-        binding.loadingText.text = message
+
     }
 
     private fun bindCategories(category: List<SubCategories?>) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
+        progressDialog.dismiss()
         binding.successView.isVisible = true
         subCategoriesAdapter.bindCategories(category)
 

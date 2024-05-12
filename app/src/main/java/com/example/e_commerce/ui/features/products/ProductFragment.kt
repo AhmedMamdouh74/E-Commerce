@@ -2,7 +2,6 @@ package com.example.e_commerce.ui.features.products
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -107,17 +106,11 @@ class ProductFragment : Fragment() {
         initViews()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.wishlistState.collect { renderWishlistState(it) }
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loggedWishlistState.collect { renderLoggedWishlistState(it) }
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect { renderViewStates(it) }
+                viewModel.state.collect {
+                    renderViewStates(it)
+                    renderLoggedWishlistState(it)
+                    renderWishlistState(it)
+                }
 
             }
         }
@@ -126,14 +119,16 @@ class ProductFragment : Fragment() {
     }
 
 
-    private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
-        when (wishlistState) {
-            is ProductContract.WishlistState.Error -> {
-                view?.showRetrySnakeBarError(wishlistState.message) { viewModel.getLoggedWishlist() }
+    private fun renderWishlistState(state: ProductContract.State?) {
+        when (state) {
+            is ProductContract.State.Error -> {
+                view?.showRetrySnakeBarError(state.message) { viewModel.getLoggedWishlist() }
             }
-            is ProductContract.WishlistState.Loading -> {}
-            is ProductContract.WishlistState.Success -> {
+
+            is ProductContract.State.Loading -> {}
+            is ProductContract.State.SuccessWishlist -> {
                 viewModel.getLoggedWishlist()
+                progressDialog.dismiss()
             }
 
 
@@ -141,16 +136,19 @@ class ProductFragment : Fragment() {
         }
     }
 
-    private fun renderLoggedWishlistState(loggedWishlistState: ProductContract.LoggedWishlistState?) {
-        when (loggedWishlistState) {
-            is ProductContract.LoggedWishlistState.Error -> {
-                view?.showSnakeBarError(loggedWishlistState.message)
+    private fun renderLoggedWishlistState(state: ProductContract.State?) {
+        when (state) {
+            is ProductContract.State.Error -> {
+                view?.showSnakeBarError(state.message)
             }
 
-            is ProductContract.LoggedWishlistState.Loading -> {}
-            is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
-                loggedWishlistState.wishlistProduct
-            )
+            is ProductContract.State.Loading -> {}
+            is ProductContract.State.SuccessLoggedWishlist -> {
+                productsAdapter.setWishlist(
+                    state.wishlistProduct
+                )
+                progressDialog.dismiss()
+            }
 
             else -> {}
         }

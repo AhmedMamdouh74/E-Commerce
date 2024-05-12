@@ -65,6 +65,7 @@ class ProductsAdapter(private var product: List<Product?>?) :
         fun bind(product: Product?, wishlist: List<Product?>?) {
             itemBinding.product = product
             itemBinding.addToFavourites.setImageResource(R.drawable.add_favourite)
+            product?.isAdded=false
             wishlist?.forEach {
                 if (it?.id == product?.id) {
                     itemBinding.addToFavourites.setImageResource(R.drawable.active_heart)
