@@ -7,11 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentHomeBinding
+import com.example.e_commerce.ui.features.auth.AuthActivity
 import com.example.e_commerce.ui.features.auth.TokenViewModel
-import com.example.e_commerce.ui.features.auth.login.LoginFragment
-import com.example.e_commerce.ui.splash.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,7 +35,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.btnLogout.setOnClickListener {
             tokenViewModel.deleteToken()
-           val intent=Intent(requireActivity(),SplashActivity::class.java)
+           val intent=Intent(requireActivity(), AuthActivity::class.java)
             startActivity(intent)
 
 

@@ -1,16 +1,13 @@
 package com.example.e_commerce.ui.features.products.details
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetSpecificProductUseCases
-import com.example.e_commerce.ui.IoDispatcher
-import com.example.e_commerce.ui.SingleLiveEvent
+import com.example.e_commerce.ui.utils.IoDispatcher
+import com.example.e_commerce.ui.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

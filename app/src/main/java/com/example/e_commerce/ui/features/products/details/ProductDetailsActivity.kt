@@ -27,6 +27,7 @@ ProductDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProductDetailsBinding.inflate(layoutInflater)
+        binding.lifecycleOwner = this
         setContentView(binding.root)
         getProduct()
         initViews()
@@ -103,9 +104,8 @@ ProductDetailsActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        binding.lifecycleOwner = this
         binding.icBack.setOnClickListener {
-            onBackPressed()
+           onBackPressedDispatcher.onBackPressed()
         }
         binding.icCart.setOnClickListener { viewModel.handleAction(ProductsDetailsContract.Action.ClickOnCartIcon) }
     }

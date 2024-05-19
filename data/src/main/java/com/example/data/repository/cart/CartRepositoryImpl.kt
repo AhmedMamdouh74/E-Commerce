@@ -1,6 +1,6 @@
 package com.example.data.repository.cart
 
-import com.example.data.dataSourceContract.CartDataSourceContact
+import com.example.data.datasourcecontract.CartDataSourceContact
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.cart.CartResponse
 import com.example.domain.model.cart.loggedCart.CartQuantity

@@ -26,6 +26,8 @@ class CartContract {
         ) : Action()
 
         object LoadingLoggedUserCarts : Action()
+
+
     }
 
     sealed class Event {}

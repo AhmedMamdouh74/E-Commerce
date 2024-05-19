@@ -1,9 +1,10 @@
 package com.example.e_commerce.ui.features.cart
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
+import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -13,7 +14,9 @@ import com.example.domain.model.cart.loggedCart.CartQuantity
 import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityCartBinding
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -21,8 +24,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class CartActivity : AppCompatActivity() {
     private val viewModel: CartViewModel by viewModels()
-    private val tokenViewModel: TokenViewModel by viewModels()
-    private val cartAdapter = CartAdapter(null)
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(this) }
+    private val cartAdapter = CartAdapter()
     private lateinit var viewBinding: ActivityCartBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,25 +41,34 @@ class CartActivity : AppCompatActivity() {
 
         viewModel.event.observe(this, ::handleEvents)
         viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
+
+
     }
 
     private fun initViews() {
-        cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { _, item ->
-            item.let {
-                viewModel.handleAction(
-                    CartContract.Action.RemoveProductFromCart(
-                        tokenViewModel.getToken(),
-                        it?.product?.id ?: ""
-                    )
-                )
-                cartAdapter.cartProductDeleted(it)
-                Toast.makeText(this, "Item Cart Deleted", Toast.LENGTH_LONG).show()
+        lifecycleScope.launch {
 
+            cartAdapter.onItemClickListener = CartAdapter.OnItemClickListener { _, item ->
+
+                item.let {
+                    viewModel.handleAction(
+                        CartContract.Action.RemoveProductFromCart(
+                            viewModel.token,
+                            it?.product?.id ?: ""
+                        )
+                    )
+
+
+                    cartAdapter.cartProductDeleted(it)
+                    Snackbar.make(viewBinding.root, "Item Cart Deleted", Snackbar.LENGTH_SHORT)
+                        .show()
+
+                }
             }
-        }
-        viewBinding.cartRecycler.adapter = cartAdapter
-        viewBinding.icBack.setOnClickListener {
-          onBackPressedDispatcher.onBackPressed()
+            viewBinding.cartRecycler.adapter = cartAdapter
+            viewBinding.icBack.setOnClickListener {
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
 
     }
@@ -68,11 +80,13 @@ class CartActivity : AppCompatActivity() {
     private fun renderState(state: CartContract.State?) {
         when (state) {
             is CartContract.State.Error -> showError(state.message)
-            is CartContract.State.Loading -> showLoading(state.message)
-            is CartContract.State.Success -> bindsCarts(
-                state.cart?.products?.toMutableList(),
-                state.cart
-            )
+            is CartContract.State.Loading -> showLoading()
+            is CartContract.State.Success -> {
+                bindsCarts(
+                    state.cart?.products?.toMutableList(),
+                    state.cart
+                )
+            }
 
             CartContract.State.Idle -> showIdle()
 
@@ -82,35 +96,32 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun showIdle() {
-        viewBinding.loadingView.isVisible = false
-        viewBinding.errorView.isVisible = false
+        progressDialog.dismiss()
         viewBinding.successView.isVisible = true
 
     }
 
-    private fun showLoading(message: String) {
-        viewBinding.loadingView.isVisible = true
-        viewBinding.errorView.isVisible = false
-        viewBinding.successView.isVisible = false
-        viewBinding.loadingText.text = message
+    private fun showLoading() {
+        progressDialog.show()
+        viewBinding.successView.isVisible = true
+
 
     }
 
     private fun showError(message: String) {
-        viewBinding.loadingView.isVisible = false
-        viewBinding.errorView.isVisible = true
-        viewBinding.successView.isVisible = false
-        viewBinding.errorText.text = message
-        viewBinding.btnTryAgain.setOnClickListener {
+        progressDialog.dismiss()
+        viewBinding.successView.isVisible = true
+        viewBinding.root.showRetrySnakeBarError(message) {
             viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
         }
     }
 
     private fun bindsCarts(product: MutableList<ProductsItem?>?, cartQuantity: CartQuantity?) {
-        viewBinding.loadingView.isVisible = false
-        viewBinding.errorView.isVisible = false
+        progressDialog.dismiss()
         viewBinding.successView.isVisible = true
         cartAdapter.bindProducts(product)
         viewBinding.cart = cartQuantity
     }
+
+
 }

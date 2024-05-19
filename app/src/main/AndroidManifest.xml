@@ -17,7 +17,7 @@
         android:theme="@style/Theme.ECommerce"
         tools:targetApi="31">
         <activity
-            android:name=".ui.features.auth.login.LoginActivity"
+            android:name=".ui.features.auth.AuthActivity"
             android:exported="false" />
         <activity
             android:name=".ui.features.products.details.ProductDetailsActivity"
@@ -26,15 +26,15 @@
             android:name=".ui.features.cart.CartActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.splash.SplashActivity"
-            android:exported="true">
+            android:name=".ui.home.HomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.home.HomeActivity" />
     </application>
 
 </manifest>

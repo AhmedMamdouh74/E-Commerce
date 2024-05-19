@@ -1,14 +1,9 @@
 package com.example.data.api
 
-import android.content.Context
 import android.content.SharedPreferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.domain.model.User
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TokenManager @Inject constructor(
@@ -29,6 +24,10 @@ class TokenManager @Inject constructor(
         sharedPreferences.edit().putString("TOKEN_KEY", token).putString("userJson", userJson)
             .apply()
     }
+    fun deleteToken() {
+        sharedPreferences.edit().putString("TOKEN_KEY", "").apply()
+
+    }
 
     fun getUser(): User? {
         val gson = Gson()
@@ -41,8 +40,5 @@ class TokenManager @Inject constructor(
 
     }
 
-    fun deleteToken() {
-        sharedPreferences.edit().putString("TOKEN_KEY", "").apply()
 
-    }
 }

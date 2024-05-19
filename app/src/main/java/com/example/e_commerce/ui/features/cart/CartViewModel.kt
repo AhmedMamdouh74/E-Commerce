@@ -7,11 +7,10 @@ import com.example.data.api.TokenManager
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.RemoveProductFromCartUseCase
-import com.example.e_commerce.ui.IoDispatcher
+import com.example.e_commerce.ui.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +25,8 @@ class CartViewModel @Inject constructor(
     override val event = _event
     private var _state = MutableStateFlow<CartContract.State>(CartContract.State.Loading("loading"))
     override val state = _state
+    val token = tokenManager.getToken().toString()
+
 
 
     override fun handleAction(action: CartContract.Action) {
@@ -36,10 +37,8 @@ class CartViewModel @Inject constructor(
                 action.productId
             )
 
-            else -> {}
+
         }
-
-
     }
 
     private fun removeProductFromCart(token: String, productId: String) {
@@ -56,18 +55,16 @@ class CartViewModel @Inject constructor(
                         )
 
                         is ResultWrapper.Success -> _state.emit(CartContract.State.Idle)
+
                         else -> {}
                     }
                 }
-
         }
     }
 
-    private val token = tokenManager.getToken().toString()
 
     private fun loadingLoggedUserCarts() {
         viewModelScope.launch(ioDispatcher) {
-
             getLoggedUserCartUseCases.invoke(token)
                 .collect { response ->
                     when (response) {
@@ -84,8 +81,9 @@ class CartViewModel @Inject constructor(
                         else -> {}
                     }
                 }
-
         }
-
     }
+
+
+
 }

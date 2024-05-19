@@ -1,38 +1,38 @@
 package com.example.e_commerce.ui.home.wishlist
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Product
 import com.example.e_commerce.databinding.FragmentWishlistBinding
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class WishlistFragment : Fragment() {
-    private val tokenViewModel: TokenViewModel by viewModels()
     private lateinit var viewModel: WishlistViewModel
 
-
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[WishlistViewModel::class.java]
     }
 
-    private val wishlistAdapter = WishlistAdapter(null)
+    private val wishlistAdapter = WishlistAdapter()
     private var _viewBinding: FragmentWishlistBinding? = null
 
     private val binding get() = _viewBinding!!
@@ -56,7 +56,7 @@ class WishlistFragment : Fragment() {
     }
 
     private fun navigateToCartScreen() {
-        startActivity(Intent(requireActivity(),CartActivity::class.java))
+        startActivity(Intent(requireActivity(), CartActivity::class.java))
 
     }
 
@@ -93,24 +93,30 @@ class WishlistFragment : Fragment() {
     private fun renderCartState(cartState: WishlistContract.CartState?) {
 
         when (cartState) {
-            is WishlistContract.CartState.Error -> {}
+            is WishlistContract.CartState.Error -> {
+                view?.showSnakeBarError(cartState.message)
+            }
+
             is WishlistContract.CartState.Loading -> {}
-            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(tokenViewModel.getToken())
-            null -> {}
+            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(viewModel.token)
+            else -> {}
         }
     }
 
     private fun renderLoggedUserCartState(loggedUserCartState: WishlistContract.LoggedUserCartState?) {
         when (loggedUserCartState) {
-            is WishlistContract.LoggedUserCartState.Error -> {}
+            is WishlistContract.LoggedUserCartState.Error -> {
+                view?.showSnakeBarError(loggedUserCartState.message)
+            }
+
             is WishlistContract.LoggedUserCartState.Loading -> {}
-            is WishlistContract.LoggedUserCartState.Success ->
+            is WishlistContract.LoggedUserCartState.Success -> {
                 wishlistAdapter.setCart(
                     loggedUserCartState.cart?.products?.toMutableList()
 
                 )
+            }
 
-            //  wishlistAdapter.setCart(loggedUserCartState.cart?.mapNotNull { it?.products?.get(0)?.product })
 
             else -> {}
         }
@@ -125,7 +131,7 @@ class WishlistFragment : Fragment() {
             }
 
             is WishlistContract.State.Loading -> {
-                viewLoading(state.message)
+                viewLoading()
             }
 
             is WishlistContract.State.Success -> {
@@ -135,42 +141,36 @@ class WishlistFragment : Fragment() {
             is WishlistContract.State.Idle -> showIdle()
             else -> {}
         }
-        Log.d("TAG", "renderStatesWishlistFragment:$state ")
+
 
     }
 
     private fun showIdle() {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
+        progressDialog.dismiss()
         binding.successView.isVisible = true
     }
 
     private fun bindProducts(product: List<Product?>) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
+        progressDialog.dismiss()
         binding.successView.isVisible = true
         wishlistAdapter.bindProducts(product.toMutableList())
-        Log.d("TAG", "bindProducts:$product ")
 
 
     }
 
     private fun viewError(message: String) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = true
+        progressDialog.dismiss()
         binding.successView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
+        view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
         }
 
     }
 
-    private fun viewLoading(message: String) {
-        binding.loadingView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = false
-        binding.loadingText.text = message
+    private fun viewLoading() {
+        progressDialog.show()
+        binding.successView.isVisible = true
+
 
     }
 
@@ -181,17 +181,17 @@ class WishlistFragment : Fragment() {
                 item?.let {
                     viewModel.handleAction(
                         WishlistContract.Action.RemoveProductFromWishlist(
-                            it.id ?: "", tokenViewModel.getToken()
+                            it.id ?: "", viewModel.token
                         )
                     )
                     wishlistAdapter.favouriteProductDeleted(it)
 
-                    Toast.makeText(
-                        requireContext(),
+                    Snackbar.make(
+                        binding.root,
                         "Item removed from Wishlist",
-                        Toast.LENGTH_LONG
+                        Snackbar.LENGTH_LONG
                     ).show()
-                    Log.d("TAG", "initViewsWishlist:$it ")
+
                 }
             }
 
@@ -200,18 +200,19 @@ class WishlistFragment : Fragment() {
                 item?.let {
 
                     if (it.addedToCart == true) {
-                        Toast.makeText(context, "Added To Cart Already", Toast.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, "Added To Cart Already", Snackbar.LENGTH_LONG)
+                            .show()
                     } else {
                         viewModel.handleAction(
                             WishlistContract.Action.AddProductToCart(
-                                tokenViewModel.getToken(),
+                                viewModel.token,
                                 it.id ?: ""
                             )
                         )
 
 
                     }
-                    Log.d("TAG", "initViews:$it ")
+
 
                 }
             }
@@ -222,6 +223,4 @@ class WishlistFragment : Fragment() {
         super.onDestroyView()
         _viewBinding = null
     }
-
-
 }

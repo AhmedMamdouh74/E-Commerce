@@ -23,11 +23,11 @@ suspend fun <T> safeApiCall(apiCall: suspend  () ->  BaseResponse<T>): Flow<Resu
         val result = apiCall.invoke()
         result.data?.let {
             emit(ResultWrapper.Success(result.data))
-            println("ApiState${result.data}")
+            println("$TAG  ${result.data}")
         }
 
     }.catch { e ->
-        Log.d("TAG", "safeApiCall:$e ")
+        Log.d(TAG, "$e ")
         when (e) {
             is TimeoutException -> {
                 emit(ResultWrapper.Error(ServerTimeOutException(e)))
@@ -54,4 +54,5 @@ suspend fun <T> safeApiCall(apiCall: suspend  () ->  BaseResponse<T>): Flow<Resu
             else -> emit(ResultWrapper.Error(e as Exception))
         }
     }
+const val TAG="safeApiCall"
 
