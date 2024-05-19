@@ -105,7 +105,7 @@ ProductDetailsActivity : AppCompatActivity() {
 
     private fun initViews() {
         binding.icBack.setOnClickListener {
-            onBackPressed()
+           onBackPressedDispatcher.onBackPressed()
         }
         binding.icCart.setOnClickListener { viewModel.handleAction(ProductsDetailsContract.Action.ClickOnCartIcon) }
     }

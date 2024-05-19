@@ -47,6 +47,8 @@ class ProductsAdapter(private var product: List<Product?>?) :
     fun bindProducts(product: List<Product?>) {
         this.product = product
         notifyDataSetChanged()
+
+
     }
 
 

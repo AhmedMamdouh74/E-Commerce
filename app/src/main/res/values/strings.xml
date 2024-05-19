@@ -18,6 +18,6 @@
     <string name="login_failed" translatable="false">"Login failed"</string>
     <string name="cart" translatable="false">Cart</string>
     <string name="loading" translatable="false">Loading</string>
-    <string name="ok">ok\n</string>
-    <string name="retry">retry</string>
+    <string name="ok" translatable="false">ok\n</string>
+    <string name="retry" translatable="false">retry</string>
 </resources>
