@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.features.auth.login
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,9 +14,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.domain.model.LoginResponse
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentLoginBinding
+import com.example.e_commerce.ui.features.auth.AuthActivity
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
@@ -78,8 +81,11 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToHomeScreen() {
-        val intent = Intent(requireActivity(), HomeActivity::class.java)
-        startActivity(intent)
+        requireActivity().startActivity(Intent(activity, HomeActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        requireActivity().finish()
+
     }
 
 
@@ -148,11 +154,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun createAccount() {
-        requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.register_login_container, RegisterFragment())
-            .commit()
+       findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
 
     }
 

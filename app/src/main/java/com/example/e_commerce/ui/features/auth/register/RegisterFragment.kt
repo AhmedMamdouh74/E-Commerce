@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.example.data.api.TokenManager
 import com.example.domain.model.RegisterRequest
@@ -127,11 +128,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun navigateAuthenticatedRegisterToLogin(registerRequest: RegisterRequest) {
-        requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.register_login_container, LoginFragment())
-            .commit()
+        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {
