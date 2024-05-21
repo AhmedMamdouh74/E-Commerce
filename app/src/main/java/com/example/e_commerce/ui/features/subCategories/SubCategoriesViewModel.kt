@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.features.subCategories
+package com.example.e_commerce.ui.features.subcategories
 
 
 import android.util.Log

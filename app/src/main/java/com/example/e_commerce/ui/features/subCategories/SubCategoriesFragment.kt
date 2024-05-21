@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.features.subCategories
+package com.example.e_commerce.ui.features.subcategories
 
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +16,6 @@ import com.example.domain.model.SubCategories
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
 import com.example.e_commerce.ui.features.products.ProductFragment
-import com.example.e_commerce.ui.features.subcategories.SubCategoriesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

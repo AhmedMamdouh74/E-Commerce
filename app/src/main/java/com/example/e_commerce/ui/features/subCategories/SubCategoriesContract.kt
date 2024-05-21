@@ -1,7 +1,6 @@
-package com.example.e_commerce.ui.features.subCategories
+package com.example.e_commerce.ui.features.subcategories
 
 import androidx.lifecycle.LiveData
-import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
 import kotlinx.coroutines.flow.StateFlow
 

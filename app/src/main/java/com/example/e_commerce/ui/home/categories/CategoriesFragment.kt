@@ -16,7 +16,7 @@ import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
-import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
+import com.example.e_commerce.ui.features.subcategories.SubCategoriesFragment
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
