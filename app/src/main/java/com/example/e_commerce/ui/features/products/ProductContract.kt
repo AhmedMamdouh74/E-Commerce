@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 class ProductContract {
     interface ViewModel {
         val state: StateFlow<State>
-        val wishlistState: StateFlow<WishlistState>
         val event: LiveData<Event>
-        val loggedWishlistState: StateFlow<LoggedWishlistState>
         fun handleAction(action: Action)
 
     }
@@ -17,22 +15,14 @@ class ProductContract {
     sealed class State {
 
         class Error(val message: String) : State()
-        class Success(val product: List<Product?>) : State()
+
         class Loading(val message: String) : State()
+        class Success(val product: List<Product?>) : State()
+        class SuccessLoggedWishlist(val wishlistProduct: List<Product?>) :State()
+        object SuccessWishlist : State()
     }
 
-    sealed class WishlistState {
 
-        class Error(val message: String) : WishlistState()
-        class Loading(val message: String) : WishlistState()
-        object Success : WishlistState()
-    }
-
-    sealed class LoggedWishlistState {
-        class Error(val message: String) : LoggedWishlistState()
-        class Loading(val message: String) : LoggedWishlistState()
-        class Success(val wishlistProduct: List<Product?>) : LoggedWishlistState()
-    }
 
     sealed class Action {
         class LoadingProducts(val categoryId: String) : Action()

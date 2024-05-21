@@ -1,6 +1,6 @@
 package com.example.data.dataSource.login
 
-import com.example.data.dataSourceContract.LoginDataSourceContract
+import com.example.data.datasourcecontract.LoginDataSourceContract
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -10,5 +10,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class Di {
     @Binds
-    abstract fun bindLoginDataSource(loginDataSourceImpl: LoginDataSourceImpl):LoginDataSourceContract
+    abstract fun bindLoginDataSource(loginDataSourceImpl: LoginDataSourceImpl): LoginDataSourceContract
 }

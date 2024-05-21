@@ -1,14 +1,13 @@
+
 package com.example.e_commerce.ui.features.products
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -16,22 +15,23 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.domain.model.Product
 import com.example.e_commerce.databinding.FragmentProductBinding
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.details.ProductDetailsActivity
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class  ProductFragment : Fragment() {
+class ProductFragment : Fragment() {
     lateinit var category: Category
-   // private late init var viewModel: ProductsViewModel
-    private val viewModel: ProductsViewModel by viewModels()
-    private val tokenViewModel: TokenViewModel by viewModels()
+    private lateinit var viewModel: ProductsViewModel
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       // viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
+        viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
     }
 
     private var viewBinding: FragmentProductBinding? = null
@@ -57,7 +57,7 @@ class  ProductFragment : Fragment() {
                         )
                     )
                 }
-                Log.d(TAG, "initViewsAndroid: ")
+
             }
         productsAdapter.onIconWishlistClickListener =
             ProductsAdapter.OnItemClickListener { position, item ->
@@ -65,18 +65,17 @@ class  ProductFragment : Fragment() {
                     if (it.isAdded == true) {
                         viewModel.handleAction(
                             ProductContract.Action.RemoveProductToWishlist(
-                                it.id ?: "", tokenViewModel.getToken()
+                                it.id ?: "", viewModel.token
                             )
                         )
                     } else {
                         viewModel.handleAction(
                             ProductContract.Action.AddProductToWishlist(
                                 it.id ?: "",
-                                tokenViewModel.getToken()
+                                viewModel.token
                             )
                         )
-                        Log.d(TAG, "initViews:${tokenViewModel.getToken()} ")
-                        Log.d(TAG, "initViews:${it.id} ")
+
 
                     }
 
@@ -101,7 +100,6 @@ class  ProductFragment : Fragment() {
         val intent = Intent(requireActivity(), ProductDetailsActivity::class.java)
         intent.putExtra("product", product)
         startActivity(intent)
-        Log.d(TAG, "navigateToProductsDetails: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -109,17 +107,11 @@ class  ProductFragment : Fragment() {
         initViews()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.wishlistState.collect { renderWishlistState(it) }
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loggedWishlistState.collect { renderLoggedWishlistState(it) }
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect { renderViewStates(it) }
+                viewModel.state.collect {
+                    renderViewStates(it)
+                    renderLoggedWishlistState(it)
+                    renderWishlistState(it)
+                }
 
             }
         }
@@ -128,14 +120,16 @@ class  ProductFragment : Fragment() {
     }
 
 
+    private fun renderWishlistState(state: ProductContract.State?) {
+        when (state) {
+            is ProductContract.State.Error -> {
+                view?.showRetrySnakeBarError(state.message) { viewModel.getLoggedWishlist() }
+            }
 
-    private fun renderWishlistState(wishlistState: ProductContract.WishlistState?) {
-        when (wishlistState) {
-            is ProductContract.WishlistState.Error -> {}
-            is ProductContract.WishlistState.Loading -> {}
-            is ProductContract.WishlistState.Success -> {
+            is ProductContract.State.Loading -> {}
+            is ProductContract.State.SuccessWishlist -> {
                 viewModel.getLoggedWishlist()
-                Log.d(TAG, "renderWishlistStateAhmed:$wishlistState ")
+                progressDialog.dismiss()
             }
 
 
@@ -143,13 +137,19 @@ class  ProductFragment : Fragment() {
         }
     }
 
-    private fun renderLoggedWishlistState(loggedWishlistState: ProductContract.LoggedWishlistState?) {
-        when (loggedWishlistState) {
-            is ProductContract.LoggedWishlistState.Error -> {}
-            is ProductContract.LoggedWishlistState.Loading -> {}
-            is ProductContract.LoggedWishlistState.Success -> productsAdapter.setWishlist(
-                loggedWishlistState.wishlistProduct
-            )
+    private fun renderLoggedWishlistState(state: ProductContract.State?) {
+        when (state) {
+            is ProductContract.State.Error -> {
+                view?.showSnakeBarError(state.message)
+            }
+
+            is ProductContract.State.Loading -> {}
+            is ProductContract.State.SuccessLoggedWishlist -> {
+                productsAdapter.setWishlist(
+                    state.wishlistProduct
+                )
+                progressDialog.dismiss()
+            }
 
             else -> {}
         }
@@ -158,7 +158,7 @@ class  ProductFragment : Fragment() {
     private fun renderViewStates(state: ProductContract.State?) {
         when (state) {
             is ProductContract.State.Error -> showError(state.message)
-            is ProductContract.State.Loading -> showLoading(state.message)
+            is ProductContract.State.Loading -> showLoading()
             is ProductContract.State.Success -> bindsProducts(state.product)
 
 
@@ -167,27 +167,25 @@ class  ProductFragment : Fragment() {
     }
 
     private fun bindsProducts(product: List<Product?>) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
+        progressDialog.dismiss()
         binding.successView.isVisible = true
         productsAdapter.bindProducts(product)
     }
 
-    private fun showLoading(message: String) {
-        binding.loadingView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = false
-        binding.loadingText.text = message
+    private fun showLoading() {
+        progressDialog.show()
+        binding.successView.isVisible = true
+
     }
 
     private fun showError(message: String) {
-        binding.errorView.isVisible = true
-        binding.successView.isVisible = false
-        binding.loadingView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
-            viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
-        }
+        binding.successView.isVisible = true
+        progressDialog.dismiss()
+        view?.showRetrySnakeBarError(
+            message
+        ) { viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: "")) }
+
+
     }
 
     companion object {
@@ -196,12 +194,10 @@ class  ProductFragment : Fragment() {
             productFragmentRef.category = category
             return productFragmentRef
         }
-        private const val TAG = "LoginFragment"
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
     }
-
 }

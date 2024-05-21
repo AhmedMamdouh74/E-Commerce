@@ -1,7 +1,7 @@
 package com.example.data.dataSource.subCategories
 
 import com.example.data.api.WebServices
-import com.example.data.dataSourceContract.SubCategoriesDataSourceContract
+import com.example.data.datasourcecontract.SubCategoriesDataSourceContract
 import com.example.data.safeApiCall
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.SubCategories

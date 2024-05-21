@@ -1,4 +1,4 @@
-package com.example.data.repository.subCategories
+package com.example.data.repository.subcategories
 
 import com.example.domain.repositories.SubCategoriesRepository
 import dagger.Binds

@@ -25,6 +25,8 @@ class CartViewModel @Inject constructor(
     override val event = _event
     private var _state = MutableStateFlow<CartContract.State>(CartContract.State.Loading("loading"))
     override val state = _state
+    val token = tokenManager.getToken().toString()
+
 
 
     override fun handleAction(action: CartContract.Action) {
@@ -35,10 +37,8 @@ class CartViewModel @Inject constructor(
                 action.productId
             )
 
-            else -> {}
+
         }
-
-
     }
 
     private fun removeProductFromCart(token: String, productId: String) {
@@ -55,18 +55,16 @@ class CartViewModel @Inject constructor(
                         )
 
                         is ResultWrapper.Success -> _state.emit(CartContract.State.Idle)
+
                         else -> {}
                     }
                 }
-
         }
     }
 
-    private val token = tokenManager.getToken().toString()
 
     private fun loadingLoggedUserCarts() {
         viewModelScope.launch(ioDispatcher) {
-
             getLoggedUserCartUseCases.invoke(token)
                 .collect { response ->
                     when (response) {
@@ -83,8 +81,9 @@ class CartViewModel @Inject constructor(
                         else -> {}
                     }
                 }
-
         }
-
     }
+
+
+
 }

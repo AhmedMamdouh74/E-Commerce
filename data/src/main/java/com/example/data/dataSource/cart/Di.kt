@@ -1,6 +1,6 @@
 package com.example.data.dataSource.cart
 
-import com.example.data.dataSourceContract.CartDataSourceContact
+import com.example.data.datasourcecontract.CartDataSourceContact
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

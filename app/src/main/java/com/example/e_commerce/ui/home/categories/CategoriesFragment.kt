@@ -2,7 +2,6 @@ package com.example.e_commerce.ui.home.categories
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,14 +14,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentCategoriesBinding
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.features.subCategories.SubCategoriesFragment
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
-    lateinit var viewModel: CategoriesViewModel
+    private lateinit var viewModel: CategoriesViewModel
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireContext()) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[CategoriesViewModel::class.java]
@@ -37,6 +39,7 @@ class CategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentCategoriesBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -70,7 +73,7 @@ class CategoriesFragment : Fragment() {
     private fun renderViewState(state: CategoriesContract.State) {
         when (state) {
             is CategoriesContract.State.Success -> bindCategories(state.category)
-            is CategoriesContract.State.Loading -> showLoadind(state.message)
+            is CategoriesContract.State.Loading -> showLoading()
             is CategoriesContract.State.Error -> showError(state.message)
 
             else -> {}
@@ -78,26 +81,22 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun showError(message: String) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = true
-        binding.successView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
+        progressDialog.dismiss()
+        binding.successView.isVisible = true
+        view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
 
         }
     }
 
-    private fun showLoadind(message: String) {
-        binding.loadingView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = false
-        binding.loadingText.text = message
+    private fun showLoading() {
+        progressDialog.show()
+        binding.successView.isVisible = true
+
     }
 
     private fun bindCategories(category: List<Category?>) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
+        progressDialog.dismiss()
         binding.successView.isVisible = true
         categoriesAdapter.bindCategories(category)
 
@@ -115,7 +114,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun navigateToCart() {
-      startActivity(Intent(requireActivity(),CartActivity::class.java))
+        startActivity(Intent(requireActivity(), CartActivity::class.java))
     }
 
     private fun navigateToSubCategory(category: Category) {
@@ -123,9 +122,6 @@ class CategoriesFragment : Fragment() {
         val bundle = Bundle()
         bundle.putParcelable("category", category)
         subCategoriesFragment.arguments = bundle
-        Log.d("categoryAhmed", "$category")
-        //     requireActivity()
-//            .supportFragmentManager
         childFragmentManager
             .beginTransaction()
             .addToBackStack("category")

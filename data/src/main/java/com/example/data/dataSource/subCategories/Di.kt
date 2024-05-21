@@ -1,6 +1,6 @@
 package com.example.data.dataSource.subCategories
 
-import com.example.data.dataSourceContract.SubCategoriesDataSourceContract
+import com.example.data.datasourcecontract.SubCategoriesDataSourceContract
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

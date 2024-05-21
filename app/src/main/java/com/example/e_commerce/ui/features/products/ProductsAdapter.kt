@@ -1,6 +1,5 @@
 package com.example.e_commerce.ui.features.products
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -30,25 +29,26 @@ class ProductsAdapter(private var product: List<Product?>?) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(product!![position], wishlist)
         //  onItemClickListener.let {
-        holder.itemView.setOnClickListener {
-            notifyItemChanged(position)
-            onItemClickListener?.onItemClick(position, product!![position])
-        }
-        // }
+        holder.apply {
+            itemView.setOnClickListener {
+                notifyItemChanged(position)
+                onItemClickListener?.onItemClick(position, product!![position])
+            }
+            itemBinding.addToFavourites.setOnClickListener {
+                onIconWishlistClickListener?.onItemClick(position, product!![position])
+                notifyItemChanged(position)
 
-        // onIconWishlistClickListener.let {
-        holder.itemBinding.addToFavourites.setOnClickListener {
-            onIconWishlistClickListener?.onItemClick(position, product!![position])
-            notifyItemChanged(position)
-
+            } 
         }
-        //   }
+
 
     }
 
     fun bindProducts(product: List<Product?>) {
         this.product = product
         notifyDataSetChanged()
+
+
     }
 
 
@@ -80,6 +80,8 @@ class ProductsAdapter(private var product: List<Product?>?) :
                 Glide
                     .with(itemView)
                     .load(product?.imageCover)
+                    .placeholder(R.drawable.ic_download)
+                    .error(R.drawable.ic_error)
                     .into(image)
 
             }

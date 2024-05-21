@@ -13,4 +13,8 @@
     </style>
 
     <style name="Theme.ECommerce" parent="Base.Theme.ECommerce" />
+
+    <style name="Theme.HomeActivity" parent="Theme.ECommerce" >
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
 </resources>

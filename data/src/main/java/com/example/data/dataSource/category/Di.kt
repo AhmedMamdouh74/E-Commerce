@@ -1,6 +1,7 @@
 package com.example.data.dataSource.category
 
-import com.example.data.dataSourceContract.CategoryDataSourceContract
+import com.example.data.datasourcecontract.CategoryDataSourceContract
+import com.example.data.datasource.category.CategoryDataSourceContractImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

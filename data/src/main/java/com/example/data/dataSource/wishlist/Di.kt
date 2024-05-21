@@ -1,6 +1,6 @@
 package com.example.data.dataSource.wishlist
 
-import com.example.data.dataSourceContract.WishListDataSourceContract
+import com.example.data.datasourcecontract.WishListDataSourceContract
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

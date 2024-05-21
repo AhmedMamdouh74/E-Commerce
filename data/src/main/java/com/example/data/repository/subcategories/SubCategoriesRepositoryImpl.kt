@@ -1,6 +1,6 @@
-package com.example.data.repository.subCategories
+package com.example.data.repository.subcategories
 
-import com.example.data.dataSourceContract.SubCategoriesDataSourceContract
+import com.example.data.datasourcecontract.SubCategoriesDataSourceContract
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.SubCategories
 import com.example.domain.repositories.SubCategoriesRepository

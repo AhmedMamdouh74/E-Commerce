@@ -13,6 +13,7 @@ import com.example.e_commerce.utils.IoDispatcher
 import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,21 +32,12 @@ class ProductsViewModel @Inject constructor(
     private var _states =
         MutableStateFlow<ProductContract.State>(ProductContract.State.Loading("loading"))
     override val state = _states
-    private val _wishlistState =
-        MutableStateFlow<ProductContract.WishlistState>(
-            ProductContract.WishlistState.Loading(
-                "loading"
-            )
-        )
-    override val wishlistState = _wishlistState
-    private var _loggedWishlistState = MutableStateFlow<ProductContract.LoggedWishlistState>(
-        ProductContract.LoggedWishlistState.Loading("loading")
-    )
-    override val loggedWishlistState = _loggedWishlistState
+
 
     private var _events = SingleLiveEvent<ProductContract.Event>()
 
     override val event = _events
+    val token = tokenManager.getToken().toString()
 
     override fun handleAction(action: ProductContract.Action) {
         when (action) {
@@ -78,25 +70,25 @@ class ProductsViewModel @Inject constructor(
             removeProductFromWishlistUseCase.invoke(productId, token)
                 .collect { response ->
                     when (response) {
-                        is ResultWrapper.Error -> _wishlistState.emit(
-                            ProductContract.WishlistState.Error(
+                        is ResultWrapper.Error -> _states.emit(
+                            ProductContract.State.Error(
                                 response.error.localizedMessage
                             )
                         )
 
-                        ResultWrapper.Loading -> _wishlistState.emit(
-                            ProductContract.WishlistState.Loading(
+                        ResultWrapper.Loading -> _states.emit(
+                            ProductContract.State.Loading(
                                 "Loading"
                             )
                         )
 
-                        is ResultWrapper.ServerError -> _wishlistState.emit(
-                            ProductContract.WishlistState.Error(
+                        is ResultWrapper.ServerError -> _states.emit(
+                            ProductContract.State.Error(
                                 response.error.serverMessage
                             )
                         )
 
-                        is ResultWrapper.Success -> _wishlistState.emit(ProductContract.WishlistState.Success)
+                        is ResultWrapper.Success -> _states.emit(ProductContract.State.SuccessWishlist)
                         else -> {}
                     }
                 }
@@ -106,34 +98,31 @@ class ProductsViewModel @Inject constructor(
     }
 
     private fun addProductToWishlist(productId: String, token: String) {
-        // _wishlistStateAdd.postValue(ProductContract.WishlistStateAdd.Loading("loading"))
         viewModelScope.launch(ioDispatcher) {
 
             addProductToWishlistUseCase.invoke(token, productId)
                 .collect { response ->
                     when (response) {
-                        is ResultWrapper.Error -> _wishlistState.emit(
-                            ProductContract.WishlistState.Error(
+                        is ResultWrapper.Error -> _states.emit(
+                            ProductContract.State.Error(
                                 response.error.localizedMessage
                             )
                         )
 
-                        
-                        ResultWrapper.Loading -> _wishlistState.emit(
-                            ProductContract.WishlistState.Loading(
+                        ResultWrapper.Loading -> _states.emit(
+                            ProductContract.State.Loading(
                                 "Loading"
                             )
                         )
 
-                        is ResultWrapper.ServerError -> _wishlistState.emit(
-                            ProductContract.WishlistState.Error(
+                        is ResultWrapper.ServerError -> _states.emit(
+                            ProductContract.State.Error(
                                 response.error.serverMessage
                             )
                         )
 
-                        is ResultWrapper.Success -> _wishlistState.emit(
-                            ProductContract.WishlistState.Success
-                        )
+                        is ResultWrapper.Success -> _states.emit(ProductContract.State.SuccessWishlist)
+                        else -> {}
                     }
                 }
 
@@ -147,79 +136,63 @@ class ProductsViewModel @Inject constructor(
 
 
     private fun loadingProducts(categoryId: String) {
-        viewModelScope.launch(ioDispatcher) {
-            _states.emit(ProductContract.State.Loading("Loading"))
-            getProductUseCases.invoke(categoryId)
-                .collect { response ->
-                    when (response) {
-                        is ResultWrapper.Success -> {
-                            _states.emit(
-                                ProductContract.State.Success(
-                                    response.data ?: listOf()
-                                )
-                            )
-                        }
-
-                        is ResultWrapper.Error -> {
-                            _states.emit(
-                                ProductContract.State.Error(response.error.localizedMessage)
-                            )
-                        }
-
-
-                        is ResultWrapper.ServerError -> {
-                            _states.emit(
-                                ProductContract.State.Error(
-                                    response.error.serverMessage
-                                )
-                            )
-                        }
-
-
-                        ResultWrapper.Loading -> {}
-
-                        else -> {}
-                    }
-                }
-        }
-
+        handleProduct(State.PRODUCT) { getProductUseCases.invoke(categoryId) }
     }
 
     fun getLoggedWishlist() {
-        viewModelScope.launch(ioDispatcher) {
-
-            getLoggedUserWishlistUseCase.invoke(tokenManager.getToken().toString())
-                .collect { response ->
-                    when (response) {
-                        is ResultWrapper.Error -> _loggedWishlistState.emit(
-                            ProductContract.LoggedWishlistState.Error(
-                                response.error.localizedMessage
-                            )
-                        )
-
-                        ResultWrapper.Loading -> _loggedWishlistState.emit(
-                            ProductContract.LoggedWishlistState.Loading(
-                                "loading"
-                            )
-                        )
-
-                        is ResultWrapper.ServerError -> _loggedWishlistState.emit(
-                            ProductContract.LoggedWishlistState.Error(
-                                response.error.serverMessage
-                            )
-                        )
-
-                        is ResultWrapper.Success -> _loggedWishlistState.emit(
-                            ProductContract.LoggedWishlistState.Success(
-                                response.data ?: listOf()
-                            )
-
-                        )
-
-                        else -> {}
-                    }
-                }
-
+        handleProduct(State.LOGGED_WISHLIST) {
+            getLoggedUserWishlistUseCase.invoke(
+                tokenManager.getToken().toString()
+            )
         }
     }
+
+    private fun handleProduct(
+        state: State,
+        wishlist: suspend () -> Flow<ResultWrapper<List<Product?>?>>
+    ) {
+        viewModelScope.launch(ioDispatcher) {
+            wishlist().collect {
+                when (it) {
+                    is ResultWrapper.Error -> _states.emit(
+                        ProductContract.State.Error(
+                            it.error.localizedMessage
+                        )
+                    )
+
+                    ResultWrapper.Loading -> _states.emit(
+                        ProductContract.State.Loading(
+                            "loading"
+                        )
+                    )
+
+                    is ResultWrapper.ServerError -> _states.emit(
+                        ProductContract.State.Error(
+                            it.error.serverMessage
+                        )
+                    )
+
+                    is ResultWrapper.Success -> {
+                        when (state) {
+                            State.PRODUCT -> _states.emit(
+                                ProductContract.State.Success(
+                                    it.data ?: listOf()
+                                )
+                            )
+
+                            State.WISHLIST -> _states.emit(ProductContract.State.SuccessWishlist)
+                            State.LOGGED_WISHLIST -> _states.emit(
+                                ProductContract.State.SuccessLoggedWishlist(
+                                    it.data ?: listOf()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
 }

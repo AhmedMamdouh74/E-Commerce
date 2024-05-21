@@ -1,7 +1,7 @@
-package com.example.data.dataSource.category
+package com.example.data.datasource.category
 
 import com.example.data.api.WebServices
-import com.example.data.dataSourceContract.CategoryDataSourceContract
+import com.example.data.datasourcecontract.CategoryDataSourceContract
 import com.example.data.model.BaseResponse
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Category
@@ -9,8 +9,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

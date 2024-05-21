@@ -1,3 +1,4 @@
+
 package com.example.e_commerce.ui.home.wishlist
 
 import android.util.Log
@@ -44,6 +45,7 @@ class WishlistViewModel @Inject constructor(
     private val _event = SingleLiveEvent<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
         get() = _event
+    val token = tokenManager.getToken().toString()
 
     override fun handleAction(action: WishlistContract.Action) {
         when (action) {
@@ -97,7 +99,7 @@ class WishlistViewModel @Inject constructor(
                                     response.data
                                 )
                             )
-                            Log.d("TAG", "getLoggedUserCartViewModel:${response.data} ")
+
 
                         }
 
@@ -200,7 +202,7 @@ class WishlistViewModel @Inject constructor(
 
                         else -> {}
                     }
-                    Log.d("TAG", "loadingFavouriteProducts:$response ")
+
                 }
 
 

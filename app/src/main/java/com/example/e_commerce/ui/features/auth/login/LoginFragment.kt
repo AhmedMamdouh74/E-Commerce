@@ -1,5 +1,7 @@
+
 package com.example.e_commerce.ui.features.auth.login
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,21 +12,34 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.domain.model.LoginResponse
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentLoginBinding
+import com.example.e_commerce.ui.features.auth.AuthActivity
 import com.example.e_commerce.ui.features.auth.TokenViewModel
 import com.example.e_commerce.ui.features.auth.register.RegisterFragment
 import com.example.e_commerce.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private val viewModel: LoginViewModel by viewModels()
+    private lateinit var viewModel: LoginViewModel
     private val tokenViewModel: TokenViewModel by viewModels()
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+
+
+    }
+
     private var viewBinding: FragmentLoginBinding? = null
     private val binding get() = viewBinding!!
 
@@ -34,14 +49,14 @@ class LoginFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         viewBinding = FragmentLoginBinding.inflate(inflater, container, false)
-
+        binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        lifecycleScope.launch {
+        lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.states.collect {
                     renderStates(it)
@@ -63,17 +78,20 @@ class LoginFragment : Fragment() {
             else -> {}
 
         }
-        Log.d(TAG, "handelEventsLogin:$event ")
+        Log.d("TAG", "handelEventsLogin:$event ")
     }
 
     private fun navigateToHomeScreen() {
-        val intent = Intent(requireActivity(), HomeActivity::class.java)
-        startActivity(intent)
+        requireActivity().startActivity(Intent(activity, HomeActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        requireActivity().finish()
+
     }
 
 
     private fun renderStates(state: LoginContract.State?) {
-        Log.d(TAG, "renderStatesLogin: $state")
+        Log.d("TAG", "renderStatesLogin: $state")
         when (state) {
             is LoginContract.State.Error -> showError(state.message)
             is LoginContract.State.Loading -> showLoading(state.message)
@@ -128,7 +146,7 @@ class LoginFragment : Fragment() {
 
 
     private fun initViews() {
-        binding.lifecycleOwner = this
+
         binding.vm = viewModel
         binding.createAccount.setOnClickListener {
             createAccount()
@@ -137,11 +155,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun createAccount() {
-        requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.register_login_container, RegisterFragment())
-            .commit()
+        findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
 
     }
 
@@ -149,9 +163,5 @@ class LoginFragment : Fragment() {
         super.onDestroy()
         viewBinding = null
 
-    }
-    companion object {
-
-        private const val TAG = "LoginFragment"
     }
 }

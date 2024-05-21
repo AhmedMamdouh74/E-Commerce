@@ -1,7 +1,7 @@
 package com.example.data.dataSource.wishlist
 
 import com.example.data.api.WebServices
-import com.example.data.dataSourceContract.WishListDataSourceContract
+import com.example.data.datasourcecontract.WishListDataSourceContract
 
 import com.example.data.safeApiCall
 import com.example.domain.common.ResultWrapper

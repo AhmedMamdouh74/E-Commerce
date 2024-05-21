@@ -16,8 +16,8 @@ import com.example.domain.model.SubCategories
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
 import com.example.e_commerce.ui.features.products.ProductFragment
+import com.example.e_commerce.ui.features.subcategories.SubCategoriesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

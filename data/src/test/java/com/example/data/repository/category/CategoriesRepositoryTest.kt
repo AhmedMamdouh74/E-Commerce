@@ -1,20 +1,16 @@
 package com.example.data.repository.category
 
-import com.example.data.dataSourceContract.CategoryDataSourceContract
+import com.example.data.datasourcecontract.CategoryDataSourceContract
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Category
 import com.example.domain.repositories.CategoriesRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
 
 import org.junit.Before
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.example.data.dataSourceContract
+package com.example.data.datasourcecontract
 
 import com.example.domain.model.RegisterRequest
 import com.example.domain.model.RegisterResponse

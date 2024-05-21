@@ -2,8 +2,6 @@ package com.example.domain.usecase
 
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Product
-import com.example.domain.model.wishlist.AddToWishlistResponse
-import com.example.domain.model.wishlist.WishlistResponse
 import com.example.domain.repositories.WishlistRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

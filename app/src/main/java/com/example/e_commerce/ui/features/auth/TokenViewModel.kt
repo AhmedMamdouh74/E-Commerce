@@ -18,24 +18,18 @@ class TokenViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    fun getToken(): String {
-
-        return tokenManager.getToken().toString()
-
+    fun getToken() = viewModelScope.launch(Dispatchers.IO) {
+        tokenManager.getToken().toString()
     }
 
 
-    fun saveToken(token: String, user: User) {
-        viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.saveToken(token, user)
-        }
-
-
+    fun saveToken(token: String, user: User) = viewModelScope.launch(Dispatchers.IO) {
+        tokenManager.saveToken(token, user)
     }
 
-    fun deleteToken() {
-        viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.deleteToken()
-        }
+
+    fun deleteToken() = viewModelScope.launch(Dispatchers.IO) {
+        tokenManager.deleteToken()
     }
+
 }

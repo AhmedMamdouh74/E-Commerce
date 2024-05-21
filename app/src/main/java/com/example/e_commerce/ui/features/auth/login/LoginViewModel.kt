@@ -86,9 +86,9 @@ class LoginViewModel @Inject constructor(
         return isValid
     }
 
-    var email = MutableLiveData("")
+    var email = MutableStateFlow("")
     var emailError = MutableLiveData<String?>()
-    var password = MutableLiveData("")
+    var password = MutableStateFlow("")
     var passwordError = MutableLiveData<String?>()
     fun getRequest(): LoginRequest {
         return LoginRequest(
