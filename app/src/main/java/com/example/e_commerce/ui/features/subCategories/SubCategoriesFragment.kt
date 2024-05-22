@@ -85,7 +85,7 @@ class SubCategoriesFragment : Fragment() {
     private fun renderViewState(state: SubCategoriesContract.State) {
         when (state) {
             is SubCategoriesContract.State.Success -> bindCategories(state.subcategory)
-            is SubCategoriesContract.State.Loading -> showLoadind(state.message)
+            is SubCategoriesContract.State.Loading -> showLoading(state.message)
             is SubCategoriesContract.State.Error -> showError(state.message)
 
             else -> {}
@@ -106,7 +106,7 @@ class SubCategoriesFragment : Fragment() {
         }
     }
 
-    private fun showLoadind(message: String) {
+    private fun showLoading(message: String) {
         binding.loadingView.isVisible = true
         binding.errorView.isVisible = false
         binding.successView.isVisible = false
