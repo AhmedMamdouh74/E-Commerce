@@ -86,6 +86,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core: 1.7.1")
+    // splash screen
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
 
 
