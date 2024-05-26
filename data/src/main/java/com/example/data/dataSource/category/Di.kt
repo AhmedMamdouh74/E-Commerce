@@ -1,4 +1,4 @@
-package com.example.data.dataSource.category
+package com.example.data.datasource.category
 
 import com.example.data.datasourcecontract.CategoryDataSourceContract
 import com.example.data.datasource.category.CategoryDataSourceContractImpl

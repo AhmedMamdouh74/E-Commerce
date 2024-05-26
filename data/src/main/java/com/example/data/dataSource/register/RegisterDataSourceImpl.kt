@@ -1,4 +1,4 @@
-package com.example.data.dataSource.register
+package com.example.data.datasource.register
 
 import com.example.data.api.WebServices
 import com.example.data.datasourcecontract.RegisterDataSourceContract

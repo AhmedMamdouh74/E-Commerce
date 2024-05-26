@@ -1,4 +1,4 @@
-package com.example.data.dataSource.wishlist
+package com.example.data.datasource.wishlist
 
 import com.example.data.datasourcecontract.WishListDataSourceContract
 import dagger.Binds

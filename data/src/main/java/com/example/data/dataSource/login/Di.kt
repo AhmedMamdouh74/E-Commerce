@@ -1,4 +1,4 @@
-package com.example.data.dataSource.login
+package com.example.data.datasource.login
 
 import com.example.data.datasourcecontract.LoginDataSourceContract
 import dagger.Binds

@@ -1,4 +1,4 @@
-package com.example.data.dataSource.product
+package com.example.data.datasource.product
 
 import com.example.data.api.WebServices
 import com.example.data.datasourcecontract.ProductDataSourceContract

@@ -1,5 +1,6 @@
-package com.example.data.dataSource.product
+package com.example.data.datasource.product
 
+import com.example.data.datasource.product.ProductDataSourceContractImpl
 import com.example.data.datasourcecontract.ProductDataSourceContract
 import dagger.Binds
 import dagger.Module

@@ -1,4 +1,4 @@
-package com.example.data.dataSource.subCategories
+package com.example.data.datasource.subCategories
 
 import com.example.data.datasourcecontract.SubCategoriesDataSourceContract
 import dagger.Binds

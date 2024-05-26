@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,18 +16,22 @@ import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentSubCategoriesBinding
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.ProductFragment
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.google.android.material.transition.MaterialContainerTransform.ProgressThresholds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SubCategoriesFragment : Fragment() {
-    private lateinit var viewModel: SubCategoriesViewModel
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
+    private val viewModel: SubCategoriesViewModel by viewModels()
     lateinit var category: Category
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[SubCategoriesViewModel::class.java]
+
         getCategory()
 
 
@@ -43,7 +48,6 @@ class SubCategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentSubCategoriesBinding.inflate(inflater, container, false)
-        Log.d(TAG, "navigateToCategoriesProductsAhmed: ")
         return binding.root
 
     }
@@ -59,7 +63,7 @@ class SubCategoriesFragment : Fragment() {
             }
         }
 
-        viewModel.events.observe(viewLifecycleOwner,::handleEvents)
+        viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(
             SubCategoriesContract.Action.LoadingSubCategories(
                 category._id ?: ""
@@ -93,30 +97,23 @@ class SubCategoriesFragment : Fragment() {
     }
 
     private fun showError(message: String) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = true
-        binding.successView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
+        progressDialog.dismiss()
+        view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(
                 SubCategoriesContract.Action.LoadingSubCategories(
                     category._id ?: ""
                 )
             )
         }
+
     }
 
     private fun showLoading(message: String) {
-        binding.loadingView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = false
-        binding.loadingText.text = message
+        progressDialog.show()
     }
 
     private fun bindCategories(category: List<SubCategories?>) {
-        binding.loadingView.isVisible = false
-        binding.errorView.isVisible = false
-        binding.successView.isVisible = true
+        progressDialog.dismiss()
         subCategoriesAdapter.bindCategories(category)
 
     }
@@ -137,7 +134,6 @@ class SubCategoriesFragment : Fragment() {
         val bundle = Bundle()
         bundle.putParcelable("category", category)
         productFragment.arguments = bundle
-        Log.d("category", "$category")
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
@@ -158,11 +154,11 @@ class SubCategoriesFragment : Fragment() {
         val bundle: Bundle? = this.arguments
         if (bundle != null) {
             category = bundle.getParcelable("category")!!
-            Log.d("subcategory", "$category")
         }
 
     }
-    companion object{
+
+    companion object {
         private const val TAG = "SubCategoriesFragment"
     }
 
