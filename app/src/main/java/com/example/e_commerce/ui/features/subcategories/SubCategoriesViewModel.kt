@@ -19,7 +19,6 @@ import javax.inject.Inject
 class SubCategoriesViewModel @Inject constructor(
     private val getSubCategoriesUseCases: GetSubCategoriesUseCases,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel(), SubCategoriesContract.ViewModel {
     private val _states =
         MutableStateFlow<SubCategoriesContract.State>(SubCategoriesContract.State.Loading("loading"))
@@ -28,7 +27,6 @@ class SubCategoriesViewModel @Inject constructor(
     override val events = _event
 
     override fun handleAction(action: SubCategoriesContract.Action) {
-        Log.d("TAG", "handleActionAhmed:$action ")
         when (action) {
             is SubCategoriesContract.Action.LoadingSubCategories -> {
                 loadSubCategories(action.categoryId)
