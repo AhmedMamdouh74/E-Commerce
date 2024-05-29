@@ -153,7 +153,6 @@ class WishlistFragment : Fragment() {
 
     private fun bindProducts(product: List<Product?>) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         wishlistAdapter.bindProducts(product.toMutableList())
 
 

@@ -1,13 +1,12 @@
 package com.example.e_commerce.ui.features.subcategories
 
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetSubCategoriesUseCases
 import com.example.e_commerce.utils.IoDispatcher
-import com.example.e_commerce.utils.MainDispatcher
 import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,7 +43,7 @@ class SubCategoriesViewModel @Inject constructor(
     }
 
     private fun navigateToSubCategoriesProducts(categoryId: String) {
-        viewModelScope.launch(mainDispatcher) {
+        viewModelScope.launch(ioDispatcher) {
             _event.postValue(SubCategoriesContract.Event.NavigateToCategoriesProducts(categoryId))
         }
 
