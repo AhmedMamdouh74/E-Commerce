@@ -45,6 +45,22 @@ class ProductFragment : Fragment() {
         viewBinding = FragmentProductBinding.inflate(inflater, container, false)
         return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect {
+                    renderViewStates(it)
+                    renderLoggedWishlistState(it)
+                    renderWishlistState(it)
+                }
+
+            }
+        }
+        viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
+        viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
+    }
 
     private fun initViews() {
         productsAdapter.onItemClickListener =
@@ -101,22 +117,7 @@ class ProductFragment : Fragment() {
         startActivity(intent)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initViews()
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect {
-                    renderViewStates(it)
-                    renderLoggedWishlistState(it)
-                    renderWishlistState(it)
-                }
 
-            }
-        }
-        viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
-        viewModel.handleAction(ProductContract.Action.LoadingProducts(category._id ?: ""))
-    }
 
 
     private fun renderWishlistState(state: ProductContract.State?) {
@@ -128,7 +129,6 @@ class ProductFragment : Fragment() {
             is ProductContract.State.Loading -> {}
             is ProductContract.State.SuccessWishlist -> {
                 viewModel.getLoggedWishlist()
-                progressDialog.dismiss()
             }
 
 
@@ -142,12 +142,13 @@ class ProductFragment : Fragment() {
                 view?.showSnakeBarError(state.message)
             }
 
-            is ProductContract.State.Loading -> {}
+            is ProductContract.State.Loading -> {progressDialog.show()}
             is ProductContract.State.SuccessLoggedWishlist -> {
+                progressDialog.dismiss()
                 productsAdapter.setWishlist(
                     state.wishlistProduct
                 )
-                progressDialog.dismiss()
+
             }
 
             else -> {}
@@ -167,18 +168,16 @@ class ProductFragment : Fragment() {
 
     private fun bindsProducts(product: List<Product?>) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         productsAdapter.bindProducts(product)
     }
 
     private fun showLoading() {
         progressDialog.show()
-        binding.successView.isVisible = true
+
 
     }
 
     private fun showError(message: String) {
-        binding.successView.isVisible = true
         progressDialog.dismiss()
         view?.showRetrySnakeBarError(
             message
