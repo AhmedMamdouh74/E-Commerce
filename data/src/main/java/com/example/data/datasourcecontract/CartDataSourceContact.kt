@@ -1,7 +1,6 @@
 package com.example.data.datasourcecontract
 
 import com.example.domain.common.ResultWrapper
-import com.example.domain.model.cart.Cart
 import com.example.domain.model.cart.CartResponse
 import com.example.domain.model.cart.loggedCart.CartQuantity
 import kotlinx.coroutines.flow.Flow

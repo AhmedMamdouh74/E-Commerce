@@ -69,7 +69,7 @@ class SubCategoriesViewModel @Inject constructor(
                         }
 
                         is ResultWrapper.Error -> {
-                            _states.emit(SubCategoriesContract.State.Error(response.error.localizedMessage))
+                            _states.emit(SubCategoriesContract.State.Error(response.error.localizedMessage?:""))
                         }
 
                         is ResultWrapper.Loading -> _states.emit(

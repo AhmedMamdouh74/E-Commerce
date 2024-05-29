@@ -16,9 +16,9 @@ class ProductDataSourceContractImpl @Inject constructor(private val webServices:
         }
     }
 
-    override suspend fun getSpecificProducts(productId: String): Flow<ResultWrapper<Product?>> {
+    override suspend fun getSpecificProducts(categoryId: String): Flow<ResultWrapper<Product?>> {
         return safeApiCall {
-            webServices.getSpecificProducts(productId)
+            webServices.getSpecificProducts(categoryId)
         }
     }
 

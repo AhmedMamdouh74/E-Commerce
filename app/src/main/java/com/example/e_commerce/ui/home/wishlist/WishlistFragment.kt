@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +15,6 @@ import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
-import com.example.e_commerce.ui.home.showSnakeBarError
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
