@@ -1,13 +1,11 @@
 package com.example.e_commerce.ui.home.wishlist
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +15,6 @@ import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
-import com.example.e_commerce.ui.home.showSnakeBarError
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -65,56 +62,62 @@ class WishlistFragment : Fragment() {
         initViews()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.cartState.collect { renderCartState(it) }
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loggedUserCartState.collect {
+                viewModel.state.collect {
+                    renderStates(it)
                     renderLoggedUserCartState(it)
+                    renderCartState(it)
+
                 }
-
-            }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect { renderStates(it) }
-
             }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
         viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
-        binding.icCart.setOnClickListener {
-            viewModel.handleAction(WishlistContract.Action.CartClicked)
-        }
+
     }
 
-    private fun renderCartState(cartState: WishlistContract.CartState?) {
+    private fun renderCartState(cartState: WishlistContract.State?) {
 
         when (cartState) {
-            is WishlistContract.CartState.Error -> {
-                view?.showSnakeBarError(cartState.message)
+            is WishlistContract.State.Error -> {
+
+                view?.showRetrySnakeBarError(cartState.message) {
+                    viewModel.getLoggedUserCart(viewModel.token)
+                }
+
             }
 
-            is WishlistContract.CartState.Loading -> {}
-            WishlistContract.CartState.Success -> viewModel.getLoggedUserCart(viewModel.token)
+            is WishlistContract.State.Loading -> {}
+            WishlistContract.State.CartSuccess -> {
+
+                viewModel.getLoggedUserCart(viewModel.token)
+            }
+
             else -> {}
         }
     }
 
-    private fun renderLoggedUserCartState(loggedUserCartState: WishlistContract.LoggedUserCartState?) {
+    private fun renderLoggedUserCartState(loggedUserCartState: WishlistContract.State?) {
         when (loggedUserCartState) {
-            is WishlistContract.LoggedUserCartState.Error -> {
-                view?.showSnakeBarError(loggedUserCartState.message)
+            is WishlistContract.State.Error -> {
+                progressDialog.dismiss()
+                view?.showRetrySnakeBarError(loggedUserCartState.message) {
+                    viewModel.getLoggedUserCart(viewModel.token)
+                }
+
             }
 
-            is WishlistContract.LoggedUserCartState.Loading -> {}
-            is WishlistContract.LoggedUserCartState.Success -> {
+            is WishlistContract.State.Loading -> {
+                progressDialog.show()
+            }
+
+            is WishlistContract.State.LoggedUserCartSuccess -> {
+                progressDialog.dismiss()
                 wishlistAdapter.setCart(
                     loggedUserCartState.cart?.products?.toMutableList()
 
                 )
+
             }
 
 
@@ -138,21 +141,16 @@ class WishlistFragment : Fragment() {
                 bindProducts(state.product)
             }
 
-            is WishlistContract.State.Idle -> showIdle()
+
             else -> {}
         }
 
 
     }
 
-    private fun showIdle() {
-        progressDialog.dismiss()
-        binding.successView.isVisible = true
-    }
 
     private fun bindProducts(product: List<Product?>) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         wishlistAdapter.bindProducts(product.toMutableList())
 
 
@@ -160,7 +158,6 @@ class WishlistFragment : Fragment() {
 
     private fun viewError(message: String) {
         progressDialog.dismiss()
-        binding.successView.isVisible = false
         view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
         }
@@ -169,7 +166,6 @@ class WishlistFragment : Fragment() {
 
     private fun viewLoading() {
         progressDialog.show()
-        binding.successView.isVisible = true
 
 
     }
@@ -216,7 +212,17 @@ class WishlistFragment : Fragment() {
 
                 }
             }
+        binding.icCart.setOnClickListener {
+            viewModel.handleAction(WishlistContract.Action.CartClicked)
+        }
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getLoggedUserCart(viewModel.token)
+        viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
     }
 
     override fun onDestroyView() {

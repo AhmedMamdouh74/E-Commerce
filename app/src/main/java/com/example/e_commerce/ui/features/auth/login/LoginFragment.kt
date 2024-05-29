@@ -1,3 +1,4 @@
+
 package com.example.e_commerce.ui.features.auth.login
 
 import android.app.ActivityOptions
@@ -154,7 +155,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun createAccount() {
-       findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
 
     }
 

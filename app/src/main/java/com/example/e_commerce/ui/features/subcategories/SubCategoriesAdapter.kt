@@ -1,5 +1,6 @@
 package com.example.e_commerce.ui.features.subcategories
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +35,7 @@ class SubCategoriesAdapter(private var subCategories: List<SubCategories?>?) :
     }
 
     override fun getItemCount(): Int = subCategories?.size ?: 0
+
     fun bindCategories(categories: List<SubCategories?>) {
         this.subCategories = categories
         notifyDataSetChanged()

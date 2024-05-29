@@ -64,8 +64,15 @@ class WishlistAdapter :
     private var cart: MutableList<ProductsItem?>? = null
     fun setCart(cart: MutableList<ProductsItem?>?) {
         this.cart = cart
-        notifyDataSetChanged()
+        for (i in cart!!.indices) {
+            // Find the index of the item in the wishlist that matches the cart item
+            val index = wishlistAsyncListDiffer.currentList.indexOfFirst { it?.id == cart[i]?.product?.id }
 
+            // If the item is found, notify the adapter that the item has been changed
+            if (index != -1) {
+                notifyItemChanged(index)
+            }
+        }
     }
 
 

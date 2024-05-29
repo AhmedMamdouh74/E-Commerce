@@ -9,8 +9,8 @@ import com.example.domain.usecase.AddProductToWishlistUseCase
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.GetProductUseCases
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.utils.IoDispatcher
-import com.example.e_commerce.ui.utils.SingleLiveEvent
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

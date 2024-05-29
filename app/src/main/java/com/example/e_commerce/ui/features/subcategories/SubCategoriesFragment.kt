@@ -1,14 +1,12 @@
 package com.example.e_commerce.ui.features.subcategories
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Category
@@ -23,13 +21,13 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SubCategoriesFragment : Fragment() {
-    private lateinit var viewModel: SubCategoriesViewModel
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
+    private val viewModel: SubCategoriesViewModel by viewModels()
     lateinit var category: Category
-    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[SubCategoriesViewModel::class.java]
+
         getCategory()
 
 
@@ -46,7 +44,6 @@ class SubCategoriesFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _viewBinding = FragmentSubCategoriesBinding.inflate(inflater, container, false)
-        Log.d("TAG", "navigateToCategoriesProductsAhmed: ")
         return binding.root
 
     }
@@ -88,7 +85,7 @@ class SubCategoriesFragment : Fragment() {
     private fun renderViewState(state: SubCategoriesContract.State) {
         when (state) {
             is SubCategoriesContract.State.Success -> bindCategories(state.subcategory)
-            is SubCategoriesContract.State.Loading -> showLoading()
+            is SubCategoriesContract.State.Loading -> showLoading(state.message)
             is SubCategoriesContract.State.Error -> showError(state.message)
 
             else -> {}
@@ -97,8 +94,6 @@ class SubCategoriesFragment : Fragment() {
 
     private fun showError(message: String) {
         progressDialog.dismiss()
-        binding.successView.isVisible = false
-
         view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(
                 SubCategoriesContract.Action.LoadingSubCategories(
@@ -106,17 +101,15 @@ class SubCategoriesFragment : Fragment() {
                 )
             )
         }
+
     }
 
-    private fun showLoading() {
+    private fun showLoading(message: String) {
         progressDialog.show()
-        binding.successView.isVisible = false
-
     }
 
     private fun bindCategories(category: List<SubCategories?>) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         subCategoriesAdapter.bindCategories(category)
 
     }
@@ -137,7 +130,6 @@ class SubCategoriesFragment : Fragment() {
         val bundle = Bundle()
         bundle.putParcelable("category", category)
         productFragment.arguments = bundle
-        Log.d("category", "$category")
         requireActivity()
             .supportFragmentManager
             .beginTransaction()
@@ -158,9 +150,12 @@ class SubCategoriesFragment : Fragment() {
         val bundle: Bundle? = this.arguments
         if (bundle != null) {
             category = bundle.getParcelable("category")!!
-            Log.d("subcategory", "$category")
         }
 
+    }
+
+    companion object {
+        private const val TAG = "SubCategoriesFragment"
     }
 
 

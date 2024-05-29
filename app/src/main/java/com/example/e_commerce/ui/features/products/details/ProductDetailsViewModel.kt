@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.common.ResultWrapper
 import com.example.domain.usecase.GetSpecificProductUseCases
-import com.example.e_commerce.ui.utils.IoDispatcher
-import com.example.e_commerce.ui.utils.SingleLiveEvent
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

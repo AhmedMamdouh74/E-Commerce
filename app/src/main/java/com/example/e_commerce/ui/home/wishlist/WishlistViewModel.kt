@@ -1,6 +1,6 @@
+
 package com.example.e_commerce.ui.home.wishlist
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,8 +10,8 @@ import com.example.domain.usecase.AddProductToCartUseCase
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.utils.IoDispatcher
-import com.example.e_commerce.ui.utils.SingleLiveEvent
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,13 +33,7 @@ class WishlistViewModel @Inject constructor(
     private val _state =
         MutableStateFlow<WishlistContract.State>(WishlistContract.State.Loading("loading"))
     override val state = _state
-    private val _cartState =
-        MutableStateFlow<WishlistContract.CartState>(WishlistContract.CartState.Loading("loading"))
-    override val cartState = _cartState
-    private val _loggedUserCartState = MutableStateFlow<WishlistContract.LoggedUserCartState>(
-        WishlistContract.LoggedUserCartState.Loading("loading")
-    )
-    override val loggedUserCartState = _loggedUserCartState
+
 
     private val _event = SingleLiveEvent<WishlistContract.Event>()
     override val event: LiveData<WishlistContract.Event>
@@ -76,25 +70,25 @@ class WishlistViewModel @Inject constructor(
             getLoggedUserCartUseCases.invoke(token)
                 .collect { response ->
                     when (response) {
-                        is ResultWrapper.Error -> _loggedUserCartState.emit(
-                            WishlistContract.LoggedUserCartState.Error(
+                        is ResultWrapper.Error -> _state.emit(
+                            WishlistContract.State.Error(
                                 response.error.localizedMessage
                             )
                         )
 
                         ResultWrapper.Loading ->
-                            _loggedUserCartState.emit(WishlistContract.LoggedUserCartState.Loading("loading"))
+                            _state.emit(WishlistContract.State.Loading("loading"))
 
 
-                        is ResultWrapper.ServerError -> _loggedUserCartState.emit(
-                            WishlistContract.LoggedUserCartState.Error(
+                        is ResultWrapper.ServerError -> _state.emit(
+                            WishlistContract.State.Error(
                                 response.error.serverMessage
                             )
                         )
 
                         is ResultWrapper.Success -> {
-                            _loggedUserCartState.emit(
-                                WishlistContract.LoggedUserCartState.Success(
+                            _state.emit(
+                                WishlistContract.State.LoggedUserCartSuccess(
                                     response.data
                                 )
                             )
@@ -117,8 +111,8 @@ class WishlistViewModel @Inject constructor(
                 .collect { response ->
                     when (response) {
                         is ResultWrapper.Error ->
-                            _cartState.emit(
-                                WishlistContract.CartState.Error(
+                            _state.emit(
+                                WishlistContract.State.Error(
                                     response.error
                                         .localizedMessage
                                 )
@@ -126,12 +120,12 @@ class WishlistViewModel @Inject constructor(
 
 
                         ResultWrapper.Loading -> {
-                            _cartState.emit(WishlistContract.CartState.Loading("Loading"))
+                            _state.emit(WishlistContract.State.Loading("Loading"))
                         }
 
                         is ResultWrapper.ServerError ->
-                            _cartState.emit(
-                                WishlistContract.CartState.Error(
+                            _state.emit(
+                                WishlistContract.State.Error(
                                     response.error
                                         .serverMessage
                                 )
@@ -139,8 +133,7 @@ class WishlistViewModel @Inject constructor(
 
 
                         is ResultWrapper.Success -> {
-                            _cartState.emit(WishlistContract.CartState.Success)
-                            Log.d("TAG", "addProductToCartViewModel:${response} ")
+                            _state.emit(WishlistContract.State.CartSuccess)
 
 
                         }
@@ -167,7 +160,7 @@ class WishlistViewModel @Inject constructor(
                             )
                         )
 
-                        is ResultWrapper.Success -> _state.emit(WishlistContract.State.Idle)
+                        is ResultWrapper.Success -> _state.emit(WishlistContract.State.CartSuccess)
                         else -> {}
                     }
                 }

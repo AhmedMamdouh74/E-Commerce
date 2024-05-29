@@ -1,6 +1,6 @@
 package com.example.e_commerce.ui.features.auth.register
 
-import android.webkit.ConsoleMessage
+
 import androidx.lifecycle.LiveData
 import com.example.domain.model.RegisterRequest
 import com.example.domain.model.RegisterResponse
