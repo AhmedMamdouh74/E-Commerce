@@ -1,4 +1,8 @@
-package com.example.e_commerce.ui.utils
+
+package com.example.e_commerce.utils
+
+
+
 
 import dagger.Module
 import dagger.Provides

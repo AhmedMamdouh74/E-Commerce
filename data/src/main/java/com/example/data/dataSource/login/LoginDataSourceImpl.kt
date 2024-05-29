@@ -7,7 +7,8 @@ import com.example.domain.model.LoginRequest
 import com.example.domain.model.LoginResponse
 import javax.inject.Inject
 
-class LoginDataSourceImpl @Inject constructor(private val webServices: WebServices):LoginDataSourceContract {
+class LoginDataSourceImpl @Inject constructor(private val webServices: WebServices):
+    LoginDataSourceContract {
     override suspend fun login(loginRequest: LoginRequest): LoginResponse? {
 
 

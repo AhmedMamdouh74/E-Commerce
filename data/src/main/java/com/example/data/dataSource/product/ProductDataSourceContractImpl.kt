@@ -8,7 +8,8 @@ import com.example.domain.model.Product
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ProductDataSourceContractImpl @Inject constructor(private val webServices: WebServices):ProductDataSourceContract {
+class ProductDataSourceContractImpl @Inject constructor(private val webServices: WebServices):
+    ProductDataSourceContract {
     override suspend fun getProducts(categoryId: String): Flow<ResultWrapper<List<Product?>?>> {
         return safeApiCall {
             webServices.getProducts(categoryId)

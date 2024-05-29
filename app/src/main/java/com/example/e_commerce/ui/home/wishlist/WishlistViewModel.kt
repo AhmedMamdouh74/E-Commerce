@@ -1,3 +1,4 @@
+
 package com.example.e_commerce.ui.home.wishlist
 
 import androidx.lifecycle.LiveData
@@ -9,8 +10,8 @@ import com.example.domain.usecase.AddProductToCartUseCase
 import com.example.domain.usecase.GetLoggedUserCartUseCases
 import com.example.domain.usecase.GetLoggedUserWishlistUseCase
 import com.example.domain.usecase.RemoveProductFromWishlistUseCase
-import com.example.e_commerce.ui.utils.IoDispatcher
-import com.example.e_commerce.ui.utils.SingleLiveEvent
+import com.example.e_commerce.utils.IoDispatcher
+import com.example.e_commerce.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.LoginRequest
 import com.example.domain.usecase.GetLoginUseCases
-import com.example.e_commerce.ui.utils.IoDispatcher
+import com.example.e_commerce.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

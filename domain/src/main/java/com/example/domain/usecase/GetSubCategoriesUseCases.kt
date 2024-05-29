@@ -1,7 +1,6 @@
 package com.example.domain.usecase
 
 import com.example.domain.common.ResultWrapper
-import com.example.domain.model.Category
 import com.example.domain.model.SubCategories
 import com.example.domain.repositories.SubCategoriesRepository
 import kotlinx.coroutines.flow.Flow

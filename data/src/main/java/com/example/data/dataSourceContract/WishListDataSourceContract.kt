@@ -2,6 +2,8 @@ package com.example.data.datasourcecontract
 
 import com.example.domain.common.ResultWrapper
 import com.example.domain.model.Product
+import com.example.domain.model.wishlist.AddToWishlistResponse
+import com.example.domain.model.wishlist.WishlistResponse
 import kotlinx.coroutines.flow.Flow
 
 interface WishListDataSourceContract {

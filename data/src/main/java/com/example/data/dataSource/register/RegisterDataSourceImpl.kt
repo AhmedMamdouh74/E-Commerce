@@ -7,7 +7,8 @@ import com.example.domain.model.RegisterRequest
 import com.example.domain.model.RegisterResponse
 import javax.inject.Inject
 
-class RegisterDataSourceImpl @Inject constructor(private val webServices: WebServices):RegisterDataSourceContract {
+class RegisterDataSourceImpl @Inject constructor(private val webServices: WebServices):
+    RegisterDataSourceContract {
     override suspend fun register(registerRequest: RegisterRequest):RegisterResponse? {
 
 

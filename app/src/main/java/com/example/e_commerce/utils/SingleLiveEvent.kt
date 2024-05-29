@@ -1,4 +1,4 @@
-package com.example.e_commerce.ui.utils
+package com.example.e_commerce.utils
 
 import android.util.Log
 import androidx.annotation.MainThread

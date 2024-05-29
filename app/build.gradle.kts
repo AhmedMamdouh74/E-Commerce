@@ -48,14 +48,13 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(project(mapOf("path" to ":data")))
     implementation(project(mapOf("path" to ":domain")))
-    implementation("androidx.annotation:annotation:1.8.0")
-    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("androidx.annotation:annotation:1.6.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -78,20 +77,17 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     // fragment extensions
-    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     // Glide
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     // navigation
-    val nav_version = "2.7.7"
+    val nav_version = "2.7.6"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-    // Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
-
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core: 1.7.1")
     // splash screen
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
 
 
