@@ -10,19 +10,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.domain.model.Product
+import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityProductDetailsBinding
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 
-class
-
-ProductDetailsActivity : AppCompatActivity() {
+class ProductDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductDetailsBinding
     private val viewModel: ProductDetailsViewModel by viewModels()
     lateinit var product: Product
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,45 +75,36 @@ ProductDetailsActivity : AppCompatActivity() {
     }
 
     private fun bindProductDetail(product: Product?) {
-        binding.successView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.loadingView.isVisible = false
+        progressDialog.dismiss()
         binding.product = product
-
-
         Glide
             .with(this)
             .load(product?.imageCover)
+            .placeholder(R.drawable.ic_download)
+            .error(R.drawable.ic_error)
             .into(binding.productDetailsImage)
     }
 
     private fun showLoading(message: String) {
-        binding.loadingView.isVisible = true
-        binding.successView.isVisible = false
-        binding.errorView.isVisible = false
-        binding.errorText.text = message
-
+        progressDialog.show()
     }
 
     private fun showError(message: String) {
-        binding.errorView.isVisible = true
-        binding.successView.isVisible = false
-        binding.loadingView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
+        progressDialog.dismiss()
+        binding.root.showRetrySnakeBarError(message) {
             viewModel.handleAction(ProductsDetailsContract.Action.LoadingProduct(product.id ?: ""))
         }
     }
 
     private fun initViews() {
         binding.icBack.setOnClickListener {
-           onBackPressedDispatcher.onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
         binding.icCart.setOnClickListener { viewModel.handleAction(ProductsDetailsContract.Action.ClickOnCartIcon) }
     }
 
     private fun getProduct() {
-        product = intent.getParcelableExtra<Product>("product")!!
+        product = intent.getParcelableExtra("product")!!
 
     }
 }

@@ -1,4 +1,3 @@
-
 package com.example.e_commerce.ui.features.products
 
 import android.content.Intent
@@ -8,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -19,19 +19,21 @@ import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.products.details.ProductDetailsActivity
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
 import com.example.e_commerce.ui.home.showSnakeBarError
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
     lateinit var category: Category
-    private lateinit var viewModel: ProductsViewModel
+    private val viewModel: ProductsViewModel by viewModels()
+    private var snackbar:Snackbar?=null
     private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[ProductsViewModel::class.java]
+
     }
 
     private var viewBinding: FragmentProductBinding? = null
@@ -46,6 +48,7 @@ class ProductFragment : Fragment() {
         viewBinding = FragmentProductBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -53,8 +56,7 @@ class ProductFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect {
                     renderViewStates(it)
-                    renderLoggedWishlistState(it)
-                    renderWishlistState(it)
+
                 }
 
             }
@@ -118,32 +120,11 @@ class ProductFragment : Fragment() {
         startActivity(intent)
     }
 
-
-
-
-    private fun renderWishlistState(state: ProductContract.State?) {
+    private fun renderViewStates(state: ProductContract.State?) {
         when (state) {
-            is ProductContract.State.Error -> {
-                view?.showRetrySnakeBarError(state.message) { viewModel.getLoggedWishlist() }
-            }
-
-            is ProductContract.State.Loading -> {}
-            is ProductContract.State.SuccessWishlist -> {
-                viewModel.getLoggedWishlist()
-            }
-
-
-            else -> {}
-        }
-    }
-
-    private fun renderLoggedWishlistState(state: ProductContract.State?) {
-        when (state) {
-            is ProductContract.State.Error -> {
-                view?.showSnakeBarError(state.message)
-            }
-
-            is ProductContract.State.Loading -> {progressDialog.show()}
+            is ProductContract.State.Error -> showError(state.message)
+            is ProductContract.State.Loading -> showLoading()
+            is ProductContract.State.Success -> bindsProducts(state.product)
             is ProductContract.State.SuccessLoggedWishlist -> {
                 progressDialog.dismiss()
                 productsAdapter.setWishlist(
@@ -152,15 +133,9 @@ class ProductFragment : Fragment() {
 
             }
 
-            else -> {}
-        }
-    }
-
-    private fun renderViewStates(state: ProductContract.State?) {
-        when (state) {
-            is ProductContract.State.Error -> showError(state.message)
-            is ProductContract.State.Loading -> showLoading()
-            is ProductContract.State.Success -> bindsProducts(state.product)
+            is ProductContract.State.SuccessWishlist -> {
+                viewModel.getLoggedWishlist()
+            }
 
 
             else -> {}
@@ -198,5 +173,10 @@ class ProductFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        snackbar?.dismiss()
     }
 }

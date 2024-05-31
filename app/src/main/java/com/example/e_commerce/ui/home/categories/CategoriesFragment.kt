@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,16 +19,17 @@ import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.features.subcategories.SubCategoriesFragment
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
-    private lateinit var viewModel: CategoriesViewModel
+    private val viewModel: CategoriesViewModel by viewModels()
     private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireContext()) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[CategoriesViewModel::class.java]
+
     }
 
     private var _viewBinding: FragmentCategoriesBinding? = null
@@ -47,24 +49,23 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.states.collect { renderViewState(it) }
-
             }
         }
         viewModel.events.observe(viewLifecycleOwner, ::handleEvents)
-        viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
+
     }
 
     private fun initViews() {
+        binding.categoriesRecycler.adapter = categoriesAdapter
         categoriesAdapter.onItemClickListener = CategoriesAdapter.OnItemClickListener { _, item ->
             item?.let {
                 viewModel.handleAction(CategoriesContract.Action.CategoryClicked(it))
             }
-
         }
-        binding.categoriesRecycler.adapter = categoriesAdapter
         binding.icCart.setOnClickListener {
             viewModel.handleAction(CategoriesContract.Action.CartClicked)
         }
@@ -82,7 +83,6 @@ class CategoriesFragment : Fragment() {
 
     private fun showError(message: String) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(CategoriesContract.Action.LoadingCategories)
 
@@ -91,13 +91,12 @@ class CategoriesFragment : Fragment() {
 
     private fun showLoading() {
         progressDialog.show()
-        binding.successView.isVisible = true
+
 
     }
 
     private fun bindCategories(category: List<Category?>) {
         progressDialog.dismiss()
-        binding.successView.isVisible = true
         categoriesAdapter.bindCategories(category)
 
 
