@@ -30,7 +30,7 @@ class SubCategoriesAdapter(private var subCategories: List<SubCategories?>?) :
             }
         }
 
-        //  category!![position]?.let { holder.bind(it) }
+
 
     }
 

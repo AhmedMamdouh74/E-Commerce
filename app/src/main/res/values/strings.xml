@@ -20,4 +20,6 @@
     <string name="loading" translatable="false">Loading</string>
     <string name="ok" translatable="false">ok\n</string>
     <string name="retry" translatable="false">retry</string>
+    <string name="item_removed_from_wishlist">Item removed from Wishlist</string>
+    <string name="added_to_cart_already">Added To Cart Already</string>
 </resources>

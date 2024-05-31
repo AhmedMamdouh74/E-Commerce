@@ -13,7 +13,6 @@ import com.example.e_commerce.databinding.ItemWishlistBinding
 
 class WishlistAdapter :
     RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
-
     private val wishlistDiffUtil = object : DiffUtil.ItemCallback<Product?>() {
         override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
             return oldItem.id == newItem.id
@@ -22,60 +21,44 @@ class WishlistAdapter :
         override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
             return oldItem == newItem
         }
-
     }
     private val wishlistAsyncListDiffer = AsyncListDiffer(this, wishlistDiffUtil)
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding =
-
             ItemWishlistBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
         return ViewHolder(itemBinding)
-
     }
-
 
     override fun getItemCount(): Int = wishlistAsyncListDiffer.currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val wishlistData = wishlistAsyncListDiffer.currentList[position]
-
         holder.bind(wishlistData, cart)
-
-        // onItemClickListener?.let {clickListener->
         holder.itemBinding.wishlistFavourite.setOnClickListener {
             notifyItemChanged(position)
             onItemClickListener?.onItemClick(position, wishlistData)
-
         }
-        // }
+
         holder.itemBinding.btnAddToCart.setOnClickListener {
             notifyItemChanged(position)
             onItemAddedListener?.onItemClick(position, wishlistData)
         }
-
-
     }
 
 
     private var cart: MutableList<ProductsItem?>? = null
-    fun setCart(cart: MutableList<ProductsItem?>?) {
-        this.cart = cart
-        for (i in cart!!.indices) {
-            // Find the index of the item in the wishlist that matches the cart item
-            val index = wishlistAsyncListDiffer.currentList.indexOfFirst { it?.id == cart[i]?.product?.id }
-
-            // If the item is found, notify the adapter that the item has been changed
-            if (index != -1) {
+    fun setCart(newCart: MutableList<ProductsItem?>?) {
+        this.cart = newCart
+        wishlistAsyncListDiffer.currentList.forEachIndexed { index, product ->
+            if (newCart?.any { it?.product?.id == product?.id } == true)
                 notifyItemChanged(index)
-            }
+            else
+                notifyItemChanged(index)
         }
+
+
     }
-
-
 
 
     class ViewHolder(var itemBinding: ItemWishlistBinding) :

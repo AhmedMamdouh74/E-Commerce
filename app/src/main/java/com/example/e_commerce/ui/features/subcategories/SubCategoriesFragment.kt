@@ -68,6 +68,7 @@ class SubCategoriesFragment : Fragment() {
     }
 
     private fun initViews() {
+        binding.subcategoriesRecycler.adapter = subCategoriesAdapter
         subCategoriesAdapter.onItemClickListener =
             SubCategoriesAdapter.OnItemClickListener { position, item ->
                 item?.let {
@@ -79,7 +80,7 @@ class SubCategoriesFragment : Fragment() {
                 }
             }
 
-        binding.subcategoriesRecycler.adapter = subCategoriesAdapter
+
     }
 
     private fun renderViewState(state: SubCategoriesContract.State) {

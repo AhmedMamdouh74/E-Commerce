@@ -6,17 +6,17 @@ import com.example.e_commerce.R
 import com.google.android.material.snackbar.Snackbar
 
 
-fun View.showSnakeBarError(message: String) {
-    Snackbar.make(this, message, Snackbar.LENGTH_INDEFINITE)
+fun View.showSnakeBarError(message: String):Snackbar {
+   return Snackbar.make(this, message, Snackbar.LENGTH_INDEFINITE)
         .setAction(this.context.resources.getString(R.string.ok)) {}.setActionTextColor(
             ContextCompat.getColor(this.context, R.color.white)
-        ).show()
+        ).apply { show() }
 }
 
-fun View.showRetrySnakeBarError(message: String, retry: () -> Unit) {
-    Snackbar.make(this, message, Snackbar.LENGTH_INDEFINITE)
+fun View.showRetrySnakeBarError(message: String, retry: () -> Unit):Snackbar {
+  return  Snackbar.make(this, message, Snackbar.LENGTH_INDEFINITE)
         .setAction(this.context.resources.getString(R.string.retry)) { retry.invoke() }
         .setActionTextColor(
             ContextCompat.getColor(this.context, R.color.white)
-        ).show()
+        ).apply { show() }
 }
