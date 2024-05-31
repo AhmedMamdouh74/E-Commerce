@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.api.TokenManager
 import com.example.domain.model.LoginRequest
 import com.example.domain.usecase.GetLoginUseCases
 import com.example.e_commerce.utils.IoDispatcher
@@ -16,10 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val getLoginUseCases: GetLoginUseCases,
+    val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-) :
-    ViewModel(),
-    LoginContract.ViewModel {
+) : ViewModel(), LoginContract.ViewModel {
     private val _states =
         MutableStateFlow<LoginContract.State>(LoginContract.State.Idle)
     override val states = _states
@@ -45,7 +45,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun login(loginRequest: LoginRequest) {
-        _states.value=LoginContract.State.Loading("loading")
+        _states.value = LoginContract.State.Loading("loading")
 
         viewModelScope.launch(ioDispatcher) {
 
@@ -55,7 +55,7 @@ class LoginViewModel @Inject constructor(
 
                 navigateToHome(loginRequest)
             } catch (ex: Exception) {
-                _states.value = LoginContract.State.Error(ex.localizedMessage?:"")
+                _states.value = LoginContract.State.Error(ex.localizedMessage ?: "")
             }
 
 
@@ -92,8 +92,8 @@ class LoginViewModel @Inject constructor(
     var passwordError = MutableLiveData<String?>()
     fun getRequest(): LoginRequest {
         return LoginRequest(
-            email = email.value,
-            password = password.value
+            email = email.value.trim().replace("\\s".toRegex(), ""),
+            password = password.value.trim().replace("\\s".toRegex(), "")
         )
     }
 

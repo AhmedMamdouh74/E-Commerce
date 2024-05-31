@@ -1,47 +1,35 @@
-
 package com.example.e_commerce.ui.features.auth.login
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.domain.model.LoginResponse
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentLoginBinding
-import com.example.e_commerce.ui.features.auth.AuthActivity
-import com.example.e_commerce.ui.features.auth.TokenViewModel
-import com.example.e_commerce.ui.features.auth.register.RegisterFragment
+import com.example.e_commerce.ui.common.customviews.ProgressDialog
+import com.example.e_commerce.ui.features.auth.UserViewModel
 import com.example.e_commerce.ui.home.HomeActivity
+import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private lateinit var viewModel: LoginViewModel
-    private val tokenViewModel: TokenViewModel by viewModels()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
-
-
-    }
-
+    private val viewModel: LoginViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
     private var viewBinding: FragmentLoginBinding? = null
+    private var snackbar:Snackbar?=null
     private val binding get() = viewBinding!!
+    private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,13 +38,14 @@ class LoginFragment : Fragment() {
         // Inflate the layout for this fragment
         viewBinding = FragmentLoginBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.vm = viewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.states.collect {
                     renderStates(it)
@@ -78,7 +67,7 @@ class LoginFragment : Fragment() {
             else -> {}
 
         }
-        Log.d("TAG", "handelEventsLogin:$event ")
+
     }
 
     private fun navigateToHomeScreen() {
@@ -91,53 +80,41 @@ class LoginFragment : Fragment() {
 
 
     private fun renderStates(state: LoginContract.State?) {
-        Log.d("TAG", "renderStatesLogin: $state")
+
         when (state) {
             is LoginContract.State.Error -> showError(state.message)
             is LoginContract.State.Loading -> showLoading(state.message)
             is LoginContract.State.Success -> login(state.loginResponse)
             LoginContract.State.Idle -> showIdle()
-            null -> TODO()
+            else -> {}
         }
 
 
     }
 
     private fun showIdle() {
+        progressDialog.dismiss()
 
-        binding.errorView.isVisible = false
-        binding.loadingView.isVisible = false
-        binding.successView.isVisible = true
     }
 
     private fun showError(message: String) {
-        binding.errorView.isVisible = true
-        binding.loadingView.isVisible = false
-        binding.successView.isVisible = false
-        binding.errorText.text = message
-        binding.btnTryAgain.setOnClickListener {
-            binding.errorView.isVisible = false
-            binding.loadingView.isVisible = false
-            binding.successView.isVisible = true
+        progressDialog.dismiss()
+        snackbar?.dismiss()
+        snackbar=view?.showRetrySnakeBarError(message) {
+            viewModel.handleAction(LoginContract.Action.Login(viewModel.getRequest()))
         }
 
     }
 
     private fun showLoading(message: String) {
-        binding.errorView.isVisible = false
-        binding.loadingView.isVisible = true
-        binding.successView.isVisible = true
-        binding.errorText.text = message
+        progressDialog.show()
     }
 
     private fun login(loginResponse: LoginResponse?) {
-        binding.successView.isVisible = true
-        binding.errorView.isVisible = false
-        binding.loadingView.isVisible = true
-
+        progressDialog.dismiss()
         loginResponse?.user?.let {
-            tokenViewModel.saveToken(
-                loginResponse?.token ?: "", it
+            userViewModel.saveToken(
+                loginResponse.token ?: "", it
             )
         }
 
@@ -146,8 +123,6 @@ class LoginFragment : Fragment() {
 
 
     private fun initViews() {
-
-        binding.vm = viewModel
         binding.createAccount.setOnClickListener {
             createAccount()
         }
@@ -163,5 +138,15 @@ class LoginFragment : Fragment() {
         super.onDestroy()
         viewBinding = null
 
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        snackbar?.dismiss()
+    }
+
+    companion object {
+        const val TAG = "LoginFragment"
     }
 }

@@ -1,9 +1,7 @@
-
 package com.example.e_commerce.ui.features.cart
 
-import android.content.Context
+
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -16,7 +14,7 @@ import com.example.domain.model.cart.loggedCart.ProductsItem
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityCartBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
-import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -104,22 +102,18 @@ class CartActivity : AppCompatActivity() {
 
     private fun showLoading() {
         progressDialog.show()
-        viewBinding.successView.isVisible = true
 
 
     }
 
     private fun showError(message: String) {
         progressDialog.dismiss()
-        viewBinding.successView.isVisible = true
-        viewBinding.root.showRetrySnakeBarError(message) {
-            viewModel.handleAction(CartContract.Action.LoadingLoggedUserCarts)
-        }
+        viewBinding.root.showSnakeBarError(message)
     }
 
     private fun bindsCarts(product: MutableList<ProductsItem?>?, cartQuantity: CartQuantity?) {
         progressDialog.dismiss()
-        viewBinding.successView.isVisible = true
+
         cartAdapter.bindProducts(product)
         viewBinding.cart = cartQuantity
     }

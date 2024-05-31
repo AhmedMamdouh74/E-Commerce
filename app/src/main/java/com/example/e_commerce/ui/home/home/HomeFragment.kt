@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.example.e_commerce.databinding.FragmentHomeBinding
 import com.example.e_commerce.ui.features.auth.AuthActivity
-import com.example.e_commerce.ui.features.auth.TokenViewModel
+import com.example.e_commerce.ui.features.auth.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
-    val tokenViewModel:TokenViewModel by viewModels()
+    val userViewModel:UserViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -34,7 +34,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnLogout.setOnClickListener {
-            tokenViewModel.deleteToken()
+            userViewModel.deleteToken()
            val intent=Intent(requireActivity(), AuthActivity::class.java)
             startActivity(intent)
 

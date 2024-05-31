@@ -11,10 +11,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.model.Product
+import com.example.e_commerce.R
 import com.example.e_commerce.databinding.FragmentWishlistBinding
 import com.example.e_commerce.ui.common.customviews.ProgressDialog
 import com.example.e_commerce.ui.features.cart.CartActivity
 import com.example.e_commerce.ui.home.showRetrySnakeBarError
+import com.example.e_commerce.ui.home.showSnakeBarError
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class WishlistFragment : Fragment() {
     private lateinit var viewModel: WishlistViewModel
+    private var snackbar: Snackbar? = null
 
     private val progressDialog by lazy { ProgressDialog.createProgressDialog(requireActivity()) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +45,19 @@ class WishlistFragment : Fragment() {
         _viewBinding = FragmentWishlistBinding.inflate(inflater, container, false)
         return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
+        viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect {
+                    renderStates(it)
+                }
+            }
+        }
+        viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
+    }
 
     private fun handleEvents(event: WishlistContract.Event) {
         when (event) {
@@ -57,75 +73,8 @@ class WishlistFragment : Fragment() {
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initViews()
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect {
-                    renderStates(it)
-                    renderLoggedUserCartState(it)
-                    renderCartState(it)
-
-                }
-            }
-        }
-
-        viewModel.event.observe(viewLifecycleOwner, ::handleEvents)
-        viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
-
-    }
-
-    private fun renderCartState(cartState: WishlistContract.State?) {
-
-        when (cartState) {
-            is WishlistContract.State.Error -> {
-
-                view?.showRetrySnakeBarError(cartState.message) {
-                    viewModel.getLoggedUserCart(viewModel.token)
-                }
-
-            }
-
-            is WishlistContract.State.Loading -> {}
-            WishlistContract.State.CartSuccess -> {
-
-                viewModel.getLoggedUserCart(viewModel.token)
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun renderLoggedUserCartState(loggedUserCartState: WishlistContract.State?) {
-        when (loggedUserCartState) {
-            is WishlistContract.State.Error -> {
-                progressDialog.dismiss()
-                view?.showRetrySnakeBarError(loggedUserCartState.message) {
-                    viewModel.getLoggedUserCart(viewModel.token)
-                }
-
-            }
-
-            is WishlistContract.State.Loading -> {
-                progressDialog.show()
-            }
-
-            is WishlistContract.State.LoggedUserCartSuccess -> {
-                progressDialog.dismiss()
-                wishlistAdapter.setCart(
-                    loggedUserCartState.cart?.products?.toMutableList()
-
-                )
-
-            }
 
 
-            else -> {}
-        }
-
-
-    }
 
     private fun renderStates(state: WishlistContract.State) {
         when (state) {
@@ -139,6 +88,18 @@ class WishlistFragment : Fragment() {
 
             is WishlistContract.State.Success -> {
                 bindProducts(state.product)
+            }
+
+            is WishlistContract.State.CartSuccess -> {
+                viewModel.getLoggedUserCart(viewModel.token)
+            }
+
+            is WishlistContract.State.LoggedUserCartSuccess -> {
+                progressDialog.dismiss()
+                wishlistAdapter.setCart(
+                    state.cart?.products?.toMutableList()
+
+                )
             }
 
 
@@ -158,7 +119,8 @@ class WishlistFragment : Fragment() {
 
     private fun viewError(message: String) {
         progressDialog.dismiss()
-        view?.showRetrySnakeBarError(message) {
+        snackbar?.dismiss()
+        snackbar = view?.showRetrySnakeBarError(message) {
             viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
         }
 
@@ -184,7 +146,7 @@ class WishlistFragment : Fragment() {
 
                     Snackbar.make(
                         binding.root,
-                        "Item removed from Wishlist",
+                        getString(R.string.item_removed_from_wishlist),
                         Snackbar.LENGTH_LONG
                     ).show()
 
@@ -196,7 +158,10 @@ class WishlistFragment : Fragment() {
                 item?.let {
 
                     if (it.addedToCart == true) {
-                        Snackbar.make(binding.root, "Added To Cart Already", Snackbar.LENGTH_LONG)
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.added_to_cart_already), Snackbar.LENGTH_LONG
+                        )
                             .show()
                     } else {
                         viewModel.handleAction(
@@ -219,14 +184,20 @@ class WishlistFragment : Fragment() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getLoggedUserCart(viewModel.token)
-        viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        viewModel.handleAction(WishlistContract.Action.LoadingFavouriteProducts)
+//
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        snackbar?.dismiss()
+
     }
 }

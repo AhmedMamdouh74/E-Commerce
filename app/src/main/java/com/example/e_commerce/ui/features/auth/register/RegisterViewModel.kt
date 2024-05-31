@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.api.TokenManager
 import com.example.domain.model.RegisterRequest
 import com.example.domain.usecase.GetRegisterUseCases
 import com.example.e_commerce.utils.IoDispatcher
@@ -17,10 +18,10 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val getRegisterUseCases: GetRegisterUseCases,
+    val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 
-) :
-    ViewModel(), RegisterContract.ViewModel {
+) : ViewModel(), RegisterContract.ViewModel {
     private val _states =
         MutableStateFlow<RegisterContract.State>(RegisterContract.State.Idle)
     override val states: StateFlow<RegisterContract.State>
@@ -43,22 +44,14 @@ class RegisterViewModel @Inject constructor(
 
     var rePassword = MutableLiveData<String>()
     var rePasswordError = MutableLiveData<String?>()
-//    var registerRequest: RegisterRequest = RegisterRequest(
-//        name = name.value,
-//        email = email.value,
-//        password = password.value,
-//        rePassword = rePassword.value,
-//        phone = mobile.value
-//
-//    )
 
     fun getRegisterRequest(): RegisterRequest {
         return RegisterRequest(
-            name = name.value,
-            email = email.value,
-            password = password.value,
-            rePassword = rePassword.value,
-            phone = mobile.value
+            name = name.value?.trim()?.replace("\\s".toRegex(), ""),
+            email = email.value?.trim()?.replace("\\s".toRegex(), ""),
+            password = password.value?.trim()?.replace("\\s".toRegex(), ""),
+            rePassword = rePassword.value?.trim()?.replace("\\s".toRegex(), ""),
+            phone = mobile.value?.trim()?.replace("\\s".toRegex(), "")
         )
     }
 
@@ -135,7 +128,7 @@ class RegisterViewModel @Inject constructor(
                 _states.value = RegisterContract.State.Success(response)
                 navigateToLogin(registerRequest)
             } catch (ex: Exception) {
-                _states.value = RegisterContract.State.Error(ex.message ?: "")
+                _states.value = RegisterContract.State.Error(ex.localizedMessage ?: "")
             }
 
 
