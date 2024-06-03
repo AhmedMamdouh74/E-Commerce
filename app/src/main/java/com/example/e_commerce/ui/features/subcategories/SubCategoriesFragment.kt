@@ -135,7 +135,7 @@ class SubCategoriesFragment : Fragment() {
             .supportFragmentManager
             .beginTransaction()
             .addToBackStack("subCategory")
-            .replace(R.id.fragment_container, ProductFragment.getInstance(category))
+            .replace(R.id.nav_host_fragment, ProductFragment.getInstance(category))
             .commit()
 
 

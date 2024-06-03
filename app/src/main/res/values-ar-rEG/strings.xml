@@ -3,4 +3,8 @@
     <string name="app_name">E-Commerce</string>
     <string name="item_removed_from_wishlist">Item removed from Wishlist</string>
     <string name="added_to_cart_already">Added To Cart Already</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="profile">Profile</string>
+    <string name="category">Category</string>
+    <string name="home">home</string>
 </resources>

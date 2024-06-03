@@ -11,6 +11,10 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.data.api.TokenManager
 import com.example.e_commerce.R
 import com.example.e_commerce.databinding.ActivityHomeBinding
@@ -24,11 +28,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
+class HomeActivity : AppCompatActivity() {
     @Inject
     lateinit var tokenManager: TokenManager
     private lateinit var viewBinding: ActivityHomeBinding
     val viewModel: HomeViewModel by viewModels()
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         initSplashScreen()
         super.onCreate(savedInstanceState)
@@ -37,33 +43,15 @@ class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
 
         }
         viewBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
-        viewBinding.bottomNavigation.setOnItemSelectedListener(this)
-        viewBinding.bottomNavigation.selectedItemId = R.id.navigation_category
+        // Initialize the Navigation controller
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-
+        // Connect the BottomNavigationView
+        viewBinding.bottomNavigation.setupWithNavController(navController)
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                pushFragment(HomeFragment())
 
-            }
-
-            R.id.navigation_category -> {
-                pushFragment(CategoriesFragment())
-            }
-
-            R.id.navigation_profile -> {
-                pushFragment(ProfileFragment())
-            }
-
-            R.id.navigation_wishlist -> {
-                pushFragment(WishlistFragment())
-            }
-        }
-        return true
-    }
 
     private fun initSplashScreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -77,8 +65,6 @@ class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
         val userToken = tokenManager.getToken()
         Log.d("TAG", "isUserLogged: $userToken")
         return !userToken.isNullOrEmpty()
-
-
     }
 
     private fun goToAuthActivity() {
@@ -93,12 +79,4 @@ class HomeActivity : AppCompatActivity(), OnItemSelectedListener {
 
     }
 
-    private fun pushFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .addToBackStack("home")
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-
-    }
 }
