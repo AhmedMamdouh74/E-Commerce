@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
 import com.example.domain.model.RegisterRequest
-import com.example.domain.usecase.GetRegisterUseCases
+import com.example.domain.usecase.GetRegisterUseCase
 import com.example.e_commerce.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val getRegisterUseCases: GetRegisterUseCases,
+    private val getAuthUseCases: GetRegisterUseCase,
     val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 
@@ -124,7 +124,7 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
 
             try {
-                val response = getRegisterUseCases.invoke(registerRequest)
+                val response = getAuthUseCases.invoke(registerRequest)
                 _states.value = RegisterContract.State.Success(response)
                 navigateToLogin(registerRequest)
             } catch (ex: Exception) {

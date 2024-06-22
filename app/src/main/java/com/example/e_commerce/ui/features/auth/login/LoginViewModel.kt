@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.api.TokenManager
 import com.example.domain.model.LoginRequest
-import com.example.domain.usecase.GetLoginUseCases
+import com.example.domain.usecase.GetLoginUseCase
 import com.example.e_commerce.utils.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val getLoginUseCases: GetLoginUseCases,
+    private val getAuthUseCases: GetLoginUseCase,
     val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel(), LoginContract.ViewModel {
@@ -38,22 +38,21 @@ class LoginViewModel @Inject constructor(
 
     private fun validateAndLogin() {
         if (validFields()) {
-            val loginRequest = getRequest()
-            login(loginRequest)
+            login()
 
         }
     }
 
-    private fun login(loginRequest: LoginRequest) {
+    private fun login() {
         _states.value = LoginContract.State.Loading("loading")
 
         viewModelScope.launch(ioDispatcher) {
 
             try {
-                val response = getLoginUseCases.invoke(getRequest())
+                val response = getAuthUseCases.invoke(getRequest())
                 _states.value = LoginContract.State.Success(response)
 
-                navigateToHome(loginRequest)
+                navigateToHome()
             } catch (ex: Exception) {
                 _states.value = LoginContract.State.Error(ex.localizedMessage ?: "")
             }
@@ -63,8 +62,8 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    private fun navigateToHome(loginRequest: LoginRequest) {
-        _events.postValue(LoginContract.Event.NavigateToHomeScreen(loginRequest))
+    private fun navigateToHome() {
+        _events.postValue(LoginContract.Event.NavigateToHomeScreen)
     }
 
     private fun validFields(): Boolean {
@@ -90,7 +89,7 @@ class LoginViewModel @Inject constructor(
     var emailError = MutableLiveData<String?>()
     var password = MutableStateFlow("")
     var passwordError = MutableLiveData<String?>()
-    fun getRequest(): LoginRequest {
+    private fun getRequest(): LoginRequest {
         return LoginRequest(
             email = email.value.trim().replace("\\s".toRegex(), ""),
             password = password.value.trim().replace("\\s".toRegex(), "")

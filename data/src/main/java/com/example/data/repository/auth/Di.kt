@@ -1,6 +1,6 @@
-package com.example.data.repository.login
+package com.example.data.repository.auth
 
-import com.example.domain.repositories.LoginRepository
+import com.example.domain.repositories.AuthRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -10,5 +10,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class Di {
     @Binds
-    abstract fun bindLoginRepository(loginRepositoryImpl: LoginRepositoryImpl):LoginRepository
+    abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 }
